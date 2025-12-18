@@ -40,6 +40,7 @@ ft_strcpy:
 	ret								; Retornar puntero dst en rax
 
 ; ==============================================================================
+;
 ; Las líneas 24 y 25, son directivas de ensamblador que definen la estructura 
 ; y visibilidad de la función ft_strcpy:
 ;
@@ -101,4 +102,5 @@ ft_strcpy:
 ;	ret: Retorna al código que llamó a la función. El valor de retorno (el puntero
 ;	original a dst) ya está en el registro rax, guardado al inicio de la función,
 ;	según la convención de llamada x86-64.
+;
 ; ==============================================================================
