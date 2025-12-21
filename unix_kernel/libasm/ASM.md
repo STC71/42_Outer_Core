@@ -6,24 +6,25 @@
 1. [Introducción al Ensamblador](#introducción-al-ensamblador)
 2. [¿Qué son los Registros?](#qué-son-los-registros)
 3. [Tipos de Registros en x86-64](#tipos-de-registros-en-x86-64)
-4. [Jerarquía y Subdivisiones de Registros](#jerarquía-y-subdivisiones-de-registros)
+4. [Tabla Completa de Registros x86-64](#tabla-completa-de-registros-x86-64)
+5. [Jerarquía y Subdivisiones de Registros](#jerarquía-y-subdivisiones-de-registros)
 
 ### 🔧 Conceptos Intermedios
-5. [Direccionamiento de Memoria](#direccionamiento-de-memoria)
-6. [Instrucciones Básicas](#instrucciones-básicas)
-7. [Etiquetas y Control de Flujo](#etiquetas-y-control-de-flujo)
-8. [Directivas del Ensamblador](#directivas-del-ensamblador)
+6. [Direccionamiento de Memoria](#direccionamiento-de-memoria)
+7. [Instrucciones Básicas](#instrucciones-básicas)
+8. [Etiquetas y Control de Flujo](#etiquetas-y-control-de-flujo)
+9. [Directivas del Ensamblador](#directivas-del-ensamblador)
 
 ### 🎯 Aplicación Práctica
-9. [Convención de Llamada x86-64](#convención-de-llamada-x86-64)
-10. [Ejemplos Prácticos del Proyecto](#ejemplos-prácticos-del-proyecto)
-11. [Trucos y Optimizaciones](#trucos-y-optimizaciones-comunes)
-12. [Debugging y Herramientas](#debugging-y-herramientas)
-13. [Errores Comunes y Cómo Evitarlos](#errores-comunes-y-cómo-evitarlos)
+10. [Convención de Llamada x86-64](#convención-de-llamada-x86-64)
+11. [Ejemplos Prácticos del Proyecto](#ejemplos-prácticos-del-proyecto)
+12. [Trucos y Optimizaciones](#trucos-y-optimizaciones-comunes)
+13. [Debugging y Herramientas](#debugging-y-herramientas)
+14. [Errores Comunes y Cómo Evitarlos](#errores-comunes-y-cómo-evitarlos)
 
 ### 📖 Referencias
-14. [Recursos Adicionales](#recursos-adicionales)
-15. [Canales de YouTube Recomendados](#-canales-de-youtube-recomendados)
+15. [Recursos Adicionales](#recursos-adicionales)
+16. [Canales de YouTube Recomendados](#-canales-de-youtube-recomendados)
 
 ---
 
@@ -212,11 +213,123 @@ Banderas importantes:
 
 ---
 
-## Jerarquía y Subdivisiones de Registros
-- **Propósito general**: 16 registros (los que usarás)
-- **Punto flotante/SIMD**: 16-32 registros
-- **Especiales**: ~20 más (rip, rflags, segmento, control, debug)
-- **Total aproximado**: ~50-80 registros según extensiones del procesador
+## Tabla Completa de Registros x86-64
+
+Esta tabla muestra todos los registros de propósito general con sus subdivisiones y convenciones de uso según la System V ABI (Application Binary Interface) de x86-64.
+
+### Registros y Sus Subdivisiones
+
+| **64 bits** | **32 bits** | **16 bits** | **8 bits (baja/alta)** | **Función Principal** |
+|-------------|-------------|-------------|------------------------|-------------------------------------------------------|
+| **RAX**     | EAX         | AX          | AL, AH                 | Retorno de funciones / Acumulador                     |
+| **RDI**     | EDI         | DI          | DIL, DIH (moderno)     | _Argumento de función (1º)_ / Destino                 |
+| **RSI**     | ESI         | SI          | SIL, SIH (moderno)     | _Argumento de función (2º)_ / Fuente                  |
+| **RDX**     | EDX         | DX          | DL, DH                 | _Argumento de función (3º)_                           |
+| **RCX**     | ECX         | CX          | CL, CH                 | _Argumento de función (4º)_ / Contador                |
+| **R8**      | R8D         | R8W         | R8B                    | _Argumento de función (5º)_                           |
+| **R9**      | R9D         | R9W         | R9B                    | _Argumento de función (6º)_                           |
+| **RBX**     | EBX         | BX          | BL, BH                 | Propósito general (preservable)                       |
+| **RBP**     | EBP         | BP          | BPL, BPH (moderno)     | Puntero de base de pila (frame pointer)               |
+| **RSP**     | ESP         | SP          | SPL, SPH (moderno)     | Puntero de pila (stack pointer)                       |
+| **R10**     | R10D        | R10W        | R10B                   | Propósito general (volátil)                           |
+| **R11**     | R11D        | R11W        | R11B                   | Propósito general (volátil)                           |
+| **R12**     | R12D        | R12W        | R12B                   | Propósito general (preservable)                       |
+| **R13**     | R13D        | R13W        | R13B                   | Propósito general (preservable)                       |
+| **R14**     | R14D        | R14W        | R14B                   | Propósito general (preservable)                       |
+| **R15**     | R15D        | R15W        | R15B                   | Propósito general (preservable)                       |
+
+### Convención de Llamada - Argumentos de Función
+
+Cuando llamas a una función en x86-64, los primeros 6 argumentos se pasan en registros:
+
+```nasm
+; Ejemplo: llamar a función_ejemplo(arg1, arg2, arg3, arg4, arg5, arg6)
+mov     rdi, arg1        ; 1º argumento
+mov     rsi, arg2        ; 2º argumento
+mov     rdx, arg3        ; 3º argumento
+mov     rcx, arg4        ; 4º argumento
+mov     r8,  arg5        ; 5º argumento
+mov     r9,  arg6        ; 6º argumento
+call    funcion_ejemplo
+```
+
+Argumentos adicionales (7º en adelante) se pasan por el stack.
+
+### Notas Importantes
+
+#### Registros Preservables (Callee-saved)
+La función **llamada** debe preservar el valor de estos registros si los usa:
+- **RBX, RBP, R12, R13, R14, R15**
+- Deben guardarse al inicio (push) y restaurarse al final (pop)
+
+```nasm
+mi_funcion:
+    push    rbx              ; Guardar rbx
+    push    r12              ; Guardar r12
+    
+    ; ... usar rbx y r12 ...
+    
+    pop     r12              ; Restaurar r12
+    pop     rbx              ; Restaurar rbx
+    ret
+```
+
+#### Registros Volátiles (Caller-saved)
+La función **llamadora** debe guardar estos registros si necesita su valor después de la llamada:
+- **RAX, RCX, RDX, RSI, RDI, R8, R9, R10, R11**
+- La función llamada puede sobrescribirlos libremente
+
+```nasm
+funcion_llamadora:
+    mov     rax, 42          ; Valor importante en rax
+    push    rax              ; Guardar antes de call
+    call    otra_funcion     ; Podría modificar rax
+    pop     rax              ; Restaurar valor
+    ; rax tiene el valor 42 de nuevo
+```
+
+#### Registros Especiales
+- **RAX**: Siempre contiene el valor de retorno de las funciones
+- **RSP**: NUNCA debe modificarse sin restaurar. Siempre debe estar alineado a 16 bytes antes de `call`
+- **RBP**: Convencionalmente usado como frame pointer (aunque es opcional en x86-64)
+
+### Ejemplo Completo
+
+```nasm
+; Función que suma dos números y guarda el resultado
+; Prototipo: int sumar_y_guardar(int a, int b, int *resultado)
+sumar_y_guardar:
+    ; Parámetros:
+    ; rdi = a (1º argumento)
+    ; rsi = b (2º argumento)  
+    ; rdx = resultado (3º argumento, puntero)
+    
+    ; No necesitamos preservar registros volátiles (rdi, rsi, rdx)
+    ; porque son caller-saved
+    
+    mov     rax, rdi         ; rax = a
+    add     rax, rsi         ; rax = a + b
+    mov     [rdx], rax       ; *resultado = rax
+    
+    ; rax ya contiene el valor de retorno (a + b)
+    ret
+```
+
+### Resumen Visual
+
+```
+╔══════════════════════════════════════════════════════════════════╗
+║                  CONVENCIÓN DE LLAMADA x86-64                    ║
+╠══════════════════════════════════════════════════════════════════╣
+║  Argumentos (orden):  RDI → RSI → RDX → RCX → R8 → R9 → Stack    ║
+║  Retorno:             RAX (enteros), XMM0 (flotantes)            ║
+║  Preservables:        RBX, RBP, R12-R15                          ║
+║  Volátiles:           RAX, RCX, RDX, RSI, RDI, R8-R11            ║
+║  Stack Pointer:       RSP (alineado a 16 bytes antes de call)    ║
+╚══════════════════════════════════════════════════════════════════╝
+```
+
+[⬆️ Volver arriba](#tabla-de-contenidos)
 
 ---
 
