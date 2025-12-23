@@ -44,7 +44,7 @@ ft_list_size:
 	ret								; Retornar tamaño en rax
 
 ; ==============================================================================
-; Las líneas 26 y 27, son directivas de ensamblador que definen la estructura 
+; Las líneas 29 y 30, son directivas de ensamblador que definen la estructura 
 ; y visibilidad de la función ft_list_size:
 ;
 ;	section .text: Declara la sección de código ejecutable del programa. 
@@ -60,7 +60,7 @@ ft_list_size:
 ; ser llamada desde C.
 ; ______________________________________________________________________________
 ;
-; Las líneas 29 a 32, son la inicialización de la función y la validación de 
+; Las líneas 32 a 35, son la inicialización de la función y la validación de 
 ; entrada:
 ;
 ;	ft_list_size: Es la etiqueta que marca el inicio de la función. 
@@ -79,7 +79,7 @@ ft_list_size:
 ;	y el manejo de listas vacías.
 ; ______________________________________________________________________________
 ;
-; Las líneas 34 a 38, son el bucle principal que recorre la lista:
+; Las líneas 37 a 41, son el bucle principal que recorre la lista:
 ;
 ;	.loop: Etiqueta local del bucle. El punto (.) indica que es una etiqueta local
 ;	a la función ft_list_size.
@@ -98,7 +98,7 @@ ft_list_size:
 ;	continuando el recorrido de la lista.
 ; ______________________________________________________________________________
 ;
-; Las líneas 40 y 41, son la finalización de la función:
+; Las líneas 43 y 44, son la finalización de la función:
 ;
 ;	.end: Etiqueta local que marca el final de la función.
 ;
