@@ -1,5 +1,5 @@
 /******************************************************************************
- * LIBASM - Test Suite para Funciones Obligatorias 
+ * LIBASM - Test Suite para Funciones Obligatorias
  * 
  * Este programa realiza pruebas comprehensivas de todas las funciones
  * obligatorias implementadas en assembly, comparándolas con sus

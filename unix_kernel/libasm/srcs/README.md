@@ -10,7 +10,7 @@ size_t ft_strlen(const char *s);
 ```
 Calcula la longitud de una cadena (sin incluir el carácter nulo final).
 
-**Implementación**: Itera byte a byte buscando el terminador nulo `\0`. 
+**Implementación**: Itera byte a byte buscando el terminador nulo `\0`.
 
 ---
 

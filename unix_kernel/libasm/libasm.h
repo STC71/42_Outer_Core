@@ -8,7 +8,7 @@
 # include <errno.h>
 
 /* ===========================================================================
- * LIBASM - Biblioteca de funciones en Assembly x86-64 
+ * LIBASM - Biblioteca de funciones en Assembly x86-64
  *
  * Este header define los prototipos de las funciones obligatorias
  * implementadas en assembly para el proyecto libasm.

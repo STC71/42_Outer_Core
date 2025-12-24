@@ -288,7 +288,7 @@ mov rax, -1          ; Retornar -1
 - [ ] Soporte para macOS (Mach-O format)
 - [ ] Versión ARM64/AArch64
 - [ ] Benchmarks de rendimiento vs libc
-- [ ] Fuzzing automático 
+- [ ] Fuzzing automático
 
 ## 👨‍💻 Autor
 
