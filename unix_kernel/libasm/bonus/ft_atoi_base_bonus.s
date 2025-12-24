@@ -32,21 +32,21 @@ section .text
 	global ft_atoi_base
 
 ft_atoi_base:
-	push	rbx
-	push	r12
-	push	r13
-	push	r14
-	push	r15
+	push	rbx						; Longitud válida de la base
+	push	r12						; Puntero a str (lo vamos a modificar)
+	push	r13						; Puntero a base (constante)
+	push	r14						; Resultado acumulado (el número que vamos construyendo)
+	push	r15						; Bandera de signo (0 = positivo, 1 = negativo)
 	
 	mov		r12, rdi				; r12 = str
 	mov		r13, rsi				; r13 = base
 	xor		r14, r14				; r14 = resultado (inicializado a 0)
-	xor		r15, r15				; r15 = signo (0 = positivo)
+	xor		r15, r15				; r15 = signo (0 por defecto)
 	
 	call	.check_base				; Validar base y obtener longitud
 	cmp		rax, 0
-	jle		.return_zero			; Base inválida, retornar 0
-	mov		rbx, rax				; rbx = longitud de base
+	jle		.return_zero			; Si longitud <= 0 → base inválida → retornar 0
+	mov		rbx, rax				; rbx = longitud válida de la base
 	
 	call	.skip_whitespace		; Saltar espacios en blanco
 	call	.handle_sign			; Procesar signos +/-
@@ -54,7 +54,7 @@ ft_atoi_base:
 	
 	cmp		r15, 1					; Verificar si es negativo
 	jne		.return
-	neg		r14						; Aplicar signo negativo
+	neg		r14						; Si negativo → negamos el resultado
 
 .return:
 	mov		rax, r14				; Retornar resultado
@@ -80,12 +80,12 @@ ft_atoi_base:
 ; Retorno: rax = longitud de base (0 si es inválida)
 ; ------------------------------------------------------------------------------
 .check_base:
-	xor		rax, rax				; Contador de longitud
-	xor		rcx, rcx				; Índice
+	xor		rax, rax				; Contador de longitud = 0
+	xor		rcx, rcx				; Índice = 0
 .check_loop:
 	movzx	edx, byte [r13 + rcx]	; Leer carácter de base
-	cmp		dl, 0
-	je		.check_done				; Fin de cadena
+	cmp		dl, 0					; dl = base[rcx] (con zero-extend)
+	je		.check_done				; Fin de cadena → terminar
 	cmp		dl, '+'
 	je		.check_invalid			; '+' no permitido
 	cmp		dl, '-'
@@ -94,7 +94,7 @@ ft_atoi_base:
 	jle		.check_invalid			; Espacios/control no permitidos
 	
 	; Verificar duplicados
-	push	rcx
+	push	rcx						; Guardar índice actual
 	inc		rcx
 .dup_loop:
 	movzx	edi, byte [r13 + rcx]	; Leer siguiente carácter
@@ -105,18 +105,18 @@ ft_atoi_base:
 	inc		rcx
 	jmp		.dup_loop
 .dup_ok:
-	pop		rcx
-	inc		rcx
+	pop		rcx						; Restaurar índice original
+	inc		rcx						; Avanzar al siguiente carácter a comprobar
 	jmp		.check_loop
 .check_invalid_pop:
-	pop		rcx
+	pop		rcx						; Limpiar pila
 .check_invalid:
 	xor		rax, rax
 	ret
 .check_done:
 	cmp		rcx, 2					; Longitud mínima = 2
-	jl		.check_invalid
-	mov		rax, rcx
+	jl		.check_invalid			; Longitud < 2 → inválida
+	mov		rax, rcx				; Devolver longitud
 	ret
 
 ; ------------------------------------------------------------------------------
@@ -129,15 +129,15 @@ ft_atoi_base:
 	mov		dl, byte [r12 + rcx]
 	cmp		dl, ' '
 	je		.ws_next
-	cmp		dl, 9					; Tab
+	cmp		dl, 9					; Tab horizontal
 	jl		.ws_done
-	cmp		dl, 13					; CR
+	cmp		dl, 13					; CR (retorno de carro)
 	jg		.ws_done
 .ws_next:
 	inc		rcx
 	jmp		.ws_loop
 .ws_done:
-	add		r12, rcx				; Avanzar puntero
+	add		r12, rcx				; r12 += rcx → avanzar puntero
 	ret
 
 ; ------------------------------------------------------------------------------
@@ -151,12 +151,12 @@ ft_atoi_base:
 	je		.sign_plus
 	cmp		dl, '-'
 	je		.sign_minus
-	ret
+	ret								; Ningún signo → terminar
 .sign_plus:
 	inc		r12
 	jmp		.sign_loop
 .sign_minus:
-	xor		r15, 1					; Alternar signo
+	xor		r15, 1					; Invertir bit de signo (toggle)
 	inc		r12
 	jmp		.sign_loop
 
@@ -167,7 +167,7 @@ ft_atoi_base:
 .convert:
 	xor		rcx, rcx
 .conv_loop:
-	mov		dl, byte [r12 + rcx]
+	mov		dl, byte [r12 + rcx]	; Carácter actual
 	cmp		dl, 0
 	je		.conv_done				; Fin de cadena
 	
@@ -175,7 +175,7 @@ ft_atoi_base:
 	call	.find_in_base			; Buscar carácter en base
 	pop		rcx
 	cmp		rax, -1
-	je		.conv_done				; Carácter no válido
+	je		.conv_done				; Carácter no válido → parar
 	
 	imul	r14, rbx				; resultado *= base
 	add		r14, rax				; resultado += índice
@@ -193,7 +193,7 @@ ft_atoi_base:
 	xor		rax, rax
 .find_loop:
 	cmp		rax, rbx
-	jge		.find_not_found
+	jge		.find_not_found			; Si índice >= longitud → no encontrado
 	movzx	edi, byte [r13 + rax]
 	cmp		dl, dil
 	je		.find_found
