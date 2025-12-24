@@ -8,7 +8,7 @@ Este directorio contiene las implementaciones en ensamblador x86-64 de las funci
 ```c
 int ft_atoi_base(char *str, char *base);
 ```
-Convierte una cadena en un número entero utilizando una base arbitraria.
+Convierte una cadena en un número entero utilizando una base arbitraria. 
 
 **Características**:
 - Soporta signos múltiples (`+`, `-`)

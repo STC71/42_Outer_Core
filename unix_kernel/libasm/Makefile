@@ -29,6 +29,51 @@ RM			= rm -f
 TEST		= test_libasm
 TEST_BONUS	= test_bonus
 
+.DEFAULT_GOAL := help
+
+help:
+	@echo "══════════════════════════════════════════════════════════════════════"
+	@echo "  LIBASM - Makefile Help"
+	@echo "══════════════════════════════════════════════════════════════════════"
+	@echo ""
+	@echo "📚 TARGETS PRINCIPALES:"
+	@echo "  make all          - Compila la biblioteca estándar (libasm.a)"
+	@echo "  make bonus        - Compila con funciones bonus incluidas"
+	@echo "  make clean        - Elimina archivos objeto (.o)"
+	@echo "  make fclean       - Elimina objetos y ejecutables"
+	@echo "  make re           - Recompila todo desde cero (fclean + all)"
+	@echo ""
+	@echo "🧪 TESTING:"
+	@echo "  make test         - Compila y ejecuta tests principales"
+	@echo "  make test_bonus   - Compila y ejecuta tests bonus"
+	@echo ""
+	@echo "📋 FUNCIONES IMPLEMENTADAS:"
+	@echo "  Mandatorias:"
+	@echo "    - ft_strlen     - Calcula longitud de cadena"
+	@echo "    - ft_strcpy     - Copia cadena"
+	@echo "    - ft_strcmp     - Compara cadenas"
+	@echo "    - ft_write      - Escribe en descriptor de archivo"
+	@echo "    - ft_read       - Lee de descriptor de archivo"
+	@echo "    - ft_strdup     - Duplica cadena (malloc)"
+	@echo ""
+	@echo "  Bonus:"
+	@echo "    - ft_atoi_base          - Conversión string a int con base"
+	@echo "    - ft_list_push_front    - Añade elemento al inicio de lista"
+	@echo "    - ft_list_size          - Cuenta elementos de lista"
+	@echo "    - ft_list_sort          - Ordena lista enlazada"
+	@echo "    - ft_list_remove_if     - Elimina elementos según condición"
+	@echo ""
+	@echo "🔧 HERRAMIENTAS:"
+	@echo "  Ensamblador: $(NASM) $(NASM_FLAGS)"
+	@echo "  Archivador:  $(AR)"
+	@echo ""
+	@echo "📖 EJEMPLO DE USO:"
+	@echo "  make all && make test         # Compila y prueba funciones básicas"
+	@echo "  make bonus && make test_bonus # Compila y prueba con bonus"
+	@echo ""
+	@echo "══════════════════════════════════════════════════════════════════════"
+	@echo ""
+
 all: $(NAME)
 
 $(NAME): $(OBJS_DIR) $(OBJS)
@@ -71,4 +116,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all bonus test test_bonus clean fclean re
+.PHONY: all bonus test test_bonus clean fclean re help

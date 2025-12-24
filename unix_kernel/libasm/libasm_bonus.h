@@ -4,7 +4,7 @@
 # include "libasm.h"
 
 /* ===========================================================================
- * LIBASM BONUS - Funciones adicionales en Assembly
+ * LIBASM BONUS - Funciones adicionales en Assembly 
  *
  * Este header define los prototipos de las funciones bonus implementadas
  * en assembly, incluyendo conversión de bases y manipulación de listas.

@@ -240,7 +240,7 @@ Esta tabla muestra todos los registros de propósito general con sus subdivision
 
 ### Convención de Llamada - Argumentos de Función
 
-Cuando llamas a una función en x86-64, los primeros 6 argumentos se pasan en registros:
+Cuando llamas a una función en x86-64, los primeros 6 argumentos se pasan en registros: 
 
 ```nasm
 ; Ejemplo: llamar a función_ejemplo(arg1, arg2, arg3, arg4, arg5, arg6)

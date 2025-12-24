@@ -1,5 +1,5 @@
 /******************************************************************************
- * LIBASM - Test Suite para Funciones Bonus
+ * LIBASM - Test Suite para Funciones Bonus 
  * 
  * Este programa realiza pruebas comprehensivas de todas las funciones
  * bonus implementadas en assembly. Incluye pruebas para conversión

@@ -5,7 +5,7 @@ Este directorio contiene los programas de prueba para verificar el correcto func
 ## Archivos
 
 ### main.c
-Programa de pruebas para las **funciones obligatorias**.
+Programa de pruebas para las **funciones obligatorias**. 
 
 **Funciones probadas**:
 - `ft_strlen` - Longitud de cadenas
