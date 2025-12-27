@@ -32,31 +32,31 @@ section .text
 	extern malloc
 
 ft_list_push_front:
-	cmp		rdi, 0
+	cmp		rdi, 0					; ¿begin_list es NULL?
 	je		.end					; Si begin_list es NULL, no hacer nada
 	
-	push	rbp
-	mov		rbp, rsp
+	push	rbp						; Guardar viejo frame pointer
+	mov		rbp, rsp				; Crear nuevo stack frame
 	sub		rsp, 16					; Alinear stack a 16 bytes y reservar espacio
 	
-	mov		[rbp - 8], rdi			; Guardar begin_list en stack
-	mov		[rbp - 16], rsi			; Guardar data en stack
+	mov		[rbp - 8], rdi			; Guardar begin_list en stack (offset -8)
+	mov		[rbp - 16], rsi			; Guardar data en stack (offset -16)
 	
 	mov		rdi, 16					; sizeof(t_list) = 16 bytes
-	call	malloc wrt ..plt		; Reservar memoria
+	call	malloc wrt ..plt		; Reservar memoria para nuevo nodo
 	
-	test	rax, rax
+	test	rax, rax				; ¿malloc devolvió NULL?
 	jz		.error					; Si malloc falló, salir
 	
 	mov		rsi, [rbp - 16]			; Restaurar data
 	mov		rdi, [rbp - 8]			; Restaurar begin_list
 	
-	mov		qword [rax], rsi		; nuevo->data = data
-	mov		rcx, [rdi]				; rcx = *begin_list (antiguo primer elemento)
-	mov		qword [rax + 8], rcx	; nuevo->next = antiguo primer elemento
-	mov		qword [rdi], rax		; *begin_list = nuevo
+	mov		qword [rax], rsi		; nuevo_nodo->data = data  (offset 0)
+	mov		rcx, [rdi]				; rcx = *begin_list → antiguo primer elemento
+	mov		qword [rax + 8], rcx	; nuevo_nodo->next = antiguo primer elementoo
+	mov		qword [rdi], rax		; *begin_list = nuevo_nodo
 	
-	leave
+	leave							: Limpia el stack frame de forma elegante: restaura rsp y rbp.
 	ret
 
 .error:
