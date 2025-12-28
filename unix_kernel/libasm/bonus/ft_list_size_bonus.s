@@ -30,18 +30,18 @@ section .text
 	global ft_list_size
 
 ft_list_size:
-	xor		rax, rax				; Inicializar contador a 0
-	cmp		rdi, 0
-	je		.end					; Si lista vacía, retornar 0
+	xor		rax, rax				; Contador = 0  →  rax será el tamaño final
+	cmp		rdi, 0					; ¿begin_list es NULL?
+	je		.end					; Si sí → lista vacía → retornar 0 inmediatamente
 
 .loop:
-	inc		rax						; Incrementar contador
+	inc		rax						; Incrementar contador (rax++)
 	mov		rdi, [rdi + 8]			; rdi = current->next (offset 8)
-	cmp		rdi, 0
-	jne		.loop					; Si no es NULL, continuar
+	cmp		rdi, 0					; ¿El siguiente es NULL?
+	jne		.loop					; Si no es NULL → hay más nodos → volver al bucle
 
 .end:
-	ret								; Retornar tamaño en rax
+	ret								; Retornar tamaño final en rax 
 
 ; ==============================================================================
 ; Las líneas 29 y 30, son directivas de ensamblador que definen la estructura 
