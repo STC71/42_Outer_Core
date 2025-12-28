@@ -55,7 +55,7 @@ ft_list_remove_if:
 	cmp		qword [rdi], 0
 	je		.end					; Si *begin_list es NULL, salir
 	
-	push	rbx
+	push	rbx						; Para rbx → nodo actual (current)
 	push	r12
 	push	r13
 	push	r14
@@ -72,33 +72,33 @@ ft_list_remove_if:
 	je		.done					; Si lista vacía, terminar
 	
 	; Comparar current->data con data_ref
-	push	rbx
-	mov		rdi, [rbx]				; rdi = current->data
-	mov		rsi, r13				; rsi = data_ref
-	call	r14						; Llamar función de comparación
-	pop		rbx
+	push	rbx						; Guardar current (lo vamos a usar después, y call podría modificar registros)
+	mov		rdi, [rbx]				; rdi = current->data (primer arg para cmp)
+	mov		rsi, r13				; rsi = data_ref (segundo arg)
+	call	r14						; Llamar función de comparación → cmp(current->data, data_ref)
+	pop		rbx						; Recuperar current
 	
-	cmp		rax, 0
+	cmp		rax, 0					; Podría sustituirse por → test rax, rax
 	jne		.next					; Si no coincide, siguiente nodo
 	
 	; Elemento coincide, eliminarlo
-	mov		rcx, [rbx + 8]			; rcx = current->next
-	mov		[r12], rcx				; *begin_list = current->next
+	mov		rcx, [rbx + 8]			; Copiar la dirección del siguiente nodo en rcx → rcx = current->next
+	mov		[r12], rcx				; Guardar esa dirección de "el que sigue" en el puntero del nodo anterior (apuntado por r12) → *begin_list = current->next
 	
 	; Liberar data del nodo
-	push	rbx
-	mov		rdi, [rbx]				; rdi = current->data
-	call	r15						; Llamar free_fct
-	pop		rbx
+	push	rbx						; Asegura que la llamada a r15 no lo sobrescriba y pueda recuperarse después
+	mov		rdi, [rbx]				; Mover la dirección de los datos a rdi → rdi = current->data
+	call	r15						; Llamar free_fct pasando los datos en rdi
+	pop		rbx						; Recuperar el valor original de rbx de la pila
 	
 	; Liberar el nodo
-	mov		rdi, rbx
-	call	free wrt ..plt
+	mov		rdi, rbx				; rbx contiene la dirección de memoria "puenteada" anteriormente
+	call	free wrt ..plt			; Invoca la función estándar free
 	
 	jmp		.loop					; Verificar nuevamente desde inicio
 
 .next:
-	lea		r12, [rbx + 8]			; r12 = &(current->next)
+	lea		r12, [rbx + 8]			; r12 = &(current->next) lea → no lee contenido → calcula una dirección y la guarda
 	jmp		.loop
 
 .done:
