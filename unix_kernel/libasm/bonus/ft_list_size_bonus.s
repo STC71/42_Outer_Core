@@ -35,7 +35,7 @@ ft_list_size:
 	je		.end					; Si sí → lista vacía → retornar 0 inmediatamente
 
 .loop:
-	inc		rax						; Incrementar contador (rax++)
+	inc		rax						; Incrementar contador (++rax)
 	mov		rdi, [rdi + 8]			; rdi = current->next (offset 8)
 	cmp		rdi, 0					; ¿El siguiente es NULL?
 	jne		.loop					; Si no es NULL → hay más nodos → volver al bucle
