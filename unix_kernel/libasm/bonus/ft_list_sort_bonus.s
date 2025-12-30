@@ -36,58 +36,58 @@ section .text
 global ft_list_sort
 
 ft_list_sort:
-	test rdi, rdi
-	jz .end
-	cmp qword [rdi], 0
-	je .end
-	push rbp
-	mov rbp, rsp
-	and rsp, -16
-	sub rsp, 48
-	mov [rsp + 32], r12
-	mov [rsp + 24], r13
-	mov [rsp + 16], r14
-	mov [rsp + 8], r15
-	mov [rsp], rdi
-	mov r13, rsi
+	test rdi, rdi					; ¿begin_list es NULL? → test = AND
+	jz .end							; Sí → salir (nada que ordenar)
+	cmp qword [rdi], 0				; ¿*begin_list es NULL? (lista vacía) → cmp = SUB
+	je .end							; Sí → salir (nada que ordenar)
+	push rbp						; Guarda el valor del RBP anterior en la pila
+	mov rbp, rsp					; rsp (Stack Pointer) es el puntero que marca el final de la pila
+	and rsp, -16					; Alinea RSP a un múltiplo de 16 bytes
+	sub rsp, 48						; Reserva 48 bytes restando valor al puntero de pila "apartando" ese espacio para que la función lo use
+	mov [rsp + 32], r12				; r12 → nodo actual (current) → Guardar en el espacio reservado en rsp
+	mov [rsp + 24], r13				; r13 → función cmp (preservada para llamadas repetidas)
+	mov [rsp + 16], r14				; r14 → nodo siguiente (next)
+	mov [rsp + 8], r15				; r15 → bandera "changed" (1 si hubo swap en esta pasada)
+	mov [rsp], rdi					; Guardar puntero begin_list (rdi)
+	mov r13, rsi					; r13 = función cmp guardada en lugar seguro y permanente
 
-.outer:
-	xor r15, r15
-	mov rdi, [rsp]
-	mov r12, [rdi]
+.outer:								; Bucle externo (Bubble Sort clásico)
+	xor r15, r15					; changed = 0 (ningún swap aún)
+	mov rdi, [rsp]					; Restaurar begin_list en rdi
+	mov r12, [rdi]					; current = *begin_list (primer nodo)
 	
-.inner:
-	test r12, r12
-	jz .check_changed
-	mov r14, [r12 + 8]
-	test r14, r14
-	jz .check_changed
-	mov rdi, [r12]
-	mov rsi, [r14]
-	call r13
-	cmp rax, 0
-	jle .no_swap
-	mov rdi, [r12]
-	mov rsi, [r14]
-	mov [r12], rsi
-	mov [r14], rdi
-	mov r15, 1
+.inner:								; Bucle interno (recorrer pares adyacentes)
+	test r12, r12					; ¿current es NULL? → test = AND
+	jz .check_changed				; Sí → fin de la lista, verificar si hubo cambios
+	mov r14, [r12 + 8]				; next = current->next
+	test r14, r14					; ¿next es NULL? → test = AND
+	jz .check_changed				; Sí → fin de la lista, verificar si hubo cambios
+	mov rdi, [r12]					; rdi = current->data (primer argumento cmp)
+	mov rsi, [r14]					; rsi = next->data (segundo argumento cmp)
+	call r13						; Llamar a función cmp (indirecta a través de r13)
+	cmp rax, 0						; ¿resultado cmp <= 0?
+	jle .no_swap					; Si cmp ≤ 0 → no swap necesario, continuar al siguiente par
+	mov rdi, [r12]					; Recargar current->data en rdi
+	mov rsi, [r14]					; Recargar next->data en rsi
+	mov [r12], rsi					; current->data = next->data
+	mov [r14], rdi					; next->data = temp (original current->data)
+	mov r15, 1						; changed = 1 (hubo swap)
 
-.no_swap:
-	mov r12, [r12 + 8]
-	jmp .inner
+.no_swap:							; Continuar al siguiente par
+	mov r12, [r12 + 8]				; current = current->next
+	jmp .inner						; Repetir bucle interno .inner
 
-.check_changed:
-	test r15, r15
-	jnz .outer
-	mov r12, [rsp + 32]
-	mov r13, [rsp + 24]
-	mov r14, [rsp + 16]
-	mov r15, [rsp + 8]
-	leave
+.check_changed:						; Fin de pasada completa por la lista
+	test r15, r15					; ¿changed es 0? → test = AND
+	jnz .outer						; Si changed ≠ 0 → repetir bucle externo .outer
+	mov r12, [rsp + 32]				; Restaurar r12 desde el stack
+	mov r13, [rsp + 24]				; Restaurar r13 desde el stack
+	mov r14, [rsp + 16]				; Restaurar r14 desde el stack
+	mov r15, [rsp + 8]		 		; Restaurar r15 desde el stack
+	leave							; Deshacer el stack frame (crea rsp = rbp; pop rbp)
 
 .end:
-	ret
+	ret								; Retornar al llamador con void return
 
 ; ==============================================================================
 ;
