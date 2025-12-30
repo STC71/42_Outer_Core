@@ -56,7 +56,7 @@ ft_list_push_front:
 	mov		qword [rax + 8], rcx	; nuevo_nodo->next = antiguo primer elementoo
 	mov		qword [rdi], rax		; *begin_list = nuevo_nodo
 	
-	leave							: Limpia el stack frame de forma elegante: restaura rsp y rbp.
+	leave							; Limpia el stack frame de forma elegante: restaura rsp y rbp.
 	ret
 
 .error:
