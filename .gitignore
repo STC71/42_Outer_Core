@@ -1,0 +1,66 @@
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos PDF
+*.pdf
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+.venv/
+venv/
+env/
+env.bak/
+.env
+.env.*
+pip-wheel-metadata/
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Tests / Coverage
+.pytest_cache/
+.mypy_cache/
+.tox/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+# Editores / IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Swap / backup
+*~
+*.swp
+.#*
+
+# Compilados / binarios
+*.o
+*.out
+*.a
+*.so
+*.dylib
+*.elf
+
+# Node
+node_modules/
+
+# Otros artefactos de build
+*.class
+*.jar
+*.war
+*.ear
+
+# Make/build dirs
+bin/
+obj/
+build/
