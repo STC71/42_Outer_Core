@@ -10,7 +10,12 @@
 *"A computer program is said to learn from experience **E** with respect to some class of tasks **T** and performance measure **P**, <br>
 if its performance at tasks in **T**, as measured by **P**, improves with experience **E**."*
 
+*"Se dice que un programa informático aprende de la experiencia **E** con respecto a cierta clase de tareas **T** y una medida de rendimiento **P**, 
+si su rendimiento en las tareas de **T**, medido por **P**, mejora con la experiencia **E**."*
+
 — **Tom M. Mitchell**
+
+Profesor e investigador en aprendizaje automático en la Universidad Carnegie Mellon (CMU); autor del libro 'Machine Learning'.
 
 </div>
 
@@ -369,7 +374,7 @@ graph LR
 **Proyecto ft_linear_regression**  
 🏫 42 Málaga - Campus 42  
 👤 sternero  
-📅 2025
+📅 Enero 2026
 
 ---
 
