@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
 Script de prueba para validar que el proyecto cumple con todos los requisitos.
+Verifica la existencia de archivos, la funcionalidad de predicción y entrenamiento,
+y la correcta implementación de fórmulas.
 """
 
 import os

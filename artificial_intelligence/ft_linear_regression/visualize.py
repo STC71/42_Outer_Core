@@ -2,6 +2,7 @@
 """
 Programa bonus para visualizar los datos y la regresión lineal.
 Muestra un gráfico con los puntos del dataset y la línea de regresión.
+Utiliza los datos de 'data.csv' y los parámetros guardados en 'thetas.txt'.
 """
 
 import csv

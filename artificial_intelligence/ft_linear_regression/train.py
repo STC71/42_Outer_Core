@@ -3,6 +3,7 @@
 Programa de entrenamiento para regresión lineal.
 Implementa el algoritmo de gradiente descendente para encontrar
 los parámetros theta0 y theta1 óptimos.
+Utiliza los datos de 'data.csv' para el entrenamiento.
 """
 
 import csv

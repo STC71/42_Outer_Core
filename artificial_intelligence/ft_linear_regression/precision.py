@@ -2,6 +2,7 @@
 """
 Programa bonus para calcular la precisión del modelo.
 Calcula métricas como R², MSE, RMSE y MAE.
+Utiliza los datos de 'data.csv' y los parámetros guardados en 'thetas.txt'.
 """
 
 import csv

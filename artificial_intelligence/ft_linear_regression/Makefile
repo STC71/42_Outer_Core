@@ -21,7 +21,7 @@ DATA = data.csv
 
 .PHONY: all train predict visualize precision test clean fclean re help
 
-# Default target
+# Default target is help
 all: help
 
 help:

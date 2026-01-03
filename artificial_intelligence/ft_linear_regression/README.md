@@ -67,7 +67,7 @@ El archivo `data.csv` contiene datos reales de precios de coches:
 
 ### 📦 Requisitos básicos
 ```bash
-Python 3.x  # Ya instalado en sistemas 42
+Python 3.x  # Ya instalado en sistemas 42 
 ```
 
 ### 🎨 Para la parte bonus (visualización)

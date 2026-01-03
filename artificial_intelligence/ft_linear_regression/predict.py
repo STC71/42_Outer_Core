@@ -2,6 +2,7 @@
 """
 Programa de predicción de precio de coches basado en kilometraje.
 Utiliza los parámetros theta0 y theta1 obtenidos del entrenamiento.
+Lee el kilometraje desde la entrada estándar y muestra el precio estimado.
 """
 
 import os
