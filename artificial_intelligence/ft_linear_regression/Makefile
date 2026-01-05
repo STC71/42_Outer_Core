@@ -19,26 +19,133 @@ TEST = test_project.py
 THETAS = thetas.txt
 DATA = data.csv
 
-.PHONY: all train predict visualize precision test clean fclean re help
+.PHONY: all train predict visualize precision test clean fclean re help bonus
 
 # Default target is help
-all: help
+.DEFAULT_GOAL := help
+
+all:
+	@echo "$(BLUE)╔══════════════════════════════════════════════════════════════════════════╗$(NC)"
+	@echo "$(BLUE)║     FT_LINEAR_REGRESSION - EJECUCIÓN COMPLETA - sternero - 42 Málaga     ║$(NC)"
+	@echo "$(BLUE)╚══════════════════════════════════════════════════════════════════════════╝$(NC)"
+	@echo ""
+	@echo "$(GREEN)📋 Este comando ejecutará el proyecto completo:$(NC)"
+	@echo "   1️⃣  Limpieza de archivos previos"
+	@echo "   2️⃣  Entrenamiento del modelo"
+	@echo "   3️⃣  Demostración con predicciones"
+	@echo "   4️⃣  Cálculo de precisión"
+	@echo "   5️⃣  Ejecución de tests"
+	@echo ""
+	@printf "$(YELLOW)¿Continuar? (s/n): $(NC)"; \
+	read answer; \
+	if [ "$$answer" = "s" ] || [ "$$answer" = "S" ]; then \
+		echo ""; \
+		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
+		echo "$(GREEN)🧹 PASO 1/5: Limpieza$(NC)"; \
+		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
+		$(MAKE) fclean; \
+		echo ""; \
+		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
+		echo "$(GREEN)🎓 PASO 2/5: Entrenamiento del modelo$(NC)"; \
+		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
+		$(MAKE) train; \
+		echo ""; \
+		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
+		echo "$(GREEN)🔮 PASO 3/5: Demostración de predicciones$(NC)"; \
+		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
+		$(MAKE) demo-silent; \
+		echo ""; \
+		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
+		echo "$(GREEN)📊 PASO 4/5: Cálculo de precisión$(NC)"; \
+		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
+		$(MAKE) precision; \
+		echo ""; \
+		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
+		echo "$(GREEN)✅ PASO 5/5: Suite de pruebas$(NC)"; \
+		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
+		$(MAKE) test; \
+		echo ""; \
+		echo "$(GREEN)╔════════════════════════════════════════════════════════════╗$(NC)"; \
+		echo "$(GREEN)║              ✨ EJECUCIÓN COMPLETADA ✨                    ║$(NC)"; \
+		echo "$(GREEN)╚════════════════════════════════════════════════════════════╝$(NC)"; \
+	else \
+		echo "$(YELLOW)Operación cancelada.$(NC)"; \
+	fi
+
+bonus:
+	@echo "$(BLUE)╔════════════════════════════════════════════════════════════╗$(NC)"
+	@echo "$(BLUE)║         FT_LINEAR_REGRESSION - BONUS FEATURES             ║$(NC)"
+	@echo "$(BLUE)╚════════════════════════════════════════════════════════════╝$(NC)"
+	@echo ""
+	@echo "$(GREEN)✨ Este comando ejecutará las funcionalidades bonus:$(NC)"
+	@echo "   📊 Cálculo de precisión (R², MSE, RMSE, MAE)"
+	@echo "   📈 Visualización gráfica de la regresión"
+	@echo ""
+	@if [ ! -f $(THETAS) ]; then \
+		echo "$(YELLOW)⚠️  No hay modelo entrenado.$(NC)"; \
+		printf "$(YELLOW)¿Entrenar ahora? (s/n): $(NC)"; \
+		read answer; \
+		if [ "$$answer" = "s" ] || [ "$$answer" = "S" ]; then \
+			echo ""; \
+			$(MAKE) train; \
+			echo ""; \
+		else \
+			echo "$(RED)No se pueden ejecutar los bonus sin modelo.$(NC)"; \
+			exit 1; \
+		fi; \
+	fi
+	@printf "$(YELLOW)¿Continuar? (s/n): $(NC)"; \
+	read answer; \
+	if [ "$$answer" = "s" ] || [ "$$answer" = "S" ]; then \
+		echo ""; \
+		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
+		echo "$(GREEN)📊 BONUS 1/2: Cálculo de precisión$(NC)"; \
+		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
+		$(MAKE) precision; \
+		echo ""; \
+		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
+		echo "$(GREEN)📈 BONUS 2/2: Visualización gráfica$(NC)"; \
+		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
+		$(MAKE) visualize; \
+		echo ""; \
+		echo "$(GREEN)╔════════════════════════════════════════════════════════════╗$(NC)"; \
+		echo "$(GREEN)║           ✨ BONUS COMPLETADOS ✨                         ║$(NC)"; \
+		echo "$(GREEN)╚════════════════════════════════════════════════════════════╝$(NC)"; \
+	else \
+		echo "$(YELLOW)Operación cancelada.$(NC)"; \
+	fi
 
 help:
-	@echo "$(BLUE)========================================$(NC)"
-	@echo "$(BLUE)  FT_LINEAR_REGRESSION - MAKEFILE$(NC)"
-	@echo "$(BLUE)========================================$(NC)"
+	@echo "$(BLUE)╔════════════════════════════════════════════════════════════╗$(NC)"
+	@echo "$(BLUE)║        FT_LINEAR_REGRESSION - AYUDA Y COMANDOS            ║$(NC)"
+	@echo "$(BLUE)╚════════════════════════════════════════════════════════════╝$(NC)"
 	@echo ""
-	@echo "$(GREEN)Comandos disponibles:$(NC)"
-	@echo "  $(YELLOW)make train$(NC)      - Entrena el modelo"
+	@echo "$(GREEN)📚 COMANDOS PRINCIPALES:$(NC)"
+	@echo "  $(YELLOW)make all$(NC)        - Ejecuta el proyecto completo (recomendado)"
+	@echo "  $(YELLOW)make help$(NC)       - Muestra esta ayuda"
+	@echo "  $(YELLOW)make bonus$(NC)      - Ejecuta funcionalidades bonus"
+	@echo ""
+	@echo "$(GREEN)🎯 COMANDOS BÁSICOS:$(NC)"
+	@echo "  $(YELLOW)make train$(NC)      - Entrena el modelo con data.csv"
 	@echo "  $(YELLOW)make predict$(NC)    - Ejecuta predicción interactiva"
-	@echo "  $(YELLOW)make visualize$(NC)  - Muestra visualización (bonus)"
-	@echo "  $(YELLOW)make precision$(NC)  - Calcula precisión (bonus)"
 	@echo "  $(YELLOW)make test$(NC)       - Ejecuta suite de pruebas"
+	@echo ""
+	@echo "$(GREEN)✨ COMANDOS BONUS:$(NC)"
+	@echo "  $(YELLOW)make precision$(NC)  - Calcula métricas (R², MSE, RMSE, MAE)"
+	@echo "  $(YELLOW)make visualize$(NC)  - Muestra gráfico de regresión"
+	@echo ""
+	@echo "$(GREEN)🔧 COMANDOS DE MANTENIMIENTO:$(NC)"
 	@echo "  $(YELLOW)make clean$(NC)      - Elimina archivo de thetas"
-	@echo "  $(YELLOW)make fclean$(NC)     - Limpieza completa"
-	@echo "  $(YELLOW)make re$(NC)         - Re-entrena desde cero"
+	@echo "  $(YELLOW)make fclean$(NC)     - Limpieza completa (pyc, cache)"
+	@echo "  $(YELLOW)make re$(NC)         - Re-entrena desde cero (fclean + train)"
 	@echo "  $(YELLOW)make install$(NC)    - Instala dependencias (matplotlib)"
+	@echo ""
+	@echo "$(GREEN)🎬 COMANDOS DEMOSTRACIÓN:$(NC)"
+	@echo "  $(YELLOW)make demo$(NC)       - Demostración con predicciones ejemplo"
+	@echo ""
+	@echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"
+	@echo "$(GREEN)💡 Tip: Para empezar, ejecuta '$(YELLOW)make all$(GREEN)'$(NC)"
+	@echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"
 	@echo ""
 
 train:
@@ -111,4 +218,11 @@ demo: train
 	@echo ""
 	@$(MAKE) precision
 
-.PHONY: demo install
+demo-silent:
+	@echo "50000" | $(PYTHON) $(PREDICT)
+	@echo ""
+	@echo "100000" | $(PYTHON) $(PREDICT)
+	@echo ""
+	@echo "150000" | $(PYTHON) $(PREDICT)
+
+.PHONY: demo install demo-silent
