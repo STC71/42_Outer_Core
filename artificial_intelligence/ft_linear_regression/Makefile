@@ -73,9 +73,9 @@ all:
 	fi
 
 bonus:
-	@echo "$(BLUE)╔════════════════════════════════════════════════════════════╗$(NC)"
-	@echo "$(BLUE)║         FT_LINEAR_REGRESSION - BONUS FEATURES             ║$(NC)"
-	@echo "$(BLUE)╚════════════════════════════════════════════════════════════╝$(NC)"
+	@echo "$(BLUE)╔══════════════════════════════════════════════════════════════════════╗$(NC)"
+	@echo "$(BLUE)║     FT_LINEAR_REGRESSION - BONUS FEATURES - sternero - 42 Málaga     ║$(NC)"
+	@echo "$(BLUE)╚══════════════════════════════════════════════════════════════════════╝$(NC)"
 	@echo ""
 	@echo "$(GREEN)✨ Este comando ejecutará las funcionalidades bonus:$(NC)"
 	@echo "   📊 Cálculo de precisión (R², MSE, RMSE, MAE)"
@@ -109,16 +109,16 @@ bonus:
 		$(MAKE) visualize; \
 		echo ""; \
 		echo "$(GREEN)╔════════════════════════════════════════════════════════════╗$(NC)"; \
-		echo "$(GREEN)║           ✨ BONUS COMPLETADOS ✨                         ║$(NC)"; \
+		echo "$(GREEN)║           ✨ BONUS COMPLETADOS ✨                          ║$(NC)"; \
 		echo "$(GREEN)╚════════════════════════════════════════════════════════════╝$(NC)"; \
 	else \
 		echo "$(YELLOW)Operación cancelada.$(NC)"; \
 	fi
 
 help:
-	@echo "$(BLUE)╔════════════════════════════════════════════════════════════╗$(NC)"
-	@echo "$(BLUE)║        FT_LINEAR_REGRESSION - AYUDA Y COMANDOS            ║$(NC)"
-	@echo "$(BLUE)╚════════════════════════════════════════════════════════════╝$(NC)"
+	@echo "$(BLUE)╔════════════════════════════════════════════════════════════════════════╗$(NC)"
+	@echo "$(BLUE)║     FT_LINEAR_REGRESSION - AYUDA Y COMANDOS - sternero - 42 Málaga     ║$(NC)"
+	@echo "$(BLUE)╚════════════════════════════════════════════════════════════════════════╝$(NC)"
 	@echo ""
 	@echo "$(GREEN)📚 COMANDOS PRINCIPALES:$(NC)"
 	@echo "  $(YELLOW)make all$(NC)        - Ejecuta el proyecto completo (recomendado)"
