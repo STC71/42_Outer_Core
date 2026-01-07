@@ -6,12 +6,34 @@
 # Clonar el repositorio
 git clone <tu-repo-url> camagru
 cd camagru
+```
 
+### Configuración del Entorno
+
+**Opción 1: Script Automático (Recomendado)**
+
+```bash
+# Usar el asistente interactivo
+./env_setup.sh
+```
+
+El script te guiará paso a paso para configurar todas las variables necesarias.
+
+**Opción 2: Manual**
+
+```bash
 # Copiar archivo de configuración
-cp .env.example .env
+cp env.example .env
 
 # Editar .env con tus credenciales
 nano .env
+```
+
+**Opción 3: Usando Make**
+
+```bash
+# Ejecutar el asistente de configuración
+make setup
 ```
 
 ## 2. Configurar Email (¡Importante!)
@@ -52,13 +74,56 @@ docker-compose logs -f
 
 ## 5. Probar la Aplicación
 
+### Tests Automatizados
+
+```bash
+# Suite completa de tests (recomendado)
+make test-full
+
+# O ejecutar directamente
+./test_auto.sh
+
+# Tests básicos rápidos
+make test
+```
+
+La suite automatizada verifica:
+- Entorno y configuración
+- Contenedores Docker
+- Base de datos y tablas
+- Endpoints y recursos
+- Seguridad básica
+- Rendimiento
+
+### Pruebas Manuales
+
 1. **Registrarse**: http://localhost:8080/register
 2. **Verificar Email**: Revisa Mailtrap inbox
 3. **Iniciar Sesión**: http://localhost:8080/login
 4. **Editor**: Crea una foto con stickers
 5. **Galería**: Visualiza e interactúa con fotos
 
-## Comandos Docker Útiles
+## 6. Comandos Make Disponibles
+
+```bash
+make help        # Mostrar todos los comandos disponibles
+make setup       # Ejecutar asistente de configuración
+make install     # Setup inicial completo
+make build       # Construir contenedores
+make up          # Iniciar aplicación
+make down        # Detener aplicación
+make restart     # Reiniciar aplicación
+make logs        # Ver logs en tiempo real
+make clean       # Limpiar contenedores y uploads
+make fclean      # Limpieza completa (incluye .env)
+make test        # Tests básicos
+make test-full   # Suite completa de tests
+make db          # Acceder a MySQL CLI
+make shell       # Acceder a shell del contenedor
+make status      # Ver estado de contenedores
+```
+
+## 7. Comandos Docker Útiles
 
 ```bash
 # Iniciar

@@ -1,4 +1,4 @@
-.PHONY: help build up down restart logs clean install test
+.PHONY: help build up down restart logs clean fclean install setup test
 
 # Colors for output
 BLUE := \033[0;34m
@@ -10,6 +10,11 @@ help: ## Show this help message
 	@echo "$(BLUE)Camagru - Available Commands$(NC)"
 	@echo ""
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "$(GREEN)%-15s$(NC) %s\n", $$1, $$2}'
+
+setup: ## Run interactive environment setup
+	@echo "$(BLUE)Starting environment setup wizard...$(NC)"
+	@./env_setup.sh
+	@echo "$(GREEN)Environment configured!$(NC)"
 
 build: ## Build Docker containers
 	@echo "$(BLUE)Building containers...$(NC)"
@@ -30,33 +35,46 @@ restart: down up ## Restart the application
 logs: ## Show application logs
 	docker-compose logs -f
 
-clean: ## Remove containers, volumes, and generated files
+clean: ## Remove containers and volumes
 	@echo "$(YELLOW)Cleaning up...$(NC)"
 	docker-compose down -v
 	rm -rf public/uploads/images/*
 	@echo "$(GREEN)Cleanup complete$(NC)"
 
-install: ## Initial setup (copy .env and build)
+fclean: clean ## Full cleanup including .env file
+	@echo "$(YELLOW)Removing environment configuration...$(NC)"
+	@if [ -f .env ]; then \
+		rm -f .env; \
+		echo "$(GREEN).env file removed$(NC)"; \
+	else \
+		echo "$(YELLOW).env file not found$(NC)"; \
+	fi
+	@echo "$(GREEN)Full cleanup complete$(NC)"
+
+install: ## Initial setup (configure environment and build)
 	@echo "$(BLUE)Setting up Camagru...$(NC)"
 	@if [ ! -f .env ]; then \
-		cp .env.example .env; \
-		echo "$(GREEN).env file created$(NC)"; \
-		echo "$(YELLOW)Please edit .env with your settings before continuing$(NC)"; \
+		echo "$(YELLOW)No .env file found. Running setup wizard...$(NC)"; \
+		./env_setup.sh; \
 	else \
-		echo "$(YELLOW).env file already exists$(NC)"; \
+		echo "$(GREEN).env file already exists$(NC)"; \
 	fi
 	@echo "$(BLUE)Building containers...$(NC)"
 	docker-compose build
 	@echo "$(GREEN)Setup complete! Run 'make up' to start the application$(NC)"
 
 test: ## Run basic tests
-	@echo "$(BLUE)Running tests...$(NC)"
+	@echo "$(BLUE)Running basic tests...$(NC)"
 	@echo "$(GREEN)✓ Checking Docker...$(NC)"
 	@docker --version
 	@echo "$(GREEN)✓ Checking Docker Compose...$(NC)"
 	@docker-compose --version
 	@echo "$(GREEN)✓ Checking containers...$(NC)"
 	@docker-compose ps
+
+test-full: ## Run complete automated test suite
+	@echo "$(BLUE)Running comprehensive test suite...$(NC)"
+	@./test_auto.sh
 
 db: ## Access MySQL CLI
 	@echo "$(BLUE)Accessing MySQL...$(NC)"

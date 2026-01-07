@@ -576,6 +576,35 @@ $animation->writeImages($gifPath, true);
 
 ## 🧪 Testing
 
+### Suite Automatizada de Pruebas
+
+El proyecto incluye un script completo de testing automatizado que verifica:
+
+- ✅ Entorno (Docker, Docker Compose, configuración)
+- ✅ Contenedores y servicios
+- ✅ Base de datos y conectividad
+- ✅ Endpoints HTTP y recursos estáticos
+- ✅ Seguridad básica (SQL injection, XSS, protección .env)
+- ✅ Rendimiento y uso de recursos
+- ✅ Funcionalidades bonus
+
+```bash
+# Ejecutar suite completa de tests
+./test_auto.sh
+
+# O usando make
+make test-full
+
+# Tests básicos rápidos
+make test
+```
+
+**Salida del Script:**
+- 🎨 Interfaz colorida con descripción de cada test
+- 📊 Contadores de éxitos/fallos/omitidos
+- 📈 Tasa de éxito porcentual
+- 🚦 Exit codes: 0 (perfecto), 1 (advertencias), 2 (crítico)
+
 ### Pruebas Manuales
 
 #### Seguridad
