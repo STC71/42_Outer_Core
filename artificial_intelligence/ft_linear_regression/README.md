@@ -88,7 +88,7 @@ make install
 
 ```bash
 python3 train.py
-# o usando Makefile
+# o usando Makefile (con ejecución optimizada)
 make train
 ```
 
@@ -97,6 +97,8 @@ make train
 - ✓ Ejecuta el algoritmo de gradiente descendente
 - ✓ Guarda los parámetros θ₀ y θ₁ en `thetas.txt`
 - ✓ Muestra el progreso del entrenamiento
+
+💡 **Tip:** El Makefile incluye verificaciones automáticas de archivos y ejecución optimizada.
 
 <details>
 <summary>📋 Ver ejemplo de salida</summary>
@@ -207,6 +209,8 @@ Interpretación:
 
 ## 🧮 Algoritmo
 
+Para una explicación matemática completa y rigurosa, consulta **[MATHS.md](MATHS.md)**.
+
 ### 📐 Función de hipótesis
 
 ```math
@@ -233,6 +237,12 @@ tmpθ₁ = learningRate × (1/m) × Σ((estimatePrice(mileage[i]) - price[i]) ×
 | **learningRate** | Tasa de aprendizaje (0.1 por defecto) |
 | **θ₀, θ₁** | Parámetros del modelo (se actualizan simultáneamente) |
 
+📖 **Para más detalles:** Consulta la derivación completa en [MATHS.md](MATHS.md) que incluye:
+- Derivación de las ecuaciones de gradiente descendente
+- Función de coste (MSE) y su optimización
+- Normalización y su impacto matemático
+- Métricas de evaluación (R², RMSE, MAE, MAPE)
+
 ### 🔄 Normalización
 
 Para mejorar la convergencia del algoritmo:
@@ -240,6 +250,8 @@ Para mejorar la convergencia del algoritmo:
 2. 🧠 **Entrena** el modelo con datos normalizados
 3. 🔙 **Desnormaliza** los parámetros θ al finalizar
 4. 💾 **Guarda** los parámetros listos para usar con datos originales
+
+🔍 **Implementación detallada:** Ver [PYTHON.md](PYTHON.md) para el análisis completo del código.
 
 ## 📁 Estructura de archivos
 
@@ -255,11 +267,26 @@ ft_linear_regression/
 ├── 📊 visualize.py          # Visualización gráfica (BONUS)
 ├── 📈 precision.py          # Cálculo de precisión (BONUS)
 │
-├── 🛠️  Makefile             # Automatización de comandos
+├── 🛠️  Makefile             # Automatización de comandos (optimizado)
 ├── 🧪 test_project.py       # Suite de pruebas
-├── 📝 README.md             # Documentación principal
+│
+├── 📝 README.md             # Documentación principal (este archivo)
+├── 📐 MATHS.md              # Fundamentos matemáticos detallados
+├── 🐍 PYTHON.md             # Implementación y código Python
 └── 🚫 .gitignore            # Archivos ignorados por git
 ```
+
+## 📚 Documentación adicional
+
+Este proyecto incluye documentación técnica detallada:
+
+| Documento | Contenido |
+|-----------|-----------|
+| 📝 **[README.md](README.md)** | Documentación principal y guía de uso |
+| 📐 **[MATHS.md](MATHS.md)** | Fundamentos matemáticos, derivaciones y teoría |
+| 🐍 **[PYTHON.md](PYTHON.md)** | Análisis del código e implementación |
+
+💡 **Recomendación:** Lee [MATHS.md](MATHS.md) para entender la teoría detrás del algoritmo, y [PYTHON.md](PYTHON.md) para los detalles de implementación.
 
 ## ⚙️ Parámetros ajustables
 
@@ -358,12 +385,24 @@ graph LR
     F --> G[R² - RMSE - MAE]
 ```
 
+### 📖 Conocimientos aplicados
+
 - 📊 **Regresión lineal simple** con una variable
 - 🎯 **Gradiente descendente** para optimización
 - 🔄 **Normalización** de datos para mejor convergencia
 - 📉 **Función de coste** (MSE - Mean Squared Error)
 - 📈 **Métricas de evaluación** (R², RMSE, MAE, MAPE)
 - 📊 **Visualización** de datos y modelos
+- 🐍 **Python** orientado a machine learning
+- 🛠️ **Makefile** con reglas optimizadas y phony targets
+
+### 🎯 Recursos de aprendizaje
+
+Para profundizar en los conceptos:
+- **Teoría matemática:** Lee [MATHS.md](MATHS.md) para derivaciones y fundamentos
+- **Implementación práctica:** Consulta [PYTHON.md](PYTHON.md) para análisis del código
+- **Visualización:** Ejecuta `make visualize` para ver el modelo en acción
+- **Evaluación:** Usa `make precision` para entender el rendimiento
 
 ---
 
