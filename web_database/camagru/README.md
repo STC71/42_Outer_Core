@@ -771,10 +771,10 @@ Si encuentras un bug:
 
 ## 👨‍💻 Autor
 
-**Tu Nombre**
-- Email: tu.email@student.42.fr
-- GitHub: [@tuusuario](https://github.com/tuusuario)
-- 42 Intra: `tulogin`
+**sternero**
+- Email: sternero@student.42malaga.com
+- GitHub: [@STC71](https://github.com/STC71)
+- 42 Intra: `sternero`
 
 ---
 
@@ -785,7 +785,7 @@ Este proyecto es código abierto bajo la licencia MIT.
 ```
 MIT License
 
-Copyright (c) 2024 Tu Nombre
+Copyright (c) 2026 sternero
 
 Se concede permiso, de forma gratuita, a cualquier persona que obtenga una copia
 de este software y archivos de documentación asociados (el "Software"), para
@@ -807,7 +807,7 @@ Ver [LICENSE](LICENSE) para el texto completo.
 
 ## 📈 Estadísticas del Proyecto
 
-- 📅 **Fecha de Inicio:** [Tu fecha]
+- 📅 **Fecha de Inicio:** [07/01/2026]
 - ⏱️ **Tiempo de Desarrollo:** ~80 horas
 - 📝 **Líneas de Código:** ~8,000
 - 📁 **Archivos Creados:** ~40
