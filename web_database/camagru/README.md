@@ -815,7 +815,38 @@ Ver [LICENSE](LICENSE) para el texto completo.
 
 ---
 
-## 🚀 Próximas Mejoras
+## � Videos Educativos en Español
+
+### Desarrollo Web con PHP
+- [PHP desde CERO - Curso Completo 2024](https://www.youtube.com/watch?v=ubD6CpC0WDs) - Por HolaMundo (8h)
+- [Curso de PHP y MySQL - Conceptos Fundamentales](https://www.youtube.com/watch?v=MPYJGeJ0kJI) - Por FaztCode
+- [Arquitectura MVC en PHP - Explicación Completa](https://www.youtube.com/watch?v=5s7Nn5dxC0E) - Por Código Facilito
+
+### Seguridad Web
+- [Seguridad en Aplicaciones Web - Top 10 OWASP](https://www.youtube.com/watch?v=aEngebgM8vI) - Por Nate Gentile
+- [SQL Injection y Cómo Prevenirla](https://www.youtube.com/watch?v=ciNHn38EyRc) - Por Pelado Nerd
+- [XSS y CSRF - Explicación con Ejemplos](https://www.youtube.com/watch?v=_Z0ID3lCVZQ) - Por MoureDev
+
+### JavaScript y APIs Web
+- [JavaScript Moderno - ES6+](https://www.youtube.com/watch?v=Z4TuS0HEJP8) - Por MiduDev
+- [API Fetch en JavaScript - Tutorial Completo](https://www.youtube.com/watch?v=cuEtnrL9-H0) - Por FalconMasters
+- [WebCam API - getUserMedia Tutorial](https://www.youtube.com/watch?v=wXtlrMjRx3k) - Por Coding Shiksha
+
+### Base de Datos MySQL
+- [MySQL desde CERO - Tutorial Completo](https://www.youtube.com/watch?v=uUdKAYl-F7g) - Por Hola Mundo
+- [Diseño de Base de Datos - Normalización](https://www.youtube.com/watch?v=oUdKH0zUdJI) - Por Freddy Vega
+
+### Docker y DevOps
+- [Docker de Principiante a Experto](https://www.youtube.com/watch?v=CV_Uf3Dq-EU) - Por Pelado Nerd
+- [Docker Compose - Tutorial Completo](https://www.youtube.com/watch?v=7kja9tCd9bU) - Por Fazt Code
+
+### Git y GitHub
+- [Git y GitHub desde CERO](https://www.youtube.com/watch?v=mBYSUUnMt9M) - Por MoureDev (4h)
+- [Git Flow - Flujo de Trabajo Profesional](https://www.youtube.com/watch?v=1SXpE08hvGs) - Por EDteam
+
+---
+
+## �🚀 Próximas Mejoras
 
 Ideas para extender el proyecto (no requerido por el subject):
 
