@@ -95,6 +95,9 @@ def train_model(mileages, prices, learning_rate=0.1, iterations=1000):
     print(f"Iniciando entrenamiento con {m} muestras...")
     print(f"Learning rate: {learning_rate}, Iteraciones: {iterations}")
     
+    # Historial de MSE para análisis de convergencia
+    mse_history = []
+    
     # Gradiente descendente
     for iteration in range(iterations):
         # Calcular las sumas para ambos thetas
@@ -115,11 +118,13 @@ def train_model(mileages, prices, learning_rate=0.1, iterations=1000):
         theta0 -= tmp_theta0
         theta1 -= tmp_theta1
         
+        # Calcular MSE en cada iteración
+        mse = sum((estimate_price(mileages_norm[i], theta0, theta1) - prices_norm[i]) ** 2 
+                 for i in range(m)) / m
+        mse_history.append(mse)
+        
         # Mostrar progreso cada 100 iteraciones
         if (iteration + 1) % 100 == 0 or iteration == 0:
-            # Calcular error medio (MSE)
-            mse = sum((estimate_price(mileages_norm[i], theta0, theta1) - prices_norm[i]) ** 2 
-                     for i in range(m)) / m
             print(f"Iteración {iteration + 1}/{iterations} - MSE: {mse:.6f}")
     
     # Desnormalizar thetas
@@ -127,7 +132,7 @@ def train_model(mileages, prices, learning_rate=0.1, iterations=1000):
         theta0, theta1, mean_km, std_km, mean_price, std_price
     )
     
-    return theta0_final, theta1_final
+    return theta0_final, theta1_final, mse_history
 
 
 def save_thetas(theta0, theta1, filename='thetas.txt'):
@@ -158,10 +163,19 @@ def main():
     print(f"Rango de precios: {min(prices):.0f} - {max(prices):.0f}€\n")
     
     # Entrenar modelo
-    theta0, theta1 = train_model(mileages, prices)
+    theta0, theta1, mse_history = train_model(mileages, prices)
     
     # Guardar parámetros
     save_thetas(theta0, theta1)
+    
+    # Guardar historial de MSE para curva de aprendizaje (bonus)
+    try:
+        with open('mse_history.txt', 'w') as f:
+            for mse in mse_history:
+                f.write(f"{mse}\n")
+        print(f"Historial de convergencia guardado en 'mse_history.txt'")
+    except IOError:
+        pass  # No es crítico
     
     print("\n¡Entrenamiento completado exitosamente!")
 

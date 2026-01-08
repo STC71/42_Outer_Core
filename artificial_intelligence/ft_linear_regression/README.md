@@ -51,6 +51,7 @@ Este proyecto implementa un **algoritmo básico de machine learning** (regresió
 |------------|-------------|
 | 📊 **visualize.py** | Gráficos de datos y regresión |
 | 📈 **precision.py** | Métricas: R², MSE, RMSE, MAE, MAPE |
+| 📉 **learning_curve.py** | Curva de convergencia del algoritmo |
 | 🎨 **Interfaz** | Salidas coloridas y formateadas |
 
 </td>
@@ -157,6 +158,35 @@ make visualize
 ---
 
 ### 📈 4. Evaluar precisión (Bonus)
+
+```bash
+python3 precision.py
+# o usando Makefile
+make precision
+```
+
+---
+
+### 📉 5. Visualizar curva de aprendizaje (Bonus)
+
+```bash
+python3 learning_curve.py
+# o usando Makefile
+make learning_curve
+```
+
+**Muestra dos gráficos:**
+- 📈 **Gráfico superior:** Evolución completa del MSE durante todas las iteraciones
+- 🔍 **Gráfico inferior:** Zoom de las primeras 100 iteraciones con punto de convergencia
+
+**Información mostrada:**
+- MSE inicial y final
+- Porcentaje de reducción del error
+- Iteración aproximada de convergencia
+
+---
+
+### 📊 6. Ejecutar todos los tests (opcional)
 
 ```bash
 python3 precision.py

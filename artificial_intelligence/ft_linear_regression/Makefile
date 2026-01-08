@@ -13,6 +13,7 @@ TRAIN = train.py
 PREDICT = predict.py
 VISUALIZE = visualize.py
 PRECISION = precision.py
+LEARNING_CURVE = learning_curve.py
 TEST = test_project.py
 
 # Files
@@ -99,14 +100,19 @@ bonus:
 	if [ "$$answer" = "s" ] || [ "$$answer" = "S" ]; then \
 		echo ""; \
 		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
-		echo "$(GREEN)📊 BONUS 1/2: Cálculo de precisión$(NC)"; \
+		echo "$(GREEN)📊 BONUS 1/3: Cálculo de precisión$(NC)"; \
 		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
 		$(MAKE) precision; \
 		echo ""; \
 		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
-		echo "$(GREEN)📈 BONUS 2/2: Visualización gráfica$(NC)"; \
+		echo "$(GREEN)📈 BONUS 2/3: Visualización gráfica$(NC)"; \
 		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
 		$(MAKE) visualize; \
+		echo ""; \
+		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
+		echo "$(GREEN)📉 BONUS 3/3: Curva de aprendizaje$(NC)"; \
+		echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"; \
+		$(MAKE) learning_curve; \
 		echo ""; \
 		echo "$(GREEN)╔════════════════════════════════════════════════════════════╗$(NC)"; \
 		echo "$(GREEN)║           ✨ BONUS COMPLETADOS ✨                          ║$(NC)"; \
@@ -131,8 +137,9 @@ help:
 	@echo "  $(YELLOW)make test$(NC)       - Ejecuta suite de pruebas"
 	@echo ""
 	@echo "$(GREEN)✨ COMANDOS BONUS:$(NC)"
-	@echo "  $(YELLOW)make precision$(NC)  - Calcula métricas (R², MSE, RMSE, MAE)"
-	@echo "  $(YELLOW)make visualize$(NC)  - Muestra gráfico de regresión"
+	@echo "  $(YELLOW)make precision$(NC)       - Calcula métricas (R², MSE, RMSE, MAE, MAPE)"
+	@echo "  $(YELLOW)make visualize$(NC)       - Muestra gráfico de regresión"
+	@echo "  $(YELLOW)make learning_curve$(NC)  - Curva de convergencia del algoritmo"
 	@echo ""
 	@echo "$(GREEN)🔧 COMANDOS DE MANTENIMIENTO:$(NC)"
 	@echo "  $(YELLOW)make clean$(NC)      - Elimina archivo de thetas"
@@ -167,6 +174,15 @@ visualize:
 	fi
 	@echo "$(GREEN)Generando visualización...$(NC)"
 	@$(PYTHON) $(VISUALIZE)
+
+learning_curve:
+	@if [ ! -f mse_history.txt ]; then \
+		echo "$(RED)Error: No existe historial de entrenamiento.$(NC)"; \
+		echo "$(YELLOW)Ejecuta 'make train' primero.$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(GREEN)Generando curva de aprendizaje...$(NC)"
+	@$(PYTHON) $(LEARNING_CURVE)
 
 precision:
 	@if [ ! -f $(THETAS) ]; then \

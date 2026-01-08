@@ -1,0 +1,44 @@
+Cargando datos...
+✓ 24 muestras cargadas
+Cargando parámetros del modelo...
+✓ Parámetros cargados
+Calculando métricas de precisión...
+
+============================================================
+         EVALUACIÓN DE PRECISIÓN DEL MODELO
+============================================================
+
+Parámetros del modelo:
+  θ₀ (intersección): 8,499.60
+  θ₁ (pendiente):    -0.02144896
+
+Número de muestras: 24
+
+Métricas de precisión:
+  R² (Coef. determinación): 0.7330
+    → Buen ajuste
+
+  MSE (Error cuadrático medio):  445,645.25
+  RMSE (Raíz del MSE):           667.57€
+  MAE (Error absoluto medio):    557.84€
+  MAPE (Error porcentual medio): 9.65%
+
+============================================================
+
+Interpretación:
+  • El modelo explica el 73.30% de la varianza en los precios
+  • Error promedio de ±558€ en las predicciones
+  • Error típico (RMSE) de ±668€
+============================================================
+
+
+Ejemplos de predicciones:
+------------------------------------------------------------
+ Kilometraje |  Precio Real |   Predicción |        Error
+------------------------------------------------------------
+     240,000 |        3,650€ |        3,352€ |         +298€
+     176,000 |        5,250€ |        4,725€ |         +525€
+      84,000 |        6,200€ |        6,698€ |         -498€
+      67,000 |        6,800€ |        7,063€ |         -263€
+      65,674 |        7,555€ |        7,091€ |         +464€
+------------------------------------------------------------
