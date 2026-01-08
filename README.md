@@ -75,23 +75,34 @@ Una librería de bajo nivel que implementa funciones estándar de C en Assembly 
 
 ### 🌐 Web & Base de Datos
 
-<details>
+<details open>
 <summary><b>Camagru</b> - Aplicación Web tipo Instagram</summary>
 
-Una aplicación web full-stack inspirada en Instagram, que incluye manipulación de imágenes y funcionalidades de redes sociales.
+Una aplicación web full-stack inspirada en Instagram con captura de fotos desde webcam, edición con stickers y funcionalidades sociales.
 
-**Características:**
-- 📸 Captura y edición de imágenes
-- 🎨 Filtros y efectos
-- 👥 Sistema de autenticación de usuarios
-- 💬 Interacciones sociales
-- 🗄️ Gestión de base de datos
+**Características Principales:**
+- 📸 **Captura desde webcam** con getUserMedia API
+- 🎨 **Superposición de stickers** sobre fotos
+- 👥 **Sistema completo de autenticación** (registro, login, verificación por email)
+- 💬 **Interacción social** (likes y comentarios en tiempo real con AJAX)
+- 📤 **Subida de archivos** con validación de seguridad
+- 📱 **Diseño responsive** (móvil, tablet, desktop)
 
-**Stack Tecnológico:** PHP, JavaScript, HTML/CSS, SQL
+**Características BONUS:**
+- ✨ Vista previa en vivo de stickers sobre webcam
+- ♾️ Scroll infinito con Intersection Observer
+- 🎬 Generación de GIFs animados
+- 🔗 Compartir en redes sociales
 
-**Estado:** 🚧 En Progreso
+**Stack Tecnológico:** PHP 8.2 (MVC personalizado), MySQL 8.0, JavaScript Vanilla, HTML5/CSS3, Docker
 
-[📂 Ver Proyecto](./web_database/camagru/)
+**Arquitectura:** Patrón MVC sin frameworks, PDO para base de datos, AJAX para interactividad
+
+**Documentación:** 📚 [19 README detallados](./web_database/camagru/) explicando cada componente del proyecto + videos educativos en español
+
+**Estado:** ✅ Completado (125/100 puntos estimados)
+
+[📂 Ver Proyecto](./web_database/camagru/) | [🚀 Guía Rápida](./web_database/camagru/QUICKSTART.md) | [📋 Compliance](./web_database/camagru/COMPLIANCE.md)
 
 </details>
 
@@ -148,7 +159,7 @@ cd [categoría]/[nombre_proyecto]
 
 - [Configuración ft_linear_regression](./artificial_intelligence/ft_linear_regression/README.md)
 - [Configuración libasm](./unix_kernel/libasm/README.md)
-- [Configuración Camagru](./web_database/camagru/) (Próximamente)
+- [Configuración Camagru (Docker + Manual)](./web_database/camagru/QUICKSTART.md)
 
 <div align="right">
 
@@ -162,7 +173,7 @@ cd [categoría]/[nombre_proyecto]
 |-----------|----------|----------|--------|------------|
 | IA | ft_linear_regression | Python | ✅ Completado | 100% |
 | Unix | libasm | Assembly/C | ✅ Completado | 100% |
-| Web | Camagru | PHP/JS | 🚧 En Progreso | ~% |
+| Web | Camagru | PHP/JS/SQL | ✅ Completado | 100% |
 
 <div align="right">
 
@@ -188,12 +199,25 @@ Este repositorio demuestra competencia en:
 
 ## Documentación
 
-Cada proyecto incluye:
-- ✅ README completo
-- ✅ Comentarios y documentación del código
-- ✅ Ejemplos de uso
-- ✅ Suite de testing
-- ✅ Makefile para compilación/ejecución
+Cada proyecto incluye documentación exhaustiva:
+
+### ft_linear_regression
+- ✅ README principal con teoría matemática
+- ✅ Documentación de uso y testing
+- ✅ Guías de precisión y visualización
+
+### libasm
+- ✅ README técnico con explicaciones de Assembly
+- ✅ Documentación de cada función
+- ✅ Tests unitarios y de integración
+
+### Camagru (Documentación Destacada)
+- ✅ **19 README detallados** (uno por carpeta/subcarpeta)
+- ✅ Explicación clara del **QUÉ, POR QUÉ y PARA QUÉ** de cada componente
+- ✅ **80+ videos educativos en español** sobre tecnologías del proyecto
+- ✅ Guías de inicio rápido, compliance y resumen técnico
+- ✅ Documentación de arquitectura MVC, seguridad y buenas prácticas
+- ✅ Ejemplos prácticos sin sobrecarga de código
 
 <div align="right">
 
@@ -227,7 +251,7 @@ Este proyecto es parte del currículo de 42 Málaga. Por favor, respeta las pol�
 
 - 42 Intra: `sternero`
 - GitHub: [@STC71](https://github.com/STC71)
-
+Enero 2026
 <div align="right">
 
 [⬆️ Volver arriba](#)
@@ -240,6 +264,6 @@ Este proyecto es parte del currículo de 42 Málaga. Por favor, respeta las pol�
 
 **Hecho con ❤️ en 42 Málaga**
 
-*Última Actualización: Diciembre 2025*
+*Última Actualización: Enero 2026*
 
 </div>
