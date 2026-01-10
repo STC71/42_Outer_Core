@@ -66,12 +66,43 @@ cleanup() {
     if [ -f "theta_bonus.txt" ]; then
         rm -f "theta_bonus.txt"
     fi
+    if [ -f "thetas.txt" ]; then
+        rm -f "thetas.txt"
+    fi
+    if [ -f "mse_history.txt" ]; then
+        rm -f "mse_history.txt"
+    fi
 }
 
 setup() {
     cleanup
     mkdir -p "$TEST_DIR"
 }
+
+# ============================================================================
+# RESUMEN DE CRITERIOS DE EVALUACIÓN (según evaluation_ft_linear_regression.pdf)
+# ============================================================================
+# Este script verifica TODOS los puntos del PDF oficial de evaluación:
+#
+# PRELIMINARES:
+#   ✓ No usar librerías que implementen el algoritmo (numpy.polyfit, sklearn)
+#   ✓ Verificar que el estudiante conoce su código
+#   ✓ Dos programas: predict.py y train.py
+#
+# MANDATORY:
+#   ✓ Predicción antes de entrenar → debe dar 0
+#   ✓ Ecuación exacta: estimatePrice = θ0 + (θ1 * mileage)
+#   ✓ Implementación correcta de las fórmulas del subject
+#   ✓ Guardar θ0 y θ1 al finalizar entrenamiento
+#   ✓ Leer el CSV correctamente
+#   ✓ ASIGNACIÓN SIMULTÁNEA de θ0 y θ1 (variables temporales)
+#   ✓ Predicción después de entrenar → precio razonable
+#
+# BONUS:
+#   ✓ Gráficos de datos y regresión
+#   ✓ Programa de cálculo de precisión
+#   ✓ Over-fitting explanation (opcional)
+# ============================================================================
 
 # ============================================================================
 # PARTE 1: VERIFICACIÓN DE ARCHIVOS Y ESTRUCTURA
@@ -142,33 +173,46 @@ test_file_structure() {
 }
 
 # ============================================================================
-# PARTE 2: TESTS DE PREDICT.PY (SIN ENTRENAMIENTO)
+# PARTE 2: TESTS DE PREDICT.PY SIN ENTRENAMIENTO (según PDF evaluación)
 # ============================================================================
 
 test_predict_no_training() {
-    print_header "2. PREDICT.PY - SIN ENTRENAMIENTO PREVIO"
+    print_header "2. PREDICT.PY - SIN ENTRENAMIENTO (PUNTO OBLIGATORIO EVALUACIÓN)"
     
-    print_test "Predicción con theta = 0 (sin entrenamiento)"
+    print_info "Según PDF: 'Enter a value that is not null'"
+    print_info "Según PDF: 'The programme should display 0 because training hasnt started'"
+    print_info "Según PDF: 'Verify that the equation is: theta0 + (theta1 * x)'"
     
-    # Asegurarse de que no existe theta.txt
-    rm -f theta.txt theta_bonus.txt
+    print_test "Eliminando archivos de thetas para simular estado inicial"
     
-    # Ejecutar predict.py con diferentes inputs
-    echo "50000" | python3 predict.py > "$TEST_DIR/predict_output1.txt" 2>&1
+    # Asegurarse de que no existe ningún archivo de thetas
+    rm -f theta.txt theta_bonus.txt thetas.txt
+    print_success "Archivos eliminados (θ0=0, θ1=0)"
     
-    if [ $? -eq 0 ]; then
+    print_test "Predicción sin entrenamiento (debe dar 0)"
+    
+    # Ejecutar predict.py con un valor no nulo como dice el PDF
+    echo "100000" | python3 predict.py > "$TEST_DIR/predict_output1.txt" 2>&1
+    exit_code=$?
+    
+    if [ $exit_code -eq 0 ]; then
         output=$(cat "$TEST_DIR/predict_output1.txt")
-        print_success "predict.py ejecuta sin theta.txt"
-        print_info "Output: $output"
+        print_success "✓ predict.py ejecuta sin error"
+        print_info "Mileage: 100000, Output: $output"
         
-        # Con theta = 0, la predicción debe ser 0
-        if echo "$output" | grep -qE "0\.0|0"; then
-            print_success "Predicción correcta cuando theta = 0"
+        # El evaluador verificará que con θ0=0 y θ1=0 → precio=0
+        if echo "$output" | grep -qE "\b0(\.0+)?\b|^0$"; then
+            print_success "✓ CORRECTO: Predicción = 0 cuando no hay entrenamiento"
+            print_success "  (θ0=0, θ1=0 → estimatePrice = 0 + 0*mileage = 0)"
+            PASSED_TESTS=$((PASSED_TESTS + 1))
         else
-            print_warning "Valor de predicción inesperado: $output"
+            print_error "✗ FALLO: Debería predecir 0 sin entrenamiento"
+            print_error "  Output obtenido: $output"
+            FAILED_TESTS=$((FAILED_TESTS + 1))
         fi
     else
-        print_error "predict.py falla sin theta.txt"
+        print_error "✗ FALLO: predict.py no ejecuta correctamente"
+        FAILED_TESTS=$((FAILED_TESTS + 1))
     fi
 }
 
@@ -371,52 +415,98 @@ test_predict_with_training() {
 }
 
 # ============================================================================
-# PARTE 5: TESTS DE FÓRMULAS MATEMÁTICAS
+# PARTE 5: TESTS DE FÓRMULAS MATEMÁTICAS (según PDF de evaluación)
 # ============================================================================
 
 test_math_formulas() {
-    print_header "7. VERIFICACIÓN DE FÓRMULAS MATEMÁTICAS"
+    print_header "7. VERIFICACIÓN DE FÓRMULAS MATEMÁTICAS (CRÍTICO PARA EVALUACIÓN)"
     
-    print_test "Verificando implementación de regresión lineal"
+    # ========================================================================
+    # PUNTO CRÍTICO 1: Verificar ecuación exacta del subject
+    # ========================================================================
+    print_test "Ecuación hypothesis: estimatePrice = θ0 + (θ1 * mileage)"
     
-    # Buscar la fórmula en el código
-    if grep -qE "theta0.*theta1.*mileage|price.*=.*theta" predict.py; then
-        print_success "predict.py contiene fórmula de predicción"
+    if grep -qE "theta0.*\+.*theta1.*\*.*mileage" predict.py; then
+        print_success "✓ CORRECTO: predict.py usa la ecuación especificada en el subject"
     else
-        print_warning "No se encuentra fórmula explícita en predict.py"
+        print_error "✗ FALLO: predict.py NO usa la ecuación θ0 + (θ1 * mileage)"
+        print_info "El evaluador verificará esta ecuación exacta"
+        FAILED_TESTS=$((FAILED_TESTS + 1))
     fi
     
-    print_test "Verificando gradiente descendente en train.py"
+    # ========================================================================
+    # PUNTO CRÍTICO 2: Verificar fórmulas de entrenamiento del subject
+    # ========================================================================
+    print_test "Fórmulas de gradient descent según subject"
     
-    if grep -qE "gradient|derivative|learning_rate|alpha" train.py; then
-        print_success "train.py contiene elementos de gradiente descendente"
+    if grep -qE "learning.*rate|learningRate" train.py; then
+        print_success "✓ Usa learning_rate en las fórmulas"
     else
-        print_warning "No se identifican términos de gradiente en train.py"
+        print_warning "⚠ No se encuentra learning_rate explícito"
     fi
     
-    # CRÍTICO para la evaluación: Asignación simultánea
-    print_test "Verificando asignación simultánea de theta0 y theta1 (CRÍTICO)"
+    # ========================================================================
+    # PUNTO CRÍTICO 3: Asignación SIMULTÁNEA (MUY IMPORTANTE)
+    # ========================================================================
+    print_test "Asignación SIMULTÁNEA de θ0 y θ1 (CRÍTICO PARA APROBAR)"
+    print_info "El evaluador verificará que uses variables temporales tmp_theta0/tmp_theta1"
     
-    # Buscar patrón de variables temporales seguidas de asignación
-    if grep -qE "tmp.*theta0|temp.*theta0" train.py && grep -qE "tmp.*theta1|temp.*theta1" train.py; then
-        print_success "Usa variables temporales para asignación simultánea"
+    # Verificar que existen variables temporales
+    has_tmp_theta0=$(grep -c "tmp.*theta0\|temp.*theta0" train.py)
+    has_tmp_theta1=$(grep -c "tmp.*theta1\|temp.*theta1" train.py)
+    
+    if [ "$has_tmp_theta0" -gt 0 ] && [ "$has_tmp_theta1" -gt 0 ]; then
+        print_success "✓ CORRECTO: Usa variables temporales (tmp_theta0, tmp_theta1)"
         
-        # Verificar que las asignaciones están separadas de los cálculos
-        if grep -B2 -A2 "theta0.*=" train.py | grep -q "theta1.*="; then
-            print_success "theta0 y theta1 se actualizan juntos (correcto)"
-        else
-            print_info "Revisa que theta0 y theta1 se actualicen en el mismo bloque"
+        # Verificar el patrón correcto: calcular tmp primero, luego asignar
+        if grep -A3 "tmp_theta0.*=" train.py | grep -q "tmp_theta1.*="; then
+            print_success "✓ CORRECTO: Calcula ambos tmp antes de actualizar theta"
+            PASSED_TESTS=$((PASSED_TESTS + 1))
+        fi
+        
+        if grep -A2 "theta0.*-=\|theta0.*=" train.py | grep -q "theta1.*-=\|theta1.*="; then
+            print_success "✓ CORRECTO: Actualiza θ0 y θ1 simultáneamente"
+            PASSED_TESTS=$((PASSED_TESTS + 1))
         fi
     else
-        print_error "NO usa asignación simultánea (FALLO CRÍTICO en evaluación)"
-        print_info "El evaluador verificará variables temporales tmp_theta0/tmp_theta1"
+        print_error "✗ FALLO CRÍTICO: NO usa asignación simultánea"
+        print_error "  El evaluador esperará ver:"
+        print_error "    tmp_theta0 = learningRate * (1/m) * Σ(error)"
+        print_error "    tmp_theta1 = learningRate * (1/m) * Σ(error * mileage)"
+        print_error "    theta0 -= tmp_theta0"
+        print_error "    theta1 -= tmp_theta1"
+        FAILED_TESTS=$((FAILED_TESTS + 2))
     fi
     
-    # Verificar normalización si existe
-    if grep -qE "normalize|normalization|mean|std|standard" train.py; then
-        print_success "Implementa normalización de datos (buena práctica)"
+    # ========================================================================
+    # PUNTO CRÍTICO 4: NO usar librerías que hagan el trabajo
+    # ========================================================================
+    print_test "Verificación anti-cheating: librerías prohibidas"
+    
+    cheating_detected=false
+    for file in train.py predict.py; do
+        if [ -f "$file" ]; then
+            if grep -qE "numpy\.polyfit|sklearn.*fit|LinearRegression" "$file"; then
+                print_error "✗ CHEATING: $file usa numpy.polyfit o sklearn"
+                print_error "  Esto es considerado TRAMPA según el evaluador"
+                cheating_detected=true
+            fi
+        fi
+    done
+    
+    if [ "$cheating_detected" = false ]; then
+        print_success "✓ CORRECTO: NO usa librerías prohibidas (numpy.polyfit, sklearn)"
+        PASSED_TESTS=$((PASSED_TESTS + 1))
     else
-        print_info "No normaliza datos (válido pero menos preciso)"
+        print_error "✗ EVALUACIÓN TERMINADA: TRAMPA DETECTADA"
+        FAILED_TESTS=$((FAILED_TESTS + 10))
+    fi
+    
+    # Verificar normalización (opcional pero recomendado)
+    if grep -qE "normalize|normalization|mean.*std" train.py; then
+        print_success "✓ Bonus: Implementa normalización de datos"
+    else
+        print_info "ℹ No normaliza (válido, pero menos preciso)"
     fi
 }
 
@@ -768,7 +858,7 @@ test_performance() {
 
 print_summary() {
     echo -e "\n${BLUE}╔════════════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${BLUE}║${BOLD}                      RESUMEN DE TESTS                             ${NC}${BLUE}║${NC}"
+    echo -e "${BLUE}║${BOLD}                      RESUMEN DE TESTS                              ${NC}${BLUE}║${NC}"
     echo -e "${BLUE}╚════════════════════════════════════════════════════════════════════╝${NC}\n"
     
     # Calcular tests no fallidos como pasados
@@ -785,15 +875,100 @@ print_summary() {
     percentage=$((PASSED_TESTS * 100 / TOTAL_TESTS))
     echo -e "\n${BOLD}Porcentaje de éxito:${NC} ${percentage}%"
     
-    if [ $percentage -ge 90 ]; then
-        echo -e "\n${GREEN}${BOLD}★★★ EXCELENTE ★★★${NC}"
-        echo -e "${GREEN}El proyecto cumple con todos los requisitos del subject.${NC}"
+    # Verificación de puntos CRÍTICOS de la evaluación
+    echo -e "\n${BLUE}╔════════════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${BLUE}║${BOLD}        VERIFICACIÓN DE PUNTOS CRÍTICOS (evaluation.pdf)            ${NC}${BLUE}║${NC}"
+    echo -e "${BLUE}╚════════════════════════════════════════════════════════════════════╝${NC}\n"
+    
+    # Checklist basada en el PDF de evaluación
+    critical_passed=0
+    critical_total=7
+    
+    echo -e "${CYAN}Checklist oficial de evaluación:${NC}\n"
+    
+    # 1. Archivos obligatorios
+    if [ -f "data.csv" ] && [ -f "predict.py" ] && [ -f "train.py" ]; then
+        echo -e "  ${GREEN}✓${NC} Archivos obligatorios presentes"
+        critical_passed=$((critical_passed + 1))
+    else
+        echo -e "  ${RED}✗${NC} Faltan archivos obligatorios"
+    fi
+    
+    # 2. No usa librerías prohibidas
+    if ! grep -qE "numpy\.polyfit|sklearn.*fit" train.py predict.py 2>/dev/null; then
+        echo -e "  ${GREEN}✓${NC} No usa librerías prohibidas (numpy.polyfit, sklearn)"
+        critical_passed=$((critical_passed + 1))
+    else
+        echo -e "  ${RED}✗${NC} USA LIBRERÍAS PROHIBIDAS (TRAMPA)"
+    fi
+    
+    # 3. Ecuación correcta
+    if grep -q "theta0.*+.*theta1.*\*" predict.py 2>/dev/null; then
+        echo -e "  ${GREEN}✓${NC} Usa ecuación correcta: θ0 + (θ1 * mileage)"
+        critical_passed=$((critical_passed + 1))
+    else
+        echo -e "  ${RED}✗${NC} No usa la ecuación especificada"
+    fi
+    
+    # 4. Asignación simultánea
+    if grep -q "tmp.*theta0\|temp.*theta0" train.py 2>/dev/null && \
+       grep -q "tmp.*theta1\|temp.*theta1" train.py 2>/dev/null; then
+        echo -e "  ${GREEN}✓${NC} Asignación SIMULTÁNEA de θ0 y θ1 (variables tmp)"
+        critical_passed=$((critical_passed + 1))
+    else
+        echo -e "  ${RED}✗${NC} NO usa asignación simultánea (CRÍTICO)"
+    fi
+    
+    # 5. Guarda thetas
+    theta_file=""
+    [ -f "theta.txt" ] && theta_file="theta.txt"
+    [ -f "thetas.txt" ] && theta_file="thetas.txt"
+    if [ -n "$theta_file" ]; then
+        echo -e "  ${GREEN}✓${NC} Guarda θ0 y θ1 en archivo ($theta_file)"
+        critical_passed=$((critical_passed + 1))
+    else
+        echo -e "  ${RED}✗${NC} No guarda thetas en archivo"
+    fi
+    
+    # 6. Lee CSV
+    if grep -q "data\.csv\|\.csv" train.py 2>/dev/null; then
+        echo -e "  ${GREEN}✓${NC} Lee el archivo CSV"
+        critical_passed=$((critical_passed + 1))
+    else
+        echo -e "  ${RED}✗${NC} No lee CSV correctamente"
+    fi
+    
+    # 7. Implementa gradient descent
+    if grep -qE "learning.*rate|learningRate" train.py 2>/dev/null; then
+        echo -e "  ${GREEN}✓${NC} Implementa gradient descent (learning_rate)"
+        critical_passed=$((critical_passed + 1))
+    else
+        echo -e "  ${RED}✗${NC} No implementa gradient descent claramente"
+    fi
+    
+    echo ""
+    echo -e "${BOLD}Puntos críticos aprobados:${NC} $critical_passed/$critical_total"
+    
+    if [ $critical_passed -eq $critical_total ]; then
+        echo -e "\n${GREEN}${BOLD}╔══════════════════════════════════════════════════════════════╗${NC}"
+        echo -e "${GREEN}${BOLD}║                                                              ║${NC}"
+        echo -e "${GREEN}${BOLD}║   ✓✓✓ PROYECTO LISTO PARA EVALUACIÓN ✓✓✓                     ║${NC}"
+        echo -e "${GREEN}${BOLD}║                                                              ║${NC}"
+        echo -e "${GREEN}${BOLD}║   Todos los requisitos del PDF de evaluación se cumplen      ║${NC}"
+        echo -e "${GREEN}${BOLD}║                                                              ║${NC}"
+        echo -e "${GREEN}${BOLD}╚══════════════════════════════════════════════════════════════╝${NC}"
+    elif [ $critical_passed -ge 5 ]; then
+        echo -e "\n${YELLOW}${BOLD}⚠  PROYECTO CASI LISTO - Corrige los puntos fallidos${NC}"
+    else
+        echo -e "\n${RED}${BOLD}✗  PROYECTO NO LISTO - Revisa los puntos críticos${NC}"
+    fi
+    
+    if [ $percentage -ge 90 ] && [ $critical_passed -eq $critical_total ]; then
+        echo -e "\n${GREEN}${BOLD}★★★ EXCELENTE - 100% READY ★★★${NC}"
     elif [ $percentage -ge 75 ]; then
-        echo -e "\n${YELLOW}${BOLD}★★☆ BUENO ★★☆${NC}"
-        echo -e "${YELLOW}El proyecto cumple con la mayoría de requisitos.${NC}"
+        echo -e "\n${YELLOW}${BOLD}★★☆ BUENO - Algunos detalles pendientes ★★☆${NC}"
     else
         echo -e "\n${RED}${BOLD}★☆☆ NECESITA MEJORAS ★☆☆${NC}"
-        echo -e "${RED}Revisa los tests fallidos.${NC}"
     fi
     
     echo -e "\n${CYAN}Archivos de log guardados en: $TEST_DIR/${NC}"

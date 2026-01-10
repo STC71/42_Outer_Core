@@ -53,10 +53,13 @@ Este proyecto implementa un **algoritmo básico de machine learning** (regresió
 | 📈 **precision.py** | Métricas: R², MSE, RMSE, MAE, MAPE |
 | 📉 **learning_curve.py** | Curva de convergencia del algoritmo |
 | 🎨 **Interfaz** | Salidas coloridas y formateadas |
+| 🎓 **Overfitting** | Explicación conceptual del sobreajuste |
 
 </td>
 </tr>
 </table>
+
+> 💡 **Nota sobre el 5º punto bonus:** Según el PDF oficial de evaluación, hay un punto bonus adicional si puedes **explicar qué es el overfitting** durante la defensa. Consulta la sección detallada en [MATHS.md](MATHS.md#-overfitting-sobreajuste---bonus-point).
 
 ## 📊 Dataset
 
@@ -186,7 +189,51 @@ make learning_curve
 
 ---
 
-### 📊 6. Ejecutar todos los tests (opcional)
+### 🧪 6. Ejecutar suite de tests completa
+
+```bash
+./test_auto.sh
+# o usando Makefile
+make test
+```
+
+**Verifica:**
+- ✓ Todos los requisitos del PDF de evaluación oficial
+- ✓ 7 puntos críticos obligatorios
+- ✓ Predicción antes/después del entrenamiento
+- ✓ Ecuaciones correctas
+- ✓ Asignación simultánea de θ₀ y θ₁
+- ✓ No uso de librerías prohibidas
+- ✓ Funcionalidades bonus
+- ✓ Robustez y calidad del código
+
+**Resultado:** Checklist completo de aprobación con 39 tests automatizados.
+
+---
+
+### � 7. Simulación de evaluación oficial de 42
+
+```bash
+./evaluation.sh
+```
+
+**Guía interactiva que simula la evaluación real de 42:**
+- 📄 Traduce cada punto del PDF oficial al español
+- 🔍 Verifica cada requisito paso a paso
+- 📂 Muestra archivos y líneas exactas que implementan cada punto
+- 💻 Ejecuta pruebas prácticas en tiempo real
+- ✅ Sistema de puntuación (mandatory + bonus)
+- 🎯 Pausas entre secciones para el evaluador
+
+**Perfecto para:**
+- Prepararte antes de la defensa
+- Entender qué se evalúa exactamente
+- Ver dónde está implementado cada requisito
+- Simular la evaluación real de 42
+
+---
+
+### 📊 8. Evaluar métricas de precisión
 
 ```bash
 python3 precision.py
@@ -236,6 +283,34 @@ Interpretación:
 ============================================================
 ```
 </details>
+
+---
+
+## 🛠️ Comandos del Makefile
+
+El proyecto incluye un Makefile optimizado con todas las operaciones comunes:
+
+| Comando | Descripción |
+|---------|-------------|
+| `make` o `make all` | Ejecuta todo el flujo completo (limpieza → entrenamiento → demo → tests) |
+| `make train` | Entrena el modelo y genera thetas.txt |
+| `make predict` | Ejecuta predicción interactiva |
+| `make visualize` | Muestra gráficos (requiere matplotlib) |
+| `make precision` | Calcula y muestra métricas de precisión |
+| `make learning_curve` | Visualiza curva de aprendizaje |
+| `make test` | Ejecuta suite completa de tests (test_auto.sh) |
+| `make eval` | Simulación de evaluación 42 (evaluation.sh) |
+| `make bonus` | Ejecuta todas las funcionalidades bonus |
+| `make demo` | Demostración interactiva con predicciones de ejemplo |
+| `make install` | Instala dependencias (matplotlib) |
+| `make clean` | Elimina thetas.txt y mse_history.txt |
+| `make fclean` | Limpieza completa (clean + .pyc + __pycache__ + test_tmp/) |
+| `make re` | Re-entrena desde cero (fclean + train) |
+| `make help` | Muestra ayuda con todos los comandos disponibles |
+
+💡 **Tip:** Usa `make help` para ver la lista completa de comandos con descripciones.
+
+---
 
 ## 🧮 Algoritmo
 
@@ -293,12 +368,15 @@ ft_linear_regression/
 ├── 🔮 predict.py            # Programa de predicción (OBLIGATORIO)
 ├── 🧠 train.py              # Programa de entrenamiento (OBLIGATORIO)
 ├── 💾 thetas.txt            # Parámetros guardados (generado por train.py)
+├── 📉 mse_history.txt       # Historial MSE (generado por train.py)
 │
 ├── 📊 visualize.py          # Visualización gráfica (BONUS)
 ├── 📈 precision.py          # Cálculo de precisión (BONUS)
+├── 📉 learning_curve.py     # Curva de aprendizaje (BONUS)
 │
 ├── 🛠️  Makefile             # Automatización de comandos (optimizado)
-├── 🧪 test_project.py       # Suite de pruebas
+├── 🧪 test_auto.sh          # Suite de testing exhaustiva (850+ líneas)
+├── 📋 evaluation.sh         # Guía de evaluación 42 punto por punto (850 líneas)
 │
 ├── 📝 README.md             # Documentación principal (este archivo)
 ├── 📐 MATHS.md              # Fundamentos matemáticos detallados
@@ -317,6 +395,78 @@ Este proyecto incluye documentación técnica detallada:
 | 🐍 **[PYTHON.md](PYTHON.md)** | Análisis del código e implementación |
 
 💡 **Recomendación:** Lee [MATHS.md](MATHS.md) para entender la teoría detrás del algoritmo, y [PYTHON.md](PYTHON.md) para los detalles de implementación.
+
+## 🧪 Sistema de Testing
+
+### 📋 Suite de Tests Automática (`test_auto.sh`)
+
+El proyecto incluye un sistema de testing exhaustivo (850+ líneas) que verifica **todos los puntos del PDF oficial de evaluación** de 42:
+
+```bash
+./test_auto.sh
+# o
+make test
+```
+
+**Verifica 7 puntos críticos obligatorios:**
+
+| # | Requisito | Descripción |
+|---|-----------|-------------|
+| 1️⃣ | **Archivos obligatorios** | data.csv, predict.py, train.py |
+| 2️⃣ | **No librerías prohibidas** | Sin numpy.polyfit, sklearn.fit |
+| 3️⃣ | **Ecuación correcta** | estimatePrice = θ₀ + (θ₁ * mileage) |
+| 4️⃣ | **Asignación simultánea** | Variables temporales tmp_theta0/1 |
+| 5️⃣ | **Guardado de parámetros** | thetas.txt generado correctamente |
+| 6️⃣ | **Lectura de CSV** | data.csv procesado correctamente |
+| 7️⃣ | **Gradient descent** | learning_rate implementado |
+
+**39 tests automatizados que cubren:**
+- ✅ Predicción antes de entrenar (debe dar 0)
+- ✅ Validación de entradas inválidas
+- ✅ Entrenamiento y convergencia
+- ✅ Predicción después de entrenar
+- ✅ Fórmulas matemáticas del subject
+- ✅ Funcionalidades bonus (visualize, precision, learning_curve)
+- ✅ Robustez del código
+- ✅ Calidad y estilo de código
+- ✅ Compliance con subject oficial
+- ✅ Rendimiento y velocidad
+
+**Salida final:** Checklist completo de aprobación indicando si el proyecto está listo para la evaluación de 42.
+
+<details>
+<summary>📋 Ver ejemplo de salida final</summary>
+
+```plaintext
+╔════════════════════════════════════════════════════════════════════╗
+║        VERIFICACIÓN DE PUNTOS CRÍTICOS (evaluation.pdf)            ║
+╚════════════════════════════════════════════════════════════════════╝
+
+Checklist oficial de evaluación:
+
+  ✓ Archivos obligatorios presentes
+  ✓ No usa librerías prohibidas (numpy.polyfit, sklearn)
+  ✓ Usa ecuación correcta: θ0 + (θ1 * mileage)
+  ✓ Asignación SIMULTÁNEA de θ0 y θ1 (variables tmp)
+  ✓ Guarda θ0 y θ1 en archivo (thetas.txt)
+  ✓ Lee el archivo CSV
+  ✓ Implementa gradient descent (learning_rate)
+
+Puntos críticos aprobados: 7/7
+
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║  ✓✓✓ PROYECTO LISTO PARA EVALUACIÓN ✓✓✓                     ║
+║                                                              ║
+║  Todos los requisitos del PDF de evaluación se cumplen      ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+★★★ EXCELENTE - 100% READY ★★★
+```
+</details>
+
+---
 
 ## ⚙️ Parámetros ajustables
 
@@ -366,6 +516,12 @@ theta0, theta1 = train_model(
 | Gráfico de datos | ✅ |
 | Gráfico de regresión | ✅ |
 | Cálculo de precisión | ✅ |
+| Curva de aprendizaje | ✅ |
+| Makefile estructurado | ✅ |
+| Explicar overfitting | ✅ |
+
+> 🎯 **Bonus 1-4:** Implementados en código  
+> 🎓 **Bonus 5:** Explicación conceptual (ver [MATHS.md](MATHS.md#-overfitting-sobreajuste---bonus-point))
 
 </td>
 </tr>

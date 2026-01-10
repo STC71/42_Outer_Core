@@ -14,13 +14,13 @@ PREDICT = predict.py
 VISUALIZE = visualize.py
 PRECISION = precision.py
 LEARNING_CURVE = learning_curve.py
-TEST = test_project.py
+TEST = test_auto.sh
 
 # Files
 THETAS = thetas.txt
 DATA = data.csv
 
-.PHONY: all train predict visualize precision test clean fclean re help bonus
+.PHONY: all train predict visualize precision test eval clean fclean re help bonus
 
 # Default target is help
 .DEFAULT_GOAL := help
@@ -194,9 +194,14 @@ precision:
 	@$(PYTHON) $(PRECISION)
 
 test:
-	@echo "$(GREEN)Ejecutando suite de pruebas...$(NC)"
+	@echo "$(GREEN)Ejecutando suite de pruebas automáticas...$(NC)"
 	@chmod +x $(TEST)
-	@$(PYTHON) $(TEST)
+	@./$(TEST)
+
+eval:
+	@echo "$(BLUE)Iniciando simulación de evaluación 42...$(NC)"
+	@chmod +x evaluation.sh
+	@./evaluation.sh
 
 install:
 	@echo "$(GREEN)Instalando dependencias...$(NC)"
@@ -204,16 +209,23 @@ install:
 	@echo "$(GREEN)✓ matplotlib instalado$(NC)"
 
 clean:
+	@echo "$(GREEN)Limpiando archivos generados...$(NC)"
 	@if [ -f $(THETAS) ]; then \
 		rm -f $(THETAS); \
 		echo "$(YELLOW)✓ $(THETAS) eliminado$(NC)"; \
-	else \
-		echo "$(YELLOW)Nada que limpiar$(NC)"; \
+	fi
+	@if [ -f mse_history.txt ]; then \
+		rm -f mse_history.txt; \
+		echo "$(YELLOW)✓ mse_history.txt eliminado$(NC)"; \
 	fi
 
 fclean: clean
 	@find . -type f -name "*.pyc" -delete
 	@find . -type d -name "__pycache__" -delete
+	@if [ -d test_tmp ]; then \
+		rm -rf test_tmp; \
+		echo "$(YELLOW)✓ test_tmp eliminado$(NC)"; \
+	fi
 	@echo "$(YELLOW)✓ Limpieza completa realizada$(NC)"
 
 re: fclean train

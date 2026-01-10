@@ -356,6 +356,89 @@ En regresión lineal simple, inicializar $\theta_0 = 0$ y $\theta_1 = 0$ funcion
 
 ---
 
+## 🎓 Overfitting (Sobreajuste) - Bonus Point
+
+### ¿Qué es el overfitting?
+
+El **overfitting** (sobreajuste en español) ocurre cuando un modelo se ajusta **demasiado bien** a los datos de entrenamiento, hasta el punto de que memoriza el ruido y las peculiaridades específicas de esos datos, en lugar de aprender el patrón general subyacente.
+
+#### 📊 Características del overfitting
+
+| Aspecto | Descripción |
+|---------|-------------|
+| 🎯 **En entrenamiento** | Predicciones perfectas o casi perfectas (MSE muy bajo) |
+| 📉 **En validación** | Predicciones pobres en datos nuevos (MSE alto) |
+| 🔍 **Síntoma principal** | Poca capacidad de generalización |
+
+#### 💡 Ejemplo práctico
+
+Imagina que quieres predecir el precio de coches basándote en el kilometraje:
+
+**Sin overfitting (buen modelo):**
+```
+Datos: (10k km, 7500€), (50k km, 6800€), (100k km, 5200€)
+Modelo: θ₀ = 8000, θ₁ = -0.025
+Predicción para 60k km → 6500€ ✓ (razonable)
+```
+
+**Con overfitting (modelo memoriza):**
+```
+Datos: (10k km, 7500€), (50k km, 6800€), (100k km, 5200€)
+Modelo polinómico grado 10: pasa exactamente por todos los puntos
+Predicción para 60k km → 12000€ ✗ (sin sentido, no generaliza)
+```
+
+#### 🚨 Cómo detectarlo en ft_linear_regression
+
+En nuestro proyecto de **regresión lineal simple** (con solo 2 parámetros θ₀ y θ₁), el overfitting es **muy poco probable** porque:
+
+1. **Modelo simple**: Solo 2 parámetros vs 24 muestras → no hay suficiente complejidad para memorizar
+2. **Función lineal**: La recta no puede pasar exactamente por todos los puntos
+
+**Sin embargo**, si observas que:
+- ✓ El **MSE en entrenamiento es 0** (predicciones exactas)
+- ✓ Las predicciones son **idénticas a los valores reales** en todos los casos
+- ✓ El modelo **falla completamente** con datos nuevos
+
+...entonces podrías estar ante un caso de overfitting (aunque en regresión lineal simple es extremadamente raro).
+
+#### 🛡️ Cómo prevenir el overfitting
+
+| Técnica | Descripción | ¿En ft_linear_regression? |
+|---------|-------------|---------------------------|
+| **Regularización** | Penalizar parámetros grandes (L1/L2) | ❌ No necesario (modelo simple) |
+| **Validación cruzada** | Dividir datos train/test | ⚠️ Opcional (pocos datos) |
+| **Early stopping** | Parar cuando el error de validación aumenta | ❌ No aplica (no tenemos validación) |
+| **Simplificar modelo** | Usar menos features o menor grado polinomial | ✅ Ya usamos el más simple (lineal) |
+| **Más datos** | Aumentar el dataset | ⚠️ Limitado por data.csv |
+
+#### 📈 Overfitting vs Underfitting
+
+```
+Underfitting          Buen ajuste          Overfitting
+(infraajuste)        (generaliza)         (sobreajuste)
+─────────────────────────────────────────────────────────
+MSE alto              MSE moderado         MSE muy bajo (train)
+No captura patrón     Captura patrón       MSE alto (test)
+Modelo muy simple     Modelo adecuado      Memoriza ruido
+R² bajo (~0)          R² alto (>0.7)       R² = 1 (sospechoso)
+```
+
+#### 🎯 En la evaluación de 42
+
+Si el evaluador nota que tus predicciones son **exactamente iguales** a los precios reales en todos los casos (precio idéntico todo el tiempo), podría sospechar overfitting y preguntarte:
+
+> *"¿Qué es el overfitting y cómo lo detectarías aquí?"*
+
+**Respuesta correcta** (+1 punto bonus):
+> "El overfitting es cuando el modelo memoriza los datos de entrenamiento en lugar de aprender el patrón general. Se detecta porque las predicciones son perfectas en entrenamiento pero fallan en datos nuevos. En regresión lineal simple es muy raro porque solo tenemos 2 parámetros, pero si todas las predicciones fueran exactamente iguales a los valores reales (MSE = 0), sería sospechoso de overfitting."
+
+### 🎥 Aprende más
+- [**Overfitting explicado** - DotCSV](https://www.youtube.com/watch?v=LJJg-bY-K7c) - Explicación visual del concepto
+- [**Bias vs Variance** - StatQuest](https://www.youtube.com/watch?v=EuBBz3bI-aA) - Trade-off fundamental en ML (inglés con subtítulos)
+
+---
+
 ## 🔟 Implementación en el proyecto
 
 Este proyecto implementa el algoritmo descrito en cuatro módulos principales:
