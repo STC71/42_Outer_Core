@@ -70,7 +70,7 @@ $$
 donde $\theta_0$ (intercepto) y $\theta_1$ (pendiente) son los parámetros a estimar.
 
 ### 🎥 Aprende más
-- [**Regresión Lineal Explicada** - Matemáticas profe Alex](https://www.youtube.com/watch?v=KZKjNA9LqLI) - Fundamentos matemáticos claros
+- [**Regresión Lineal Simple** - DotCSV](https://www.youtube.com/watch?v=k964_uNn3l0) - Explicación muy visual y clara del concepto
 
 ---
 
@@ -150,8 +150,8 @@ $$
 | 🐌 **α muy pequeño** | La convergencia será muy lenta |
 
 ### 🎥 Aprende más
-- [**Gradiente Descendente** - DotCSV](https://www.youtube.com/watch?v=A6FiCDoz8_4) - Visualización animada del algoritmo
-- [**Optimización en ML** - Ringa Tech](https://www.youtube.com/watch?v=d5SAGm_9KIA) - Cómo funciona la optimización
+- [**Gradiente Descendente** - Codificando bits](https://youtu.be/mAq2wjTYnGg?si=SjmDL2P2jZcpnMJ8) - El algoritmo del gradiante descendente
+- [**Gradient Descent** - StatQuest](https://www.youtube.com/watch?v=sDv4f4s2SB8) - Explicaciones muy intuitivas y paso a paso
 
 ---
 
