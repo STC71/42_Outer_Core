@@ -6,34 +6,52 @@ los parámetros theta0 y theta1 óptimos.
 Utiliza los datos de 'data.csv' para el entrenamiento.
 """
 
-import csv
-import sys
+import csv  # Para manejar archivos CSV, como 'data.csv'
+import sys  # Para manejar errores y salir del programa, si es necesario.
 
 
 def load_data(filename):
     """
-    Carga los datos del archivo CSV.
+    def: es la palabra clave para definir una función en Python
+    load_data: es el nombre de la función que carga los datos desde un archivo CSV
+    filename: es el parámetro que representa el nombre del archivo CSV a cargar
+    Luego entonces:
+    Carga los datos del archivo CSV, pasado como argumento 'filename', ej: python3 train.py data.csv
     Retorna dos listas: kilometrajes y precios.
     """
-    mileages = []
-    prices = []
+    mileages = []   # Lista para almacenar los kilometrajes
+    prices = []     # Lista para almacenar los precios
     
-    try:
-        with open(filename, 'r') as f:
+    try:            # Intentar abrir y leer el archivo
+        with open(filename, 'r') as f:      
+        # Abrir en modo lectura. 'f' es el objeto archivo, variable que representa el archivo abierto.
             reader = csv.DictReader(f)
-            for row in reader:
-                mileages.append(float(row['km']))
-                prices.append(float(row['price']))
+            # Crear un lector de CSV que interpreta cada fila como un diccionario
+            for row in reader:              
+            # Iterar sobre cada fila rowm, en reader (que es el objeto que contiene las filas del archivo CSV)
+                mileages.append(float(row['km']))   
+                # Agregar el kilometraje convertido a float a la lista mileages
+                prices.append(float(row['price']))  
+                # Agregar el precio convertido a float a la lista prices    
         
-        if len(mileages) == 0:
+        if len(mileages) == 0:      # Verificar si no se cargaron datos
             raise ValueError("El archivo está vacío")
+            # raise: lanzar una excepción
+            # ValueError: tipo de excepción que indica un valor incorrecto
         
-        return mileages, prices
+        return mileages, prices     # Retornar las listas de kilometrajes y precios
     
     except FileNotFoundError:
+    # Manejar el error si el archivo no se encuentra
         print(f"Error: No se encuentra el archivo '{filename}'")
-        sys.exit(1)
+        # f es para formatear cadenas, permite insertar variables dentro de cadenas
+        # en nuestra caso, permite insertar el valor de filename (el nombre del archivo)
+        sys.exit(1)     # Salir del programa con código de error 1
     except (ValueError, KeyError) as e:
+    # Manejar errores de formato o claves faltantes en el CSV
+    # ValueError: si hay un valor incorrecto en el archivo
+    # KeyError: si falta una clave esperada en el archivo CSV (como 'km' o 'price')
+    # 'as e': asigna la excepción capturada a la variable 'e' para su uso posterior
         print(f"Error al leer datos: {e}")
         sys.exit(1)
 
