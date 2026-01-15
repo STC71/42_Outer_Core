@@ -58,8 +58,15 @@ def load_data(filename):
 
 def estimate_price(mileage, theta0, theta1):
     """
-    Calcula el precio estimado usando la función lineal:
+    def: define una función en Python llamada estimate_price que
+    calcula el precio estimado usando la función lineal:
     estimatePrice(mileage) = theta0 + (theta1 * mileage)
+    donde theta0 representa la intersección con el eje Y o sea el precio base,
+    y theta1 representa la pendiente de la línea o sea el cambio en el precio
+    por cada unidad de cambio en el kilometraje.
+    el eje x representa el kilometraje (mileage)
+    el eje y representa el precio (price)
+    Retorna el precio estimado para un kilometraje dado.
     """
     return theta0 + (theta1 * mileage)
 
@@ -70,33 +77,77 @@ def normalize_data(data):
     Retorna los datos normalizados, la media y la desviación estándar.
     """
     mean = sum(data) / len(data)
+    # Calcular la media de los datos.
+    # mean = suma de todos los elementos en data / el número de elementos en data (len(data))
     
     # Calcular desviación estándar
     variance = sum((x - mean) ** 2 for x in data) / len(data)
-    std = variance ** 0.5
+    # o sea la varianza es igual a la suma de las diferencias al cuadrado
+    # for x in data: para cada elemento x en la lista data
+    # luego dividir entre el número de elementos en data (len(data))
+    std = variance ** 0.5   # calcular la desviación estándar, std
+    # dice cuánto se alejan, en promedio, los datos de su valor central (la media)
+    # ¿Qué tan dispersos o esparcidos están mis números?
+    # std es igual a la raíz cuadrada de la varianza. 0.5 = 1/2 = raíz cuadrada.
     
     # Evitar división por cero
     if std == 0:
         std = 1
     
     normalized = [(x - mean) / std for x in data]
+    # Normalizar cada dato restando la media y dividiendo por la desviación estándar
     
     return normalized, mean, std
+    # Retorna la lista de datos normalizados, la media y la desviación estándar
 
 
 def denormalize_theta(theta0_norm, theta1_norm, mean_x, std_x, mean_y, std_y):
     """
-    Desnormaliza los parámetros theta para usarlos con datos originales.
+    Desnormaliza los parámetros theta para usarlos con datos originales,
+    o sea, sin normalizar después del entrenamiento.
+    Los parametros fueron normalizdos en la función train_model (siguiente función)
+    Retorna theta0 y theta1 desnormalizados.
     """
     theta1 = theta1_norm * (std_y / std_x)
+    """
+    Ajustar theta1 según las desviaciones estándar de y y x
+    x está en unidad normalizada, y también y está en unidad normalizada.
+    theta1_norm mide ¿cuánto cambia y normalizado por cada cambio en x normalizado?
+    Al multiplicar por (std_y / std_x), convertimos ese cambio a la escala original de y y x.
+    Así volvemos a la escala original de precios y kilometrajes.
+    Ejemplo simplificado:
+    Si std_x = 1000 km y std_y = 5000€:
+    - En espacio normalizado, theta1_norm = -0.5 significa "por cada desv. estándar 
+        de km, el precio baja 0.5 desv. estándar"
+    - En espacio original: theta1 = -0.5 × (5000/1000) = -2.5 €/km
+    Esto permite usar theta1 con datos sin normalizar en predict.py.
+    """
     theta0 = mean_y - (theta1 * mean_x)
-    
+    """
+    Ajustar theta0 para que la línea pase por el punto (mean_x, mean_y)
+    mean_x es el kilometraje promedio en los datos originales
+    mean_y es el precio promedio en los datos originales
+    Al calcular theta0 así, aseguramos que la línea de regresión
+    pase por el punto medio de los datos originales.
+    Esto permite usar theta0 con datos sin normalizar en predict.py.
+    Ejemplo simplificado:
+    Si mean_x = 100000 km y mean_y = 6000 €
+    Entonces theta0 = 6000 - (-0.02 * 100000) = 6000 + 2000 = 8000 €
+    Esto significa que cuando el kilometraje es 0 km, el precio estimado es 8000 €.
+    8000 € es el precio base estimado para un coche nuevo (0 km).
+    8000 € es la intersección con el eje Y en el espacio original de precios y kilometrajes.
+    Esto garantiza que cuando se predice con 100000 km, se obtiene ...
+    8000 + (-0.02 * 100000) = 6000 €, justo la media de los precios originales.
+    """
     return theta0, theta1
-
 
 def train_model(mileages, prices, learning_rate=0.1, iterations=1000):
     """
     Entrena el modelo usando gradiente descendente.
+    Gradiante descendiente: algoritmo de optimización para minimizar una función,
+    o sea encontrar sus valores mínimos, el punto más bajo de la curva (mínimo global).
+    En este caso, minimiza el error cuadrático medio (MSE) entre las predicciones
+    del modelo y los precios reales.
     
     Implementa las fórmulas especificadas:
     tmpθ0 = learningRate * (1/m) * Σ(estimatePrice(mileage[i]) - price[i])

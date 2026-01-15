@@ -28,6 +28,25 @@ Este documento explica, las matemáticas utilizadas en el proyecto `ft_linear_re
 
 ---
 
+<a id="indice"></a>
+
+## 📑 Índice
+
+1. [Objetivo](#1️⃣-objetivo)
+2. [Notación matemática](#2️⃣-notación-matemática)
+3. [Función de coste (MSE)](#3️⃣-función-de-coste-mse)
+4. [Derivación del gradiente (parcial)](#4️⃣-derivación-del-gradiente-parcial)
+5. [Descenso por gradiente](#5️⃣-descenso-por-gradiente)
+6. [Normalización de características](#6️⃣-normalización-de-características)
+7. [Métricas de evaluación](#7️⃣-métricas-de-evaluación)
+8. [Ejemplo numérico (dos iteraciones completas)](#8️⃣-ejemplo-numérico-dos-iteraciones-completas)
+9. [Consideraciones prácticas](#9️⃣-consideraciones-prácticas)
+10. [Overfitting (Sobreajuste) - Bonus Point](#🎓-overfitting-sobreajuste---bonus-point)
+11. [Implementación en el proyecto](#🔟-implementación-en-el-proyecto)
+12. [Referencias y recursos adicionales](#📚-referencias-y-recursos-adicionales)
+
+---
+
 ## 🎯 Resumen en lenguaje llano
 
 Este proyecto aprende una **recta** que relaciona el kilometraje de un coche con su precio. A partir de ejemplos (pares kilometraje-precio) el algoritmo ajusta dos números:
@@ -72,6 +91,8 @@ donde $\theta_0$ (intercepto) y $\theta_1$ (pendiente) son los parámetros a est
 ### 🎥 Aprende más
 - [**Regresión Lineal Simple** - DotCSV](https://www.youtube.com/watch?v=k964_uNn3l0) - Explicación muy visual y clara del concepto
 
+[↑ Volver al índice](#indice)
+
 ---
 
 ## 2️⃣ Notación matemática
@@ -82,6 +103,8 @@ donde $\theta_0$ (intercepto) y $\theta_1$ (pendiente) son los parámetros a est
 | $x^{(i)}$, $y^{(i)}$ | Entrada y salida de la $i$-ésima muestra |
 | $\theta = [\theta_0,\ \theta_1]^T$ | Vector de parámetros |
 | $h_\theta(x)$ | Hipótesis (predicción) para la entrada $x$ |
+
+[↑ Volver al índice](#indice)
 
 ---
 
@@ -102,6 +125,8 @@ $$
 ### 🎥 Aprende más
 - [**Función de Coste en ML** - DotCSV](https://www.youtube.com/watch?v=TqnqMa7x3xc) - ¿Por qué usamos MSE?
 
+[↑ Volver al índice](#indice)
+
 ---
 
 ## 4️⃣ Derivación del gradiente (parcial)
@@ -121,6 +146,8 @@ $$
 $$
 
 **💡 Explicación:** El gradiente respecto a $\theta_1$ es el promedio de los errores ponderados por la característica $x$; mide cómo debe cambiar la pendiente para mejorar el ajuste.
+
+[↑ Volver al índice](#indice)
 
 ---
 
@@ -153,6 +180,8 @@ $$
 - [**Gradiente Descendente** - Codificando bits](https://youtu.be/mAq2wjTYnGg?si=SjmDL2P2jZcpnMJ8) - El algoritmo del gradiante descendente
 - [**Gradient Descent** - StatQuest](https://www.youtube.com/watch?v=sDv4f4s2SB8) - Explicaciones muy intuitivas y paso a paso
 
+[↑ Volver al índice](#indice)
+
 ---
 
 ## 6️⃣ Normalización de características
@@ -184,6 +213,8 @@ Si normalizas durante el entrenamiento, **debes aplicar la misma transformación
 
 ### 🎥 Aprende más
 - [**Normalización de Datos** - La Escuela de Inteligencia](https://www.youtube.com/watch?v=3QhxK1p6Jzs) - Por qué y cómo normalizar
+
+[↑ Volver al índice](#indice)
 
 ---
 
@@ -229,6 +260,8 @@ Con $\bar{y}$ la media de las etiquetas. **R²** indica la fracción de varianza
 ### 🎥 Aprende más
 - [**Métricas de Regresión** - AprendeIA](https://www.youtube.com/watch?v=rS_Pj4d3x10) - MSE, RMSE, MAE explicados
 - [**Coeficiente R²** - Khan Academy Español](https://es.khanacademy.org/math/statistics-probability/describing-relationships-quantitative-data) - Entendiendo R²
+
+[↑ Volver al índice](#indice)
 
 ---
 
@@ -312,6 +345,8 @@ Después de dos iteraciones las predicciones se acercan más a los valores reale
 ### 🎥 Aprende más
 - [**Ejemplo Paso a Paso** - Matemóvil](https://www.youtube.com/watch?v=w2RJ1D6kz-o) - Cálculo manual de regresión lineal
 
+[↑ Volver al índice](#indice)
+
 ---
 
 ## 📈 Gráficos de ayuda
@@ -353,6 +388,8 @@ En regresión lineal simple, inicializar $\theta_0 = 0$ y $\theta_1 = 0$ funcion
 - **Regresión polinómica**: para relaciones no lineales, usar características $x, x^2, x^3, \ldots$ con regularización L2 (Ridge).
 - **Validación cruzada**: dividir datos en entrenamiento y validación para evaluar generalización.
 - **Detección de outliers**: valores atípicos pueden afectar significativamente el ajuste; considerar técnicas robustas.
+
+[↑ Volver al índice](#indice)
 
 ---
 
@@ -437,6 +474,8 @@ Si el evaluador nota que tus predicciones son **exactamente iguales** a los prec
 - [**Overfitting explicado** - DotCSV](https://www.youtube.com/watch?v=LJJg-bY-K7c) - Explicación visual del concepto
 - [**Bias vs Variance** - StatQuest](https://www.youtube.com/watch?v=EuBBz3bI-aA) - Trade-off fundamental en ML (inglés con subtítulos)
 
+[↑ Volver al índice](#indice)
+
 ---
 
 ## 🔟 Implementación en el proyecto
@@ -466,6 +505,8 @@ Los parámetros $\theta_0$ y $\theta_1$ se guardan junto con $\mu$ y $\sigma$ pa
 - [**Implementando ML desde Cero** - Código Máquina](https://www.youtube.com/watch?v=vP59dCE3KkQ) - Implementación práctica en Python
 - [**Curso ML Completo** - AprendeIA](https://www.youtube.com/playlist?list=PLAnA8FVrBl8AWkZmbswwWiF8a_52dQ3JQ) - Serie completa de Machine Learning
 
+[↑ Volver al índice](#indice)
+
 ---
 
 ## 📚 Referencias y recursos adicionales
@@ -485,6 +526,8 @@ Los parámetros $\theta_0$ y $\theta_1$ se guardan junto con $\mu$ y $\sigma$ pa
 - [Ringa Tech](https://www.youtube.com/@RingaTech) - Programación y ML
 - [AprendeIA](https://www.youtube.com/@AprendeIA) - Inteligencia Artificial
 - [Matemáticas profe Alex](https://www.youtube.com/@matematicasprofealex) - Matemáticas aplicadas
+
+[↑ Volver al índice](#indice)
 
 ---
 
