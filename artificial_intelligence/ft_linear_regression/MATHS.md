@@ -32,19 +32,21 @@ Este documento explica, las matemáticas utilizadas en el proyecto `ft_linear_re
 
 ## 📑 Índice
 
-1. [**📊 Esquemas visuales del proceso matemático**](#-esquemas-visuales-del-proceso-matemático) ⭐ **NUEVO**
+1. [**Esquemas visuales del proceso matemático**](#-esquemas-visuales-del-proceso-matemático)
 2. [Objetivo](#1️⃣-objetivo)
 3. [Función de coste (MSE)](#3️⃣-función-de-coste-mse)
 4. [¿Qué son las derivadas? - Fundamentos de cálculo](#-qué-son-las-derivadas---fundamentos-de-cálculo)
 5. [Derivación del gradiente (parcial)](#4️⃣-derivación-del-gradiente-parcial)
 6. [Descenso por gradiente](#5️⃣-descenso-por-gradiente)
 7. [Normalización de características](#6️⃣-normalización-de-características)
-8. [Métricas de evaluación](#7️⃣-métricas-de-evaluación)
-9. [Ejemplo numérico (dos iteraciones completas)](#8️⃣-ejemplo-numérico-dos-iteraciones-completas)
-10. [Consideraciones prácticas](#9️⃣-consideraciones-prácticas)
-11. [Overfitting (Sobreajuste) - Bonus Point](#🎓-overfitting-sobreajuste---bonus-point)
-12. [Implementación en el proyecto](#🔟-implementación-en-el-proyecto)
-13. [Referencias y recursos adicionales](#📚-referencias-y-recursos-adicionales)
+8. [Covarianza y Correlación](#-covarianza-y-correlación)
+9. [Métricas de evaluación](#7️⃣-métricas-de-evaluación)
+10. [Análisis de Residuos](#-análisis-de-residuos)
+11. [Ejemplo numérico (dos iteraciones completas)](#8️⃣-ejemplo-numérico-dos-iteraciones-completas)
+12. [Consideraciones prácticas](#9️⃣-consideraciones-prácticas)
+13. [Overfitting (Sobreajuste) - Bonus Point](#🎓-overfitting-sobreajuste---bonus-point)
+14. [Implementación en el proyecto](#🔟-implementación-en-el-proyecto)
+15. [Referencias y recursos adicionales](#📚-referencias-y-recursos-adicionales)
 
 ---
 
@@ -647,6 +649,114 @@ J(θ)
   └────────────────────────────────→ t
 ```
 
+### 📊 Esquema: Relación entre nuevos conceptos
+
+```
+╔═══════════════════════════════════════════════════════════════════════════╗
+║            CONCEPTOS MATEMÁTICOS ADICIONALES EN USO                       ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│  FASE PRE-ENTRENAMIENTO: Análisis Exploratorio                          │
+└─────────────────────────────────────────────────────────────────────────┘
+
+    📊 Dataset: (x, y) → km y precios
+             ↓
+    ┌──────────────────┐
+    │  Calcular Media  │  →  μ_x, μ_y
+    └────────┬─────────┘
+             ↓
+    ┌──────────────────┐
+    │  Calcular        │  →  σ_x, σ_y
+    │  Desv. Estándar  │
+    └────────┬─────────┘
+             ↓
+    ┌──────────────────┐       Fundamento teórico: ¿Por qué
+    │  Covarianza      │  →    funciona la regresión lineal?
+    │  Cov(X,Y)        │       
+    └────────┬─────────┘       Cov(km, precio) < 0
+             ↓                 → Relación inversa ✓
+    ┌──────────────────┐
+    │  Correlación     │  →    r ≈ -0.97
+    │  r = Cov/(σ_x·σ_y)│      → Relación lineal MUY fuerte ✓
+    └────────┬─────────┘       → Regresión lineal apropiada ✓
+             ↓
+    ✅ Confirmación: El modelo lineal es adecuado
+
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│  FASE POST-ENTRENAMIENTO: Evaluación del Modelo                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+    Modelo entrenado: θ₀, θ₁
+             ↓
+    ┌──────────────────────────────────┐
+    │  Hacer predicciones              │
+    │                                  │
+    │  Para cada muestra i:            │
+    │    ŷᵢ = θ₀ + θ₁ · xᵢ             │
+    └──────────────┬───────────────────┘
+                   ↓
+    ┌─────────────────────────────────────────┐
+    │  Calcular RESIDUOS                      │
+    │                                         │
+    │  residuoᵢ = yᵢ - ŷᵢ                     │
+    │                                         │
+    │  • Si residuo > 0 → Subpredicción       │
+    │  • Si residuo < 0 → Sobrepredicción     │
+    │  • Si residuo ≈ 0 → Predicción correcta │
+    └──────────────┬──────────────────────────┘
+                   ↓
+    ┌──────────────────────────────────┐
+    │  Calcular SUMA DE CUADRADOS      │
+    │                                  │
+    │  SST = Σ(yᵢ - ȳ)²                │
+    │  Variabilidad TOTAL en los datos │
+    │                                  │
+    │  SSR = Σ(yᵢ - ŷᵢ)²               │
+    │  Variabilidad NO explicada       │
+    └──────────────┬───────────────────┘
+                   ↓
+    ┌──────────────────────────────────┐
+    │  Calcular MÉTRICAS               │
+    │                                  │
+    │  MSE  = SSR / m                  │
+    │  RMSE = √MSE                     │
+    │  MAE  = Σ|residuoᵢ| / m          │
+    │  R²   = 1 - SSR/SST              │
+    └──────────────┬───────────────────┘
+                   ↓
+    ✅ Evaluación completa del modelo
+
+
+    CONEXIÓN ENTRE CONCEPTOS:
+    
+    Correlación (r)  →  Indica si regresión es apropiada
+           ↓
+    Entrenamiento    →  Encuentra θ₀, θ₁ óptimos
+           ↓
+    Predicciones     →  ŷ = θ₀ + θ₁·x
+           ↓
+    Residuos         →  e = y - ŷ
+           ↓
+    SST, SSR         →  Miden variabilidad
+           ↓
+    R² = 1 - SSR/SST →  Calidad del modelo
+           ↓
+    ¿R² ≈ r² ?       →  SÍ (en regresión simple)
+
+
+    IMPLEMENTACIÓN EN EL PROYECTO:
+    
+    Covarianza/Correlación → No se calcula (fundamento teórico)
+    Media (μ)             → normalize_data() en train.py
+    Desv. Estándar (σ)    → normalize_data() en train.py
+    Residuos              → Implícito en precision.py
+    SST                   → ss_total en precision.py (línea 84)
+    SSR                   → ss_residual en precision.py (línea 89)
+    R²                    → r_squared en precision.py (línea 93)
+```
+
 [↑ Volver al índice](#indice)
 
 ---
@@ -673,6 +783,11 @@ J(θ)
 | **MAE** | Mean Absolute Error | Error absoluto medio: promedio de \|y - ŷ\| | `MAE = 632€` → error promedio |
 | **R²** | Coeficiente de determinación | Proporción de varianza explicada (0-1) | `R² = 0.943` → el modelo explica el 94.3% de la varianza |
 | **Epoch** | Iteración completa | Una pasada completa por todo el dataset | `epochs = 1000` → 1000 actualizaciones de θ |
+| **Cov(X,Y)** | Covarianza | Mide cómo varían X e Y juntas | Si Cov < 0 → relación inversa (km↑ precio↓) |
+| **r** | Coef. de correlación | Covarianza normalizada entre -1 y +1 | `r = -0.97` → correlación negativa muy fuerte |
+| **Residuo** | Error de predicción | Diferencia entre valor real y predicho | `residuo = y - ŷ` |
+| **SST** | Suma Cuadrados Total | Variabilidad total de los datos | `SST = Σ(y - ȳ)²` en precision.py |
+| **SSR** | Suma Cuadrados Residual | Variabilidad NO explicada por el modelo | `SSR = Σ(y - ŷ)²` usado para calcular R² |
 
 ---
 
@@ -1673,6 +1788,171 @@ Aunque usamos z-score, existen otras:
 
 ---
 
+## 📐 Covarianza y Correlación
+
+### 🎯 ¿Por qué son importantes?
+
+Antes de entrenar un modelo de regresión lineal, es fundamental entender si existe una **relación lineal** entre las variables. La covarianza y la correlación son las herramientas matemáticas que nos permiten medir esta relación.
+
+**Conexión con el proyecto**: Aunque no calculamos explícitamente estos valores en el código, la regresión lineal funciona **precisamente porque existe una correlación negativa** entre kilometraje y precio.
+
+### 📊 Covarianza
+
+**Definición**: La covarianza mide cómo dos variables cambian juntas.
+
+$$
+\text{Cov}(X, Y) = \frac{1}{m} \sum_{i=1}^{m} (x^{(i)} - \bar{x})(y^{(i)} - \bar{y})
+$$
+
+donde:
+- $\bar{x}$ = media de los valores de $x$
+- $\bar{y}$ = media de los valores de $y$
+- $m$ = número de muestras
+
+**Interpretación**:
+
+| Valor | Significado | En nuestro proyecto |
+|-------|-------------|---------------------|
+| **Cov > 0** | Las variables crecen juntas | Si km ↑ entonces precio ↑ (NO es nuestro caso) |
+| **Cov < 0** | Una crece cuando la otra decrece | Si km ↑ entonces precio ↓ ✅ **(nuestro caso)** |
+| **Cov ≈ 0** | No hay relación lineal | Regresión lineal no funcionaría bien |
+
+### 💡 Ejemplo con nuestros datos
+
+Supongamos 3 coches simplificados:
+
+| i | km (x) | € (y) | $x - \bar{x}$ | $y - \bar{y}$ | $(x - \bar{x})(y - \bar{y})$ |
+|---|--------|-------|---------------|---------------|-------------------------------|
+| 1 | 50,000 | 7,500 | -50,000 | +1,500 | -75,000,000 |
+| 2 | 100,000| 6,000 | 0 | 0 | 0 |
+| 3 | 150,000| 4,500 | +50,000 | -1,500 | -75,000,000 |
+
+Media: $\bar{x} = 100,000$ km, $\bar{y} = 6,000$€
+
+$$
+\text{Cov}(X, Y) = \frac{1}{3}(-75M + 0 - 75M) = \frac{-150M}{3} = -50,000,000
+$$
+
+**Conclusión**: Covarianza negativa grande → **relación inversa fuerte** entre kilometraje y precio.
+
+### 📏 Correlación de Pearson (r)
+
+**Problema con la covarianza**: Su valor depende de las unidades (km, metros, €, etc.). Difícil de interpretar.
+
+**Solución**: Normalizar la covarianza → **Coeficiente de correlación de Pearson**
+
+$$
+r = \frac{\text{Cov}(X, Y)}{\sigma_x \cdot \sigma_y}
+$$
+
+donde:
+- $\sigma_x$ = desviación estándar de $x$
+- $\sigma_y$ = desviación estándar de $y$
+
+**Propiedades**:
+- **Rango**: $-1 \leq r \leq +1$ (siempre está entre -1 y +1)
+- **Independiente de unidades**: sin importar si medimos en km o millas, en € o $
+
+### 📊 Interpretación del coeficiente de correlación
+
+```
+r = +1.0  ═══════>  Correlación positiva perfecta
+                    Puntos en línea recta ascendente
+                    
+r = +0.8  ═══╱╱══>  Correlación positiva fuerte
+                    Puntos cerca de línea ascendente
+                    
+r = +0.5  ══╱ ╱══>  Correlación positiva moderada
+                    Puntos dispersos, tendencia ascendente
+                    
+r =  0.0  • • • •    Sin correlación lineal
+           • • • •   Puntos aleatorios
+           
+r = -0.5  ══╲ ╲══>  Correlación negativa moderada
+                    Puntos dispersos, tendencia descendente
+                    
+r = -0.8  ═══╲╲══>  Correlación negativa fuerte  ← Nuestro proyecto
+                    Puntos cerca de línea descendente
+                    
+r = -1.0  ═══════>  Correlación negativa perfecta
+                    Puntos en línea recta descendente
+```
+
+### 🎯 En nuestro proyecto
+
+Con los datos reales de `data.csv`, si calculáramos la correlación entre kilometraje y precio:
+
+$$
+r \approx -0.97
+$$
+
+**Interpretación**:
+- ✅ Correlación **negativa** (cuando km sube, precio baja)
+- ✅ Correlación **muy fuerte** (cerca de -1.0)
+- ✅ **Ideal para regresión lineal** (relación casi perfectamente lineal)
+
+### 🔗 Relación con R²
+
+¿Recuerdas el coeficiente de determinación $R^2$ de las métricas?
+
+$$
+R^2 = r^2
+$$
+
+Para regresión lineal simple, $R^2$ es **el cuadrado del coeficiente de correlación**.
+
+**Ejemplo**:
+- Si $r = -0.97$ (correlación fuerte)
+- Entonces $R^2 = (-0.97)^2 = 0.94 = 94\%$
+- **Significado**: El modelo explica el 94% de la varianza en los precios
+
+### 📊 Visualización de la correlación
+
+```
+Correlación fuerte (r ≈ -0.97):          Correlación débil (r ≈ -0.3):
+
+Precio                                    Precio
+  │                                         │
+  │  •                                      │    •   •
+  │    •                                    │  •       •
+  │      •                                  │      •     •
+  │        •  •                             │  •     •
+  │          •                              │    •       •
+  │            •  •  Línea clara           │        •   •  Nube dispersa
+  │              •                          │  •   •
+  │                •                        │      •   •
+  └──────────────────> km                  └──────────────────> km
+  
+  ✅ Perfecto para regresión               ⚠️  Regresión menos útil
+```
+
+### 🧮 Fórmula alternativa de correlación
+
+Forma computacionalmente eficiente (sin calcular medias primero):
+
+$$
+r = \frac{m \sum xy - (\sum x)(\sum y)}{\sqrt{[m \sum x^2 - (\sum x)^2][m \sum y^2 - (\sum y)^2]}}
+$$
+
+Esta es la forma que usarías si implementaras un cálculo de correlación en el código.
+
+### ✅ Conceptos clave
+
+| Concepto | Fórmula | Rango | Uso |
+|----------|---------|-------|-----|
+| **Covarianza** | $\text{Cov}(X,Y) = \frac{1}{m}\sum(x_i-\bar{x})(y_i-\bar{y})$ | $-\infty$ a $+\infty$ | Detectar relación |
+| **Correlación** | $r = \frac{\text{Cov}(X,Y)}{\sigma_x \sigma_y}$ | -1 a +1 | Cuantificar fuerza |
+| **R²** | $R^2 = r^2$ | 0 a 1 | Evaluar modelo |
+
+### 🎥 Aprende más
+- [**Covarianza y Correlación** - Matemáticas profe Alex](https://www.youtube.com/watch?v=Cq-7xt5fTKw) - Explicación clara en español
+- [**Correlation Explained** - StatQuest](https://www.youtube.com/watch?v=xZ_z8KWkhXE) - Correlación explicada visualmente
+- [**¿Qué es la Correlación?** - DotCSV](https://www.youtube.com/watch?v=HJ_AlR-Llkw) - Correlación en Machine Learning
+
+[↑ Volver al índice](#indice)
+
+---
+
 ## 7️⃣ Métricas de evaluación
 
 ### 🎯 ¿Por qué necesitamos métricas?
@@ -1902,6 +2182,273 @@ print(f"R²:   {r2:.4f}")
 ### 🎥 Aprende más
 - [**¿Cómo medir el desempeño de un modelo de Regresión? | Métricas de Regresión** - Codificando Bits](https://youtu.be/0GnZ7krN2ss?si=PL1B9Qkvu6kT9hBt)
 - [**R² explicado visualmente** - StatQuest](https://www.youtube.com/watch?v=2AQKmw14mHM) - Coeficiente de determinación
+
+[↑ Volver al índice](#indice)
+
+---
+
+## 📊 Análisis de Residuos
+
+### 🎯 ¿Qué son los residuos?
+
+Los **residuos** (también llamados errores) son las diferencias entre los valores reales y los valores predichos por el modelo.
+
+$$
+\text{Residuo}_i = y^{(i)} - \hat{y}^{(i)} = y^{(i)} - h_\theta(x^{(i)})
+$$
+
+donde:
+- $y^{(i)}$ = valor real (precio real del coche $i$)
+- $\hat{y}^{(i)}$ = predicción del modelo para el coche $i$
+- $\text{Residuo}_i$ = error en la predicción
+
+**Conexión con el proyecto**: En [precision.py](precision.py#L89) calculamos los residuos para cada muestra y los usamos para calcular las métricas de evaluación.
+
+### 📐 Suma de Cuadrados (Sum of Squares)
+
+Los residuos se utilizan para calcular tres medidas fundamentales:
+
+#### 1️⃣ Suma de Cuadrados Total (SST - Total Sum of Squares)
+
+Mide la **variabilidad total** en los datos (sin considerar el modelo):
+
+$$
+\text{SST} = \sum_{i=1}^{m} (y^{(i)} - \bar{y})^2
+$$
+
+**Significado**: "¿Cuánto varían los precios respecto a su media?"
+
+#### 2️⃣ Suma de Cuadrados Residual (SSR - Residual Sum of Squares)
+
+Mide la **variabilidad NO explicada** por el modelo:
+
+$$
+\text{SSR} = \sum_{i=1}^{m} (y^{(i)} - \hat{y}^{(i)})^2 = \sum_{i=1}^{m} (\text{Residuo}_i)^2
+$$
+
+**Significado**: "¿Cuánto error comete nuestro modelo?"
+
+#### 3️⃣ Suma de Cuadrados Explicada (SSE - Explained Sum of Squares)
+
+Mide la **variabilidad explicada** por el modelo:
+
+$$
+\text{SSE} = \sum_{i=1}^{m} (\hat{y}^{(i)} - \bar{y})^2
+$$
+
+**Relación fundamental**:
+
+$$
+\text{SST} = \text{SSE} + \text{SSR}
+$$
+
+```
+Variabilidad Total = Variabilidad Explicada + Variabilidad No Explicada
+```
+
+### 🔗 Conexión con R²
+
+El coeficiente de determinación se calcula usando estas sumas:
+
+$$
+R^2 = 1 - \frac{\text{SSR}}{\text{SST}} = \frac{\text{SSE}}{\text{SST}}
+$$
+
+**Implementación en precision.py**:
+
+```python
+# Línea 84-87 en precision.py
+ss_total = sum((price - mean_price) ** 2 for price in actual_prices)
+
+# Línea 89-90
+ss_residual = sum((actual_prices[i] - predictions[i]) ** 2 for i in range(n))
+
+# Línea 92-94
+r_squared = 1 - (ss_residual / ss_total) if ss_total != 0 else 0
+```
+
+### 💡 Ejemplo numérico completo
+
+Supongamos 4 coches con precio medio $\bar{y} = 6000$€:
+
+| i | km | Precio real<br>$y^{(i)}$ | Predicción<br>$\hat{y}^{(i)}$ | Residuo<br>$y - \hat{y}$ | $(y - \bar{y})^2$ | $(y - \hat{y})^2$ |
+|---|---|---|---|---|---|---|
+| 1 | 50k | 7,500 | 7,400 | +100 | 2,250,000 | 10,000 |
+| 2 | 100k | 6,200 | 6,100 | +100 | 40,000 | 10,000 |
+| 3 | 150k | 5,800 | 5,800 | 0 | 40,000 | 0 |
+| 4 | 200k | 4,500 | 4,700 | -200 | 2,250,000 | 40,000 |
+| **Σ** | | | | | **4,580,000** | **60,000** |
+
+**Cálculos**:
+
+$$
+\text{SST} = 4,580,000 \quad \text{(varianza total en los precios)}
+$$
+
+$$
+\text{SSR} = 60,000 \quad \text{(error del modelo)}
+$$
+
+$$
+R^2 = 1 - \frac{60,000}{4,580,000} = 1 - 0.013 = 0.987 = 98.7\%
+$$
+
+**Interpretación**: El modelo explica el 98.7% de la varianza → excelente ajuste.
+
+### 📊 Visualización de residuos
+
+```
+Precio
+  │
+8k│    •                         • = punto real
+  │   /|                         / = línea de regresión
+7k│  / •←residuo positivo       | = residuo
+  │ /  |
+6k│/   • ← residuo ≈ 0
+  /    |
+5k|    •
+  │   /|← residuo negativo
+4k│  / •
+  └──────────> km
+```
+
+### 🔍 Propiedades de los residuos en un buen modelo
+
+Un modelo de regresión lineal bien ajustado debe tener residuos que cumplan:
+
+#### 1️⃣ Media cero
+
+$$
+\frac{1}{m}\sum_{i=1}^{m} \text{Residuo}_i \approx 0
+$$
+
+**Significado**: El modelo no tiene sesgo sistemático (no sobre-predice ni sub-predice consistentemente).
+
+#### 2️⃣ Distribución normal
+
+Los residuos deben seguir aproximadamente una distribución normal (gaussiana).
+
+```
+Frecuencia
+    │      ╱╲
+    │     ╱  ╲
+    │    ╱    ╲
+    │   ╱      ╲
+    │__╱________╲____ Residuo
+     -σ    0    +σ
+```
+
+#### 3️⃣ Varianza constante (Homocedasticidad)
+
+Los residuos deben tener varianza similar en todo el rango de predicciones.
+
+**Bueno** (homocedasticidad):
+```
+Residuo
+  +│  •  •   •  •  •
+   │   •  •   •  •      Dispersión constante
+  0├─•───•──•───•──>
+   │  •  •  •   •
+  -│ •   •   •
+           Predicción
+```
+
+**Malo** (heterocedasticidad):
+```
+Residuo
+  +│            • •
+   │          •   •    Dispersión creciente
+  0├─•──•─•──────>
+   │ •  •  • 
+  -│•  •  •
+           Predicción
+```
+
+#### 4️⃣ Independencia
+
+Los residuos no deben mostrar patrones o correlación entre sí.
+
+**Bueno** (aleatorios):
+```
+Residuo
+   │ •  •   •  • •    Sin patrón claro
+   ├──•──•───•────>
+   │•   •  •
+         i (índice)
+```
+
+**Malo** (patrón):
+```
+Residuo
+   │   •••   •••       Patrón cíclico
+   ├•••   •••   ••>   (problema con el modelo)
+   │
+         i (índice)
+```
+
+### 📈 Análisis de residuos en precision.py
+
+Nuestro archivo [precision.py](precision.py#L1) calcula los residuos implícitamente:
+
+```python
+# Predicciones
+predictions = [estimate_price(m, theta0, theta1) for m in mileages]
+
+# Residuos (error)
+residuals = [actual_prices[i] - predictions[i] for i in range(n)]
+
+# MSE (promedio de residuos al cuadrado)
+mse = sum(residual**2 for residual in residuals) / n
+
+# MAE (promedio de residuos en valor absoluto)
+mae = sum(abs(residual) for residual in residuals) / n
+```
+
+### 🎯 ¿Por qué importa el análisis de residuos?
+
+| Si los residuos... | Entonces... | Acción |
+|-------------------|-------------|--------|
+| Tienen media ≠ 0 | El modelo tiene sesgo | Revisar datos o modelo |
+| No son normales | Violación de supuestos | Considerar transformaciones |
+| Tienen heterocedasticidad | Varianza no constante | Considerar ponderación |
+| Muestran patrones | Modelo inadecuado | Probar modelo no lineal |
+| Son aleatorios y pequeños | ✅ **Modelo correcto** | Continuar |
+
+### 💡 Ejemplo práctico con nuestro dataset
+
+Si ejecutas [precision.py](precision.py#L1) con el modelo entrenado:
+
+```bash
+$ python3 precision.py
+```
+
+Obtienes métricas calculadas a partir de los residuos:
+
+```
+RMSE: 787.23€    ← Desviación típica de los residuos
+MAE:  632.45€    ← Promedio del valor absoluto de residuos
+R²:   0.943      ← 94.3% de varianza explicada (SSR/SST)
+```
+
+**Interpretación**:
+- Los residuos típicos son de ±787€ (RMSE)
+- En promedio, nos equivocamos por 632€ (MAE)
+- Solo el 5.7% de la varianza queda sin explicar (1 - R²)
+
+### 🧮 Fórmulas resumen
+
+| Concepto | Fórmula | En el código |
+|----------|---------|--------------|
+| **Residuo** | $e_i = y_i - \hat{y}_i$ | `actual - predicted` |
+| **SST** | $\sum(y_i - \bar{y})^2$ | `ss_total` en precision.py |
+| **SSR** | $\sum(y_i - \hat{y}_i)^2$ | `ss_residual` en precision.py |
+| **MSE** | $\frac{\text{SSR}}{m}$ | `mse = ss_residual / n` |
+| **RMSE** | $\sqrt{\text{MSE}}$ | `rmse = mse ** 0.5` |
+| **R²** | $1 - \frac{\text{SSR}}{\text{SST}}$ | `r_squared = 1 - (ss_res/ss_tot)` |
+
+### 🎥 Aprende más
+- [**Residuos en Regresión Lineal** - Khan Academy](https://es.khanacademy.org/math/statistics-probability/describing-relationships-quantitative-data/residuals-intro/v/introduction-to-residuals-and-least-squares-regression) - Introducción a residuos
+- [**Sum of Squares** - StatQuest](https://www.youtube.com/watch?v=2AQKmw14mHM) - Explicación visual de SST, SSR, SSE
 
 [↑ Volver al índice](#indice)
 

@@ -155,20 +155,54 @@ def train_model(mileages, prices, learning_rate=0.1, iterations=1000):
     """
     # Normalizar datos para mejor convergencia
     mileages_norm, mean_km, std_km = normalize_data(mileages)
+    """
+    Esta línea anterior es equivalente a hacer:
+    resultado = normalize_data(mileages)
+    mileages_norm = resultado[0]
+    mean_km = resultado[1]
+    std_km = resultado[2]
+    donde:
+    mileages_norm es la lista de kilometrajes normalizados
+    mean_km es la media de los kilometrajes originales guardada para desnormalizar luego
+    std_km es la desviación estándar de los kilometrajes originales guardada para desnormalizar luego
+    normalize_data: función definida anteriormente que normaliza los datos
+    En resumen, esta línea normaliza los kilometrajes para que tengan media 0 y desviación estándar 1.
+    Esto ayuda a que el gradiente descendente converja más rápido y de manera más estable
+    """
     prices_norm, mean_price, std_price = normalize_data(prices)
+    """
+    Similar a la normalización de kilometrajes, pero para los precios.
+    prices_norm es la lista de precios normalizados
+    mean_price es la media de los precios originales
+    std_price es la desviación estándar de los precios originales
+    """
     
-    m = len(mileages_norm)
-    theta0 = 0.0
-    theta1 = 0.0
+    m = len(mileages_norm)  # Número de muestras de entrenamiento, o sea, número de datos
+    theta0 = 0.0            # Inicializar theta0 que representa la intersección con el eje Y
+    theta1 = 0.0            # Inicializar theta1 que representa la pendiente de la línea 
     
     print(f"Iniciando entrenamiento con {m} muestras...")
     print(f"Learning rate: {learning_rate}, Iteraciones: {iterations}")
     
     # Historial de MSE para análisis de convergencia
     mse_history = []
+    """
+    mse_history: lista para almacenar el error cuadrático medio (MSE)
+    en cada iteración del gradiente descendente.
+    Esto es útil para analizar cómo el modelo mejora con el tiempo.
+    """
     
     # Gradiente descendente
     for iteration in range(iterations):
+        """
+        iteration: variable que representa el número de la iteración actual
+        range(iterations): genera una secuencia de números desde 0 hasta iterations-1
+        ejemplo: se generan números 0, 1, 2, ..., iterations-1
+        o sea, si iterations es 1000, se generan números del 0 al 999
+        range(iterations) viene de la función incorporada range() de Python e iterations 
+        es el número total de iteraciones definido en los parámetros de la función train_model.
+        El bucle for se ejecuta 'iterations' veces para actualizar los parámetros theta0 y theta1.
+        """
         # Calcular las sumas para ambos thetas
         sum_errors_theta0 = 0.0
         sum_errors_theta1 = 0.0
