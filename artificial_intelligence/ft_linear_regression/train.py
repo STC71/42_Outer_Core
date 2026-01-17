@@ -177,7 +177,7 @@ def train_model(mileages, prices, learning_rate=0.1, iterations=1000):
     std_price es la desviación estándar de los precios originales
     """
     
-    m = len(mileages_norm)  # Número de muestras de entrenamiento, o sea, número de datos
+    m = len(mileages_norm)  # Número de muestras de entrenamiento, o sea, número de datos en mileages_norm y prices_norm
     theta0 = 0.0            # Inicializar theta0 que representa la intersección con el eje Y
     theta1 = 0.0            # Inicializar theta1 que representa la pendiente de la línea 
     
@@ -208,41 +208,158 @@ def train_model(mileages, prices, learning_rate=0.1, iterations=1000):
         sum_errors_theta1 = 0.0
         
         for i in range(m):
+            """
+            Iterar sobre cada muestra de entrenamiento
+            m es el número total de muestras de entrenamiento y viene de la línea: 180
+            m = len(mileages_norm)
+            o sea, el número de datos en mileages_norm y prices_norm
+            0 <= i < m
+            0, 1, 2, ..., m-1
+            0 es la primera muestra, m-1 es la última muestra
+            """
             estimated = estimate_price(mileages_norm[i], theta0, theta1)
+            """
+            Calcular el precio estimado para el kilometraje normalizado actual
+            estimate_price: función definida anteriormente que calcula el precio estimado
+            mileages_norm[i]: el kilometraje normalizado de la muestra i
+            theta0 = el valor actual que representa la intersección con el eje Y
+            theta1 = el valor actual que representa la pendiente de la línea
+            estimated: el precio estimado por el modelo para la muestra i
+            """
             error = estimated - prices_norm[i]
+            """
+            Calcular el error entre el precio estimado y el precio normalizado real
+            estimated: el precio estimado por el modelo para la muestra i
+            prices_norm[i]: el precio normalizado real de la muestra i
+            error: la diferencia entre el precio estimado y el real
+            Se utiliza para actualizar los parámetros thetas
+            """
             
             sum_errors_theta0 += error
+            """
+            Acumular el error para theta0
+            sum_errors_theta0: suma acumulada de errores para theta0
+            error: el error calculado para la muestra i
+            """
             sum_errors_theta1 += error * mileages_norm[i]
+            """
+            Acumular el error ponderado por el kilometraje normalizado para theta1
+            sum_errors_theta1: suma acumulada de errores ponderados para theta1
+            error * mileages_norm[i]: el error multiplicado por el kilometraje 
+            normalizado de la muestra i
+            """
         
         # Actualizar simultáneamente theta0 y theta1
         tmp_theta0 = learning_rate * (sum_errors_theta0 / m)
+        """
+        Calcular la actualización para theta0
+        learning_rate: tasa de aprendizaje que controla el tamaño del paso en cada 
+        actualización de los parámetros thetas
+        La tasa de aprendizaje es un hiperparámetro que define qué tan grande es el paso
+        en la dirección del gradiente (pendiente de la función de error) 
+        sum_errors_theta0 / m: promedio del error acumulado para theta0
+        tmp_theta0: el valor que se restará de theta0 para actualizarlo
+        """
         tmp_theta1 = learning_rate * (sum_errors_theta1 / m)
+        """
+        Calcular la actualización para theta1
+        learning_rate: tasa de aprendizaje que controla el tamaño del paso en cada 
+        actualización de los parámetros thetas
+        sum_errors_theta1 / m: promedio del error acumulado ponderado para theta1
+        tmp_theta1: el valor que se restará de theta1 para actualizarlo
+        """
         
         theta0 -= tmp_theta0
+        """
+        Actualizar theta0 restando la actualización calculada
+        theta0: el valor actual que representa la intersección con el eje Y
+        tmp_theta0: el valor que se restará de theta0 para actualizarlo
+        Así, theta0 se mueve en la dirección que reduce el error.
+        """
         theta1 -= tmp_theta1
+        """
+        Actualizar theta1 restando la actualización calculada
+        theta1: el valor actual que representa la pendiente de la línea
+        tmp_theta1: el valor que se restará de theta1 para actualizarlo
+        Así, theta1 se mueve en la dirección que reduce el error.
+        """
         
         # Calcular MSE en cada iteración
         mse = sum((estimate_price(mileages_norm[i], theta0, theta1) - prices_norm[i]) ** 2 
                  for i in range(m)) / m
+        """
+        Calcular el error cuadrático medio (MSE) en cada iteración
+        estimate_price(mileages_norm[i], theta0, theta1): precio estimado para la muestra i
+        prices_norm[i]: precio real normalizado para la muestra i
+        (estimate_price(...) - prices_norm[i]) ** 2: error al cuadrado para la muestra i
+        sum(... for i in range(m)): suma de los errores al cuadrado para todas las muestras
+        m: número total de muestras
+        mse: promedio del error cuadrático medio para la iteración actual
+        """
         mse_history.append(mse)
+        """
+        Agregar el MSE calculado al historial para seguimiento
+        mse_history: lista que almacena el MSE de cada iteración
+        append es un método de listas en Python que agrega un elemento al final de la lista
+        mse: error cuadrático medio calculado en la iteración actual
+        Esto permite analizar cómo el MSE disminuye con el tiempo,
+        indicando que el modelo está aprendiendo y mejorando.
+        """
         
         # Mostrar progreso cada 100 iteraciones
         if (iteration + 1) % 100 == 0 or iteration == 0:
             print(f"Iteración {iteration + 1}/{iterations} - MSE: {mse:.6f}")
+        """
+        Si la iteración actual más 1 es múltiplo de 100, o si es la primera iteración,
+        entonces imprimir el progreso del entrenamiento.
+        iteration + 1: se suma 1 porque las iteraciones comienzan en 0
+        % 100 == 0: verifica si es múltiplo de 100
+        MSE: el error cuadrático medio calculado en la iteración actual
+        .6f: formato para mostrar el MSE con 6 decimales
+        """
     
     # Desnormalizar thetas
     theta0_final, theta1_final = denormalize_theta(
         theta0, theta1, mean_km, std_km, mean_price, std_price
     )
+    """
+    Desnormalizar los parámetros theta0 y theta1 para usarlos con datos originales
+    theta0 y theta1: el valor final de theta0 y theta1 en espacio normalizado
+    mean_km: media de los kilometrajes originales
+    std_km: desviación estándar de los kilometrajes originales
+    mean_price: media de los precios originales
+    std_price: desviación estándar de los precios originales
+    theta0_final y theta1_final: el valor desnormalizado de theta0 y theta1 
+    para usar con datos originales de kilometrajes y precios
+    denormalize_theta: función definida anteriormente que desnormaliza los parámetros thetas
+
+    """
     
     return theta0_final, theta1_final, mse_history
+    """
+    Retornar los parámetros desnormalizados y el historial de MSE
+    """
 
 
 def save_thetas(theta0, theta1, filename='thetas.txt'):
     """
     Guarda los parámetros theta0 y theta1 en un archivo.
+    save thetas: nombre de la función que guarda los parámetros thetas
+    filename: nombre del archivo donde se guardarán los parámetros thetas
+    Por defecto, el archivo se llama 'thetas.txt' pero se puede cambiar 
+    pasando otro nombre como argumento.
     """
     try:
+    """
+    try es una construcción de manejo de excepciones en Python
+    que permite intentar ejecutar un bloque de código y capturar
+    cualquier excepción que pueda ocurrir durante su ejecución.
+    Si ocurre una excepción, si algo sale mal, el flujo del programa
+    se transfiere al bloque except correspondiente para manejar el error.
+    En este caso, se intenta abrir un archivo y escribir los parámetros thetas en él.
+    Si ocurre un error al abrir o escribir en el archivo, se captura la excepción
+    y se maneja en el bloque except, que imprime un mensaje de error y sale del programa.
+    """
         with open(filename, 'w') as f:
             f.write(f"{theta0}\n")
             f.write(f"{theta1}\n")
@@ -261,27 +378,63 @@ def main():
     # Cargar datos
     print("Cargando datos desde 'data.csv'...")
     mileages, prices = load_data('data.csv')
+    # load_data: función definida al principio que carga los datos desde un archivo CSV
     print(f"Datos cargados: {len(mileages)} muestras")
+    # len(): función incorporada en Python que retorna el número de elementos en una lista
     print(f"Rango de kilometraje: {min(mileages):.0f} - {max(mileages):.0f} km")
+    # min() y max() son funciones incorporadas en Python que retornan el valor mínimo y máximo de una lista
     print(f"Rango de precios: {min(prices):.0f} - {max(prices):.0f}€\n")
     
     # Entrenar modelo
     theta0, theta1, mse_history = train_model(mileages, prices)
+    """
+    train_model: función definida anteriormente que entrena el modelo
+    mileages: lista de kilometrajes cargados desde el archivo CSV
+    prices: lista de precios cargados desde el archivo CSV
+    theta0: parámetro que representa la intersección con el eje Y
+    theta1: parámetro que representa la pendiente de la línea
+    mse_history: historial del error cuadrático medio (MSE) durante el entrenamiento
+    cuyo uso es opcional, para análisis de convergencia (bonus)
+    """
     
     # Guardar parámetros
     save_thetas(theta0, theta1)
+    """
+    Función para guardar los parámetros theta0 y theta1 en un archivo, ej: 'thetas.txt'
+    """
     
     # Guardar historial de MSE para curva de aprendizaje (bonus)
     try:
         with open('mse_history.txt', 'w') as f:
             for mse in mse_history:
+            """
+            El bucle for itera sobre cada valor de mse en la lista mse_history
+            mse_history: lista que contiene el historial del error cuadrático medio (MSE)
+            en cada iteración del entrenamiento
+            f.write(f"{mse}\n"): escribe cada valor de mse en una nueva línea del archivo 
+            'mse_history.txt'. Cuando se llega al final de la lista, el bucle termina y
+            el archivo se cierra automáticamente al salir del bloque with.
+            """
                 f.write(f"{mse}\n")
         print(f"Historial de convergencia guardado en 'mse_history.txt'")
     except IOError:
         pass  # No es crítico
+        """
+        Manejar errores de entrada/salida al guardar el historial de MSE
+        Si ocurre un error al abrir o escribir en el archivo,
+        simplemente se ignora porque no es crítico para el funcionamiento del programa.
+        """
     
     print("\n¡Entrenamiento completado exitosamente!")
 
 
 if __name__ == "__main__":
+"""
+    Punto de entrada del programa. Si este archivo se ejecuta directamente,
+    se llama a la función main().
+    __name__: variable especial en Python que indica el nombre del módulo actual.
+    Si el archivo se ejecuta directamente, __name__ es igual a "__main__".
+    Esto permite que el código dentro del bloque if se ejecute solo cuando
+    el archivo se ejecuta directamente, y no cuando se importa como un módulo en otro archivo.
+"""
     main()
