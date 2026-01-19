@@ -197,16 +197,43 @@ def plot_data_and_regression(mileages, prices, theta0, theta1):
     plt.ylabel('Precio (€)', fontsize=12, fontweight='bold')
     plt.title('Regresión Lineal: Precio vs Kilometraje', 
               fontsize=14, fontweight='bold', pad=20)
+    """
+    plt.xlabel y plt.ylabel: establecen las etiquetas de los ejes X e Y respectivamente.
+    fontsize especifica el tamaño de la fuente de las etiquetas.
+    fontweight='bold' hace que las etiquetas sean negritas.
+    plt.title: establece el título del gráfico que aparece en la parte superior.
+    pad=20: añade un espacio adicional entre el título y el gráfico para mejorar la apariencia
+    """
     
     # Leyenda
     plt.legend(loc='upper right', fontsize=10, framealpha=0.9)
+    """
+    plt.legend(...): añade una leyenda al gráfico para identificar los elementos.
+    loc='upper right': posición de la leyenda en la esquina superior derecha del gráfico
+    fontsize=10: tamaño de la fuente de la leyenda
+    framealpha=0.9: transparencia del fondo de la leyenda (1 es opaco, 0 es transparente)
+    La leyenda ayuda a identificar qué representan los diferentes colores y estilos
+    en el gráfico, mejorando la comprensión visual de los datos presentados.
+    """
     
     # Ajustar el layout
     plt.tight_layout()
+    """
+    plt.tight_layout(): ajusta automáticamente los elementos del gráfico
+    para que no se solapen y se vean correctamente. En concreto, ajusta los márgenes
+    y el espacio entre los elementos del gráfico (títulos, etiquetas, leyendas, etc.)
+    para mejorar la presentación visual.
+    tight_layout es un método de matplotlib que optimiza el diseño del gráfico.
+    """
     
     # Mostrar el gráfico
     print("\nMostrando visualización...")
     plt.show()
+    """
+    plt.show(): muestra el gráfico generado en una ventana emergente.
+    Esta función es esencial para visualizar el gráfico después de haberlo configurado
+    con todos los elementos necesarios (puntos, líneas, etiquetas, etc.).
+    """
 
 
 def main():
@@ -226,7 +253,20 @@ def main():
     
     # Crear visualización
     plot_data_and_regression(mileages, prices, theta0, theta1)
+    """
+    plot_data_and_regression(...): llama a la función para crear y mostrar
+    el gráfico con los datos y la línea de regresión.
+    mileages: lista de kilometrajes
+    prices: lista de precios
+    theta0: parámetro que representa la intersección con el eje Y
+    theta1: parámetro que representa la pendiente de la línea
+    """
 
 
 if __name__ == "__main__":
     main()
+"""
+Si el script es ejecutado directamente (no importado como módulo), llama a la función main().
+Sirve para iniciar la ejecución del programa cuando se corre el archivo. En caso de que el archivo
+sea importado como módulo en otro script, la función main() no se ejecutará automáticamente.
+"""
