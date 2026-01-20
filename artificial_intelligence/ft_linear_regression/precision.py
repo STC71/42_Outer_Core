@@ -245,33 +245,67 @@ def calculate_metrics(mileages, actual_prices, theta0, theta1):
     - 'n_samples': Número de muestras utilizadas en el cálculo
     """
 
-
 def print_metrics(metrics, theta0, theta1):
     """
     Imprime las métricas de forma legible.
     """
-    print("\n" + "="*60)
+    print("\n" + "="*60)    # Encabezado
+    """
+    + "="*60 crea una línea de 60 caracteres de "=" para separar secciones.
+    """
     print("         EVALUACIÓN DE PRECISIÓN DEL MODELO")
-    print("="*60)
+    print("="*60)   # Línea inferior del encabezado
     
     print(f"\nParámetros del modelo:")
     print(f"  θ₀ (intersección): {theta0:,.2f}")
     print(f"  θ₁ (pendiente):    {theta1:.8f}")
+    """
+    Imprime los parámetros del modelo (theta0 y theta1) con formato adecuado.
+    La coma en {theta0:,.2f} formatea el número con separadores de miles y dos decimales.
+    El punto en {theta1:.8f} es para separar la parte entera de la decimal, 
+    mostrando ocho decimales.
+    """
     
     print(f"\nNúmero de muestras: {metrics['n_samples']}")
+    """
+    Imprime el número de muestras utilizadas en el cálculo de las métricas.
+    metrics['n_samples'] accede al valor del número de muestras en el diccionario metrics,
+    que fue calculado previamente en la función calculate_metrics.
+    """
     
     print(f"\nMétricas de precisión:")
     print(f"  R² (Coef. determinación): {metrics['r_squared']:.4f}")
+    """
+    Imprime el coeficiente de determinación R² con cuatro decimales.
+    metrics['r_squared'] accede al valor de R² en el diccionario metrics,
+    que fue calculado previamente en la función calculate_metrics.
+    """
     
     # Interpretación de R²
     if metrics['r_squared'] >= 0.9:
         interpretation = "Excelente ajuste"
+        """
+        0.9 significa que el modelo explica el 90% de la varianza en los datos,
+        lo cual es considerado un ajuste excelente.
+        """
     elif metrics['r_squared'] >= 0.7:
         interpretation = "Buen ajuste"
+        """
+        0.7 significa que el modelo explica el 70% de la varianza en los datos,
+        lo cual es considerado un buen ajuste.
+        """
     elif metrics['r_squared'] >= 0.5:
         interpretation = "Ajuste moderado"
+        """
+        0.5 significa que el modelo explica el 50% de la varianza en los datos,
+        lo cual es considerado un ajuste moderado.
+        """
     else:
         interpretation = "Ajuste pobre"
+        """
+        Si no cumple con los criterios anteriores, se considera un ajuste pobre,
+        ya que el modelo explica menos del 50% de la varianza en los datos.
+        """
     print(f"    → {interpretation}")
     
     print(f"\n  MSE (Error cuadrático medio):  {metrics['mse']:,.2f}")
@@ -296,16 +330,38 @@ def show_predictions_sample(mileages, prices, theta0, theta1, n_samples=5):
     print("\nEjemplos de predicciones:")
     print("-" * 60)
     print(f"{'Kilometraje':>12} | {'Precio Real':>12} | {'Predicción':>12} | {'Error':>12}")
+    """
+    Imprime el encabezado de la tabla de predicciones con formato adecuado.
+    >12 alinea el texto a la derecha en un espacio de 12 caracteres.
+    """
     print("-" * 60)
     
     # Seleccionar índices distribuidos uniformemente
     indices = [int(i * len(mileages) / n_samples) for i in range(n_samples)]
+    """
+    Genera una lista de índices distribuidos uniformemente a lo largo de los datos.
+    len(mileages) obtiene el número total de muestras.
+    n_samples es el número de ejemplos que se desean mostrar.
+    La expresión int(i * len(mileages) / n_samples) calcula el índice correspondiente
+    para cada muestra, asegurando que estén distribuidos uniformemente.
+    """
     
     for idx in indices:
         pred = estimate_price(mileages[idx], theta0, theta1)
         error = prices[idx] - pred
         print(f"{mileages[idx]:>12,.0f} | {prices[idx]:>12,.0f}€ | "
               f"{pred:>12,.0f}€ | {error:>+12,.0f}€")
+        """
+        Para cada índice seleccionado:
+        - Calcula la predicción usando la función estimate_price.
+        - Calcula el error como la diferencia entre el precio real y la predicción.
+        - Imprime el kilometraje, precio real, predicción y error con formato adecuado.
+        La coma en {mileages[idx]:>12,.0f} formatea el número con separadores de miles 
+        y sin decimales.
+        El signo + en {error:>+12,.0f} asegura que el error se muestre con un signo 
+        positivo o negativo.
+        12 alinea el texto a la derecha en un espacio de 12 caracteres.
+        """
     
     print("-" * 60)
 
@@ -318,22 +374,49 @@ def main():
     print("Cargando datos...")
     mileages, prices = load_data('data.csv')
     print(f"✓ {len(mileages)} muestras cargadas")
+    """
+    Llama a la función load_data para cargar los datos desde 'data.csv'.
+    Almacena los kilometrajes en mileages y los precios en prices.
+    Imprime el número de muestras cargadas.
+    """
     
     # Cargar thetas
     print("Cargando parámetros del modelo...")
     theta0, theta1 = load_thetas()
     print("✓ Parámetros cargados")
+    """
+    Llama a la función load_thetas para cargar los parámetros del modelo desde 'thetas.txt'.
+    Almacena los valores en theta0 y theta1.
+    Imprime un mensaje indicando que los parámetros han sido cargados.
+    """
     
     # Calcular métricas
     print("Calculando métricas de precisión...")
     metrics = calculate_metrics(mileages, prices, theta0, theta1)
+    """
+    Llama a la función calculate_metrics para calcular las métricas de precisión
+    utilizando los kilometrajes, precios reales y los parámetros del modelo.
+    Almacena las métricas calculadas en el diccionario metrics.
+    """
     
     # Mostrar resultados
     print_metrics(metrics, theta0, theta1)
+    """
+    Llama a la función print_metrics para imprimir las métricas de precisión
+    de forma legible, utilizando el diccionario metrics y los parámetros del modelo.
+    """
     
     # Mostrar ejemplos
     show_predictions_sample(mileages, prices, theta0, theta1)
-
+    """
+    Llama a la función show_predictions_sample para mostrar algunos ejemplos
+    de predicciones del modelo, utilizando los kilometrajes, precios reales
+    y los parámetros del modelo.
+    """
 
 if __name__ == "__main__":
     main()
+"""
+Ejecuta la función principal si el script es ejecutado directamente.
+Si el archivo es importado como un módulo, no se ejecuta main().
+"""
