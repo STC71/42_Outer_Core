@@ -72,7 +72,7 @@ def main():
     
     # Solicitar kilometraje al usuario
     try:
-        mileage_input = input("Introduce el kilometraje del coche: ")
+        mileage_input = input("🚗 Introduce el kilometraje del coche: ")
         """
         input(): solicita al usuario que introduzca el kilometraje del coche.
         El valor introducido se almacena en la variable mileage_input como una cadena de texto.
@@ -98,7 +98,7 @@ def main():
         
         # Muestra el precio estimado en euros para el kilometraje proporcionado.
         # El kilometraje se muestra sin decimales y el precio con dos decimales.
-        print(f"Precio estimado para {mileage:.0f} km: {price:.2f}€")
+        print(f"💰 Precio estimado para {mileage:.0f} km: {price:.2f}€")
         
     # Si la conversión a float falla (por ejemplo, si el usuario introduce texto no numérico),
     # captura la excepción ValueError, imprime un mensaje de error y termina el programa.
@@ -109,7 +109,7 @@ def main():
     # Captura la excepción KeyboardInterrupt (por ejemplo, si el usuario presiona Ctrl+C),
     # imprime un mensaje de cancelación y termina el programa con un código de salida 0.
     except KeyboardInterrupt:
-        print("\nOperación cancelada.")
+        print("\n👋 Operación cancelada.")
         sys.exit(0)
 
 

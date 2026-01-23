@@ -227,7 +227,7 @@ def plot_data_and_regression(mileages, prices, theta0, theta1):
     """
     
     # Mostrar el gráfico
-    print("\nMostrando visualización...")
+    print("\n📈 Mostrando visualización...")
     plt.show()
     """
     plt.show(): muestra el gráfico generado en una ventana emergente.
@@ -243,13 +243,13 @@ def main():
     print("=== Visualización de Regresión Lineal ===\n")
     
     # Cargar datos
-    print("Cargando datos...")
+    print("\n📊 Cargando datos...")
     mileages, prices = load_data('data.csv')
-    print(f"✓ {len(mileages)} muestras cargadas")
+    print(f"✅ {len(mileages)} muestras cargadas")
     
     # Cargar thetas
     theta0, theta1 = load_thetas()
-    print(f"✓ Parámetros cargados: θ₀={theta0:.2f}, θ₁={theta1:.6f}")
+    print(f"✅ Parámetros cargados: θ₀={theta0:.2f}, θ₁={theta1:.6f}")
     
     # Crear visualización
     plot_data_and_regression(mileages, prices, theta0, theta1)

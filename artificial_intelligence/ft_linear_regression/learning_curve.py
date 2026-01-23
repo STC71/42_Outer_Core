@@ -153,7 +153,7 @@ def plot_learning_curve(mse_history):
     plt.tight_layout()
     
     # Mostrar información en consola
-    print("\n✓ Curva de aprendizaje generada")
+    print("\n✅ Curva de aprendizaje generada")
     print(f"  • Iteraciones totales: {len(mse_history)}")
     print(f"  • MSE inicial: {initial_mse:.6f}")
     print(f"  • MSE final: {final_mse:.6f}")
@@ -162,7 +162,7 @@ def plot_learning_curve(mse_history):
     if converged_at:
         print(f"  • Convergencia alcanzada en ~{converged_at} iteraciones")
     
-    print("\nMostrando visualización...")
+    print("\n📊 Mostrando visualización...")
     plt.show()
 
 def main():
@@ -171,10 +171,10 @@ def main():
     """
     print("=== Curva de Aprendizaje - Análisis de Convergencia ===\n")
     
-    print("Cargando historial de entrenamiento...")
+    print("📊 Cargando historial de entrenamiento...")
     # load_mse_history(): carga el historial de MSE desde el archivo
     mse_history = load_mse_history()
-    print(f"✓ {len(mse_history)} valores de MSE cargados")
+    print(f"✅ {len(mse_history)} valores de MSE cargados")
     
     # Crear y mostrar visualización
     plot_learning_curve(mse_history)

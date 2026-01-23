@@ -371,9 +371,9 @@ def main():
     Función principal.
     """
     # Cargar datos
-    print("Cargando datos...")
+    print("📊 Cargando datos...")
     mileages, prices = load_data('data.csv')
-    print(f"✓ {len(mileages)} muestras cargadas")
+    print(f"✅ {len(mileages)} muestras cargadas")
     """
     Llama a la función load_data para cargar los datos desde 'data.csv'.
     Almacena los kilometrajes en mileages y los precios en prices.
@@ -381,9 +381,9 @@ def main():
     """
     
     # Cargar thetas
-    print("Cargando parámetros del modelo...")
+    print("🔧 Cargando parámetros del modelo...")
     theta0, theta1 = load_thetas()
-    print("✓ Parámetros cargados")
+    print("✅ Parámetros cargados")
     """
     Llama a la función load_thetas para cargar los parámetros del modelo desde 'thetas.txt'.
     Almacena los valores en theta0 y theta1.
@@ -391,7 +391,7 @@ def main():
     """
     
     # Calcular métricas
-    print("Calculando métricas de precisión...")
+    print("📈 Calculando métricas de precisión...")
     metrics = calculate_metrics(mileages, prices, theta0, theta1)
     """
     Llama a la función calculate_metrics para calcular las métricas de precisión

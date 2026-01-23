@@ -181,8 +181,8 @@ def train_model(mileages, prices, learning_rate=0.1, iterations=1000):
     theta0 = 0.0            # Inicializar theta0 que representa la intersección con el eje Y
     theta1 = 0.0            # Inicializar theta1 que representa la pendiente de la línea 
     
-    print(f"Iniciando entrenamiento con {m} muestras...")
-    print(f"Learning rate: {learning_rate}, Iteraciones: {iterations}")
+    print(f"🎓 Iniciando entrenamiento con {m} muestras...")
+    print(f"⚙️  Learning rate: {learning_rate}, Iteraciones: {iterations}")
     
     # Historial de MSE para análisis de convergencia
     mse_history = []
@@ -362,9 +362,9 @@ def save_thetas(theta0, theta1, filename='thetas.txt'):
         with open(filename, 'w') as f:
             f.write(f"{theta0}\n")
             f.write(f"{theta1}\n")
-        print(f"\nParámetros guardados en '{filename}'")
-        print(f"θ0 = {theta0}")
-        print(f"θ1 = {theta1}")
+        print(f"\n💾 Parámetros guardados en '{filename}'")
+        print(f"📊 θ0 = {theta0}")
+        print(f"📈 θ1 = {theta1}")
     except IOError as e:
         print(f"Error al guardar thetas: {e}")
         sys.exit(1)
@@ -375,14 +375,14 @@ def main():
     Función principal que carga datos, entrena el modelo y guarda los parámetros.
     """
     # Cargar datos
-    print("Cargando datos desde 'data.csv'...")
+    print("📁 Cargando datos desde 'data.csv'...")
     mileages, prices = load_data('data.csv')
     # load_data: función definida al principio que carga los datos desde un archivo CSV
-    print(f"Datos cargados: {len(mileages)} muestras")
+    print(f"✅ Datos cargados: {len(mileages)} muestras")
     # len(): función incorporada en Python que retorna el número de elementos en una lista
-    print(f"Rango de kilometraje: {min(mileages):.0f} - {max(mileages):.0f} km")
+    print(f"🚗 Rango de kilometraje: {min(mileages):.0f} - {max(mileages):.0f} km")
     # min() y max() son funciones incorporadas en Python que retornan el valor mínimo y máximo de una lista
-    print(f"Rango de precios: {min(prices):.0f} - {max(prices):.0f}€\n")
+    print(f"💶 Rango de precios: {min(prices):.0f} - {max(prices):.0f}€\n")
     
     # Entrenar modelo
     theta0, theta1, mse_history = train_model(mileages, prices)
@@ -411,14 +411,14 @@ def main():
         with open('mse_history.txt', 'w') as f:
             for mse in mse_history:
                 f.write(f"{mse}\n")
-        print(f"Historial de convergencia guardado en 'mse_history.txt'")
+        print(f"📉 Historial de convergencia guardado en 'mse_history.txt'")
     except IOError:
         # Manejar errores de entrada/salida al guardar el historial de MSE
         # Si ocurre un error al abrir o escribir en el archivo,
         # simplemente se ignora porque no es crítico para el funcionamiento del programa.
         pass
     
-    print("\n¡Entrenamiento completado exitosamente!")
+    print("\n✨ ¡Entrenamiento completado exitosamente! 🎉")
 
 
 # Punto de entrada del programa. Si este archivo se ejecuta directamente,
