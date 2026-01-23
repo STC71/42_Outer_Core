@@ -348,9 +348,7 @@ def save_thetas(theta0, theta1, filename='thetas.txt'):
     filename: nombre del archivo donde se guardarán los parámetros thetas
     Por defecto, el archivo se llama 'thetas.txt' pero se puede cambiar 
     pasando otro nombre como argumento.
-    """
-    try:
-    """
+    
     try es una construcción de manejo de excepciones en Python
     que permite intentar ejecutar un bloque de código y capturar
     cualquier excepción que pueda ocurrir durante su ejecución.
@@ -360,6 +358,7 @@ def save_thetas(theta0, theta1, filename='thetas.txt'):
     Si ocurre un error al abrir o escribir en el archivo, se captura la excepción
     y se maneja en el bloque except, que imprime un mensaje de error y sale del programa.
     """
+    try:
         with open(filename, 'w') as f:
             f.write(f"{theta0}\n")
             f.write(f"{theta1}\n")
@@ -398,43 +397,35 @@ def main():
     """
     
     # Guardar parámetros
+    # Guardar parámetros theta0 y theta1 en archivo 'thetas.txt'
     save_thetas(theta0, theta1)
-    """
-    Función para guardar los parámetros theta0 y theta1 en un archivo, ej: 'thetas.txt'
-    """
     
     # Guardar historial de MSE para curva de aprendizaje (bonus)
+    # El bucle for itera sobre cada valor de mse en la lista mse_history
+    # mse_history: lista que contiene el historial del error cuadrático medio (MSE)
+    # en cada iteración del entrenamiento
+    # f.write(f"{mse}\n"): escribe cada valor de mse en una nueva línea del archivo 
+    # 'mse_history.txt'. Cuando se llega al final de la lista, el bucle termina y
+    # el archivo se cierra automáticamente al salir del bloque with.
     try:
         with open('mse_history.txt', 'w') as f:
             for mse in mse_history:
-            """
-            El bucle for itera sobre cada valor de mse en la lista mse_history
-            mse_history: lista que contiene el historial del error cuadrático medio (MSE)
-            en cada iteración del entrenamiento
-            f.write(f"{mse}\n"): escribe cada valor de mse en una nueva línea del archivo 
-            'mse_history.txt'. Cuando se llega al final de la lista, el bucle termina y
-            el archivo se cierra automáticamente al salir del bloque with.
-            """
                 f.write(f"{mse}\n")
         print(f"Historial de convergencia guardado en 'mse_history.txt'")
     except IOError:
-        pass  # No es crítico
-        """
-        Manejar errores de entrada/salida al guardar el historial de MSE
-        Si ocurre un error al abrir o escribir en el archivo,
-        simplemente se ignora porque no es crítico para el funcionamiento del programa.
-        """
+        # Manejar errores de entrada/salida al guardar el historial de MSE
+        # Si ocurre un error al abrir o escribir en el archivo,
+        # simplemente se ignora porque no es crítico para el funcionamiento del programa.
+        pass
     
     print("\n¡Entrenamiento completado exitosamente!")
 
 
+# Punto de entrada del programa. Si este archivo se ejecuta directamente,
+# se llama a la función main().
+# __name__: variable especial en Python que indica el nombre del módulo actual.
+# Si el archivo se ejecuta directamente, __name__ es igual a "__main__".
+# Esto permite que el código dentro del bloque if se ejecute solo cuando
+# el archivo se ejecuta directamente, y no cuando se importa como un módulo en otro archivo.
 if __name__ == "__main__":
-"""
-    Punto de entrada del programa. Si este archivo se ejecuta directamente,
-    se llama a la función main().
-    __name__: variable especial en Python que indica el nombre del módulo actual.
-    Si el archivo se ejecuta directamente, __name__ es igual a "__main__".
-    Esto permite que el código dentro del bloque if se ejecute solo cuando
-    el archivo se ejecuta directamente, y no cuando se importa como un módulo en otro archivo.
-"""
     main()

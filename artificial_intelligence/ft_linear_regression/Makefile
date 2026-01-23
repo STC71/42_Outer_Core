@@ -20,7 +20,7 @@ TEST = test_auto.sh
 THETAS = thetas.txt
 DATA = data.csv
 
-.PHONY: all train predict visualize precision test eval clean fclean re help bonus
+.PHONY: all train predict visualize precision test eval evaluation clean fclean re help bonus
 
 # Default target is help
 .DEFAULT_GOAL := help
@@ -149,9 +149,11 @@ help:
 	@echo ""
 	@echo "$(GREEN)🎬 COMANDOS DEMOSTRACIÓN:$(NC)"
 	@echo "  $(YELLOW)make demo$(NC)       - Demostración con predicciones ejemplo"
+	@echo "  $(YELLOW)make evaluation$(NC) - Simulación completa de evaluación 42"
 	@echo ""
 	@echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"
 	@echo "$(GREEN)💡 Tip: Para empezar, ejecuta '$(YELLOW)make all$(GREEN)'$(NC)"
+	@echo "$(GREEN)💡 Para evaluar, ejecuta '$(YELLOW)make evaluation$(GREEN)'$(NC)"
 	@echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"
 	@echo ""
 
@@ -202,6 +204,95 @@ eval:
 	@echo "$(BLUE)Iniciando simulación de evaluación 42...$(NC)"
 	@chmod +x evaluation.sh
 	@./evaluation.sh
+
+evaluation:
+	@echo "$(BLUE)╔════════════════════════════════════════════════════════════════════════╗$(NC)"
+	@echo "$(BLUE)║      FT_LINEAR_REGRESSION - PREPARACIÓN EVALUACIÓN 42 - sternero       ║$(NC)"
+	@echo "$(BLUE)╚════════════════════════════════════════════════════════════════════════╝$(NC)"
+	@echo ""
+	@echo "$(GREEN)📋 Esta demostración simula la evaluación 42:$(NC)"
+	@echo "   ✅ Verificación de requisitos obligatorios"
+	@echo "   ✅ Demostración de funcionalidad"
+	@echo "   ✅ Explicación de conceptos clave"
+	@echo "   ✅ Validación de bonus"
+	@echo ""
+	@printf "$(YELLOW)¿Iniciar demostración de evaluación? (s/n): $(NC)"; \
+	read answer; \
+	if [ "$$answer" = "s" ] || [ "$$answer" = "S" ]; then \
+		echo ""; \
+		echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"; \
+		echo "$(GREEN)📝 PARTE 1/5: VERIFICACIÓN PRELIMINAR$(NC)"; \
+		echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"; \
+		echo "$(YELLOW)Verificando estructura del proyecto...$(NC)"; \
+		[ -f $(TRAIN) ] && echo "  ✓ train.py presente" || echo "  ✗ train.py falta"; \
+		[ -f $(PREDICT) ] && echo "  ✓ predict.py presente" || echo "  ✗ predict.py falta"; \
+		[ -f $(DATA) ] && echo "  ✓ data.csv presente" || echo "  ✗ data.csv falta"; \
+		echo "$(YELLOW)Verificando librerías prohibidas...$(NC)"; \
+		! grep -q "sklearn\|polyfit" $(TRAIN) $(PREDICT) && echo "  ✓ No usa librerías prohibidas" || echo "  ✗ Usa librerías prohibidas"; \
+		echo ""; \
+		echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"; \
+		echo "$(GREEN)📝 PARTE 2/5: PREDICCIÓN SIN ENTRENAR$(NC)"; \
+		echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"; \
+		echo "$(YELLOW)Probando predicción antes de entrenar (debe dar ~0)...$(NC)"; \
+		$(MAKE) clean > /dev/null 2>&1; \
+		echo "100000" | $(PYTHON) $(PREDICT) 2>/dev/null || echo "  ⚠️  Sin modelo: OK"; \
+		echo ""; \
+		echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"; \
+		echo "$(GREEN)📝 PARTE 3/5: ENTRENAMIENTO$(NC)"; \
+		echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"; \
+		$(MAKE) train; \
+		if [ -f $(THETAS) ]; then \
+			echo "$(GREEN)  ✓ Archivo $(THETAS) creado correctamente$(NC)"; \
+			echo "$(YELLOW)  Parámetros entrenados:$(NC)"; \
+			cat $(THETAS) | head -2 | awk '{print "    θ" NR-1 " = " $$1}'; \
+		else \
+			echo "$(RED)  ✗ No se creó el archivo de thetas$(NC)"; \
+		fi; \
+		echo ""; \
+		echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"; \
+		echo "$(GREEN)📝 PARTE 4/5: DEMOSTRACIÓN DE PREDICCIONES$(NC)"; \
+		echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"; \
+		echo "$(YELLOW)Predicciones con modelo entrenado:$(NC)"; \
+		echo ""; \
+		echo "  🚗 Coche con 50,000 km:"; \
+		echo "50000" | $(PYTHON) $(PREDICT) | grep -A1 "Precio" || true; \
+		echo ""; \
+		echo "  🚗 Coche con 100,000 km:"; \
+		echo "100000" | $(PYTHON) $(PREDICT) | grep -A1 "Precio" || true; \
+		echo ""; \
+		echo "  🚗 Coche con 150,000 km:"; \
+		echo "150000" | $(PYTHON) $(PREDICT) | grep -A1 "Precio" || true; \
+		echo ""; \
+		echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"; \
+		echo "$(GREEN)📝 PARTE 5/5: MÉTRICAS Y BONUS$(NC)"; \
+		echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"; \
+		$(MAKE) precision; \
+		echo ""; \
+		echo "$(YELLOW)Bonus disponibles:$(NC)"; \
+		[ -f $(VISUALIZE) ] && echo "  ✓ visualize.py (gráfico de regresión)" || echo "  ✗ visualize.py"; \
+		[ -f $(PRECISION) ] && echo "  ✓ precision.py (métricas R², MSE, etc.)" || echo "  ✗ precision.py"; \
+		[ -f $(LEARNING_CURVE) ] && echo "  ✓ learning_curve.py (curva convergencia)" || echo "  ✗ learning_curve.py"; \
+		echo ""; \
+		echo "$(GREEN)╔════════════════════════════════════════════════════════════╗$(NC)"; \
+		echo "$(GREEN)║     ✨ DEMOSTRACIÓN COMPLETA - LISTO PARA EVALUAR ✨      ║$(NC)"; \
+		echo "$(GREEN)╚════════════════════════════════════════════════════════════╝$(NC)"; \
+		echo ""; \
+		echo "$(BLUE)💡 CONCEPTOS CLAVE PARA LA DEFENSA:$(NC)"; \
+		echo "   • θ₀ = Intersección (precio a 0 km)"; \
+		echo "   • θ₁ = Pendiente (cambio de precio por km)"; \
+		echo "   • MSE = Error cuadrático medio (métrica de error)"; \
+		echo "   • Gradiente Descendente = Algoritmo de optimización"; \
+		echo "   • Learning Rate = Tamaño del paso en cada iteración"; \
+		echo "   • Normalización = Escalado de datos para convergencia"; \
+		echo ""; \
+		printf "$(YELLOW)¿Mostrar gráficos bonus? (s/n): $(NC)"; \
+		read show_bonus; \
+		if [ "$$show_bonus" = "s" ] || [ "$$show_bonus" = "S" ]; then \
+			$(MAKE) bonus; \
+		fi; \
+	else \
+		echo "$(YELLOW)Demostración cancelada.$(NC)"; \
+	fi
 
 install:
 	@echo "$(GREEN)Instalando dependencias...$(NC)"

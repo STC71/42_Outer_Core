@@ -92,34 +92,26 @@ def main():
         """
         
         # Calcular precio estimado
+        # estimate_price(): calcula el precio estimado usando la función lineal:
+        # estimatePrice(mileage) = theta0 + (theta1 * mileage)
         price = estimate_price(mileage, theta0, theta1)
-        """
-        estimate_price(): calcula el precio estimado usando la función lineal:
-        estimatePrice(mileage) = theta0 + (theta1 * mileage)
-        """
         
+        # Muestra el precio estimado en euros para el kilometraje proporcionado.
+        # El kilometraje se muestra sin decimales y el precio con dos decimales.
         print(f"Precio estimado para {mileage:.0f} km: {price:.2f}€")
-        """
-        Muestra el precio estimado en euros para el kilometraje proporcionado.
-        El kilometraje se muestra sin decimales y el precio con dos decimales.
-        """
         
+    # Si la conversión a float falla (por ejemplo, si el usuario introduce texto no numérico),
+    # captura la excepción ValueError, imprime un mensaje de error y termina el programa.
     except ValueError:
         print("Error: Por favor introduce un número válido.")
         sys.exit(1)
-    """
-    Si la conversión a float falla (por ejemplo, si el usuario introduce texto no numérico),
-    captura la excepción ValueError, imprime un mensaje de error y termina el programa con 
-    un código de salida 1.
-    """
+    
+    # Captura la excepción KeyboardInterrupt (por ejemplo, si el usuario presiona Ctrl+C),
+    # imprime un mensaje de cancelación y termina el programa con un código de salida 0.
     except KeyboardInterrupt:
         print("\nOperación cancelada.")
         sys.exit(0)
-    """
-    Captura la excepción KeyboardInterrupt (por ejemplo, si el usuario presiona Ctrl+C),
-    imprime un mensaje de cancelación y termina el programa con un código de salida 0,
-    indicando una terminación exitosa.
-    """
+
 
 if __name__ == "__main__":
     main()
