@@ -378,15 +378,42 @@ Esta sección presenta de forma visual y ordenada todos los pasos matemáticos q
 │                                                                           │
 │     MSE = 1/m · Σᵢ₌₁ᵐ (yᵢ - ŷᵢ)²                                          │
 │                                                                           │
+│     donde:                                                                │
+│       m  = número de ejemplos                                             │
+│       yᵢ = valor real (precio real del coche i)                           │
+│       ŷᵢ = valor predicho por el modelo                                   │
+│                                                                           │
+│     ¿Qué mide?: El error cuadrático promedio entre predicciones y         │
+│     valores reales. Penaliza más los errores grandes (por el cuadrado).   │
+│                                                                           │
+│     Interpretación: Cuanto más bajo, mejor. MSE = 0 → predicción          │
+│     perfecta. En unidades al cuadrado (ej: euros²).                       │
+│                                                                           │
 │                                                                           │
 │   Root Mean Squared Error (RMSE):                                         │
 │                                                                           │
 │     RMSE = √MSE = √[1/m · Σᵢ₌₁ᵐ (yᵢ - ŷᵢ)²]                               │
 │                                                                           │
+│     ¿Qué mide?: La raíz cuadrada del MSE. Devuelve el error promedio      │
+│     en las mismas unidades que los datos originales (ej: euros).          │
+│                                                                           │
+│     Interpretación: "En promedio, nuestras predicciones se desvían        │
+│     ±RMSE del valor real". Más intuitivo que MSE. Cuanto menor, mejor.    │
+│                                                                           │
+│     Ejemplo: RMSE = 500€ → nos equivocamos ~500€ en promedio.             │
+│                                                                           │
 │                                                                           │
 │   Mean Absolute Error (MAE):                                              │
 │                                                                           │
 │     MAE = 1/m · Σᵢ₌₁ᵐ |yᵢ - ŷᵢ|                                           │
+│                                                                           │
+│     ¿Qué mide?: El error absoluto promedio (sin elevar al cuadrado).      │
+│     Menos sensible a valores atípicos que RMSE.                           │
+│                                                                           │
+│     Interpretación: "En promedio, el error absoluto es de ±MAE".          │
+│     Más robusto ante outliers. Cuanto menor, mejor.                       │
+│                                                                           │
+│     Ejemplo: MAE = 400€ → el error promedio absoluto es de 400€.          │
 │                                                                           │
 │                                                                           │
 │   Coeficiente de Determinación (R²):                                      │
@@ -395,7 +422,15 @@ Esta sección presenta de forma visual y ordenada todos los pasos matemáticos q
 │                                                                           │
 │        = 1 - (SS_res / SS_tot)                                            │
 │                                                                           │
-│     donde ȳ = media de y                                                  │
+│     donde:                                                                │
+│       ȳ      = media de y                                                 │
+│       SS_res = Sum of Squares Residual (Σ de cuadrados de residuos)       │
+│       SS_tot = Total Sum of Squares (Σ total de cuadrados)                │
+│                                                                           │
+│   El R² mide qué proporción de la variabilidad total es explicada por     │
+│   tu modelo.                                                              │
+│   Si SS_res es pequeño comparado con SS_tot, significa que tu modelo      │
+│   predice bien y el R² se acerca a 1.                                     │
 │                                                                           │
 │   Interpretación de R²:                                                   │
 │     • R² = 1.0   → Modelo perfecto (100% de varianza explicada)           │
