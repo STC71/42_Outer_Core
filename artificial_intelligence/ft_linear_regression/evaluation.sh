@@ -647,7 +647,7 @@ check_prediction_after_training() {
     echo ""
     print_info "Comparación:"
     echo -e "   ${CYAN}Precio real (CSV):${NC}  $csv_price€"
-    echo -e "   ${CYAN}Precio predicho:${NC}    $(echo "$output" | grep -oE '[0-9]+(\.[0-9]+)?')"
+    echo -e "   ${CYAN}Precio predicho:${NC}    $(echo "$output" | grep -oE '[0-9]+\.[0-9]+' | tail -1)€"
     
     print_info "Una diferencia es normal y esperada (el modelo generaliza)"
     add_point
