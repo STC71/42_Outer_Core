@@ -44,9 +44,9 @@ Este documento explica, las matemáticas utilizadas en el proyecto `ft_linear_re
 10. [Análisis de Residuos](#-análisis-de-residuos)
 11. [Ejemplo numérico (dos iteraciones completas)](#8️⃣-ejemplo-numérico-dos-iteraciones-completas)
 12. [Consideraciones prácticas](#9️⃣-consideraciones-prácticas)
-13. [Overfitting (Sobreajuste) - Bonus Point](#🎓-overfitting-sobreajuste---bonus-point)
-14. [Implementación en el proyecto](#🔟-implementación-en-el-proyecto)
-15. [Referencias y recursos adicionales](#📚-referencias-y-recursos-adicionales)
+13. [Overfitting (Sobreajuste) - Bonus Point](#-overfitting-sobreajuste---bonus-point)
+14. [Implementación en el proyecto](#-implementación-en-el-proyecto)
+15. [Referencias y recursos adicionales](#-referencias-y-recursos-adicionales)
 
 ---
 
