@@ -20,6 +20,11 @@ dslr/
 ├── logreg_train_stochastic.py     # BONUS: Descenso de Gradiente Estocástico
 ├── logreg_train_minibatch.py      # BONUS: Descenso de Gradiente Mini-Batch
 ├── evaluate.py                    # Evaluación de precisión
+├── cross_validate.py              # Validación cruzada (BONUS)
+├── test_pipeline.sh               # Script de testing del pipeline
+├── evaluation.sh                  # Guía de evaluación interactiva (NUEVO)
+├── test_auto.sh                   # Tests automatizados completos (NUEVO)
+├── Makefile                       # Automatización de tareas
 ├── weights.pkl                    # Pesos del modelo entrenado (generado)
 ├── houses.csv                     # Salida de predicciones (generado)
 ├── dataset_train.csv              # Dataset de entrenamiento
@@ -101,6 +106,43 @@ make visualize     # Gráficos
 make train         # Entrenar modelo
 make predict       # Generar predicciones
 make evaluate      # Evaluar precisión
+
+# Tests automatizados
+make test_auto     # Ejecutar todos los tests automáticos
+make evaluation    # Guía de evaluación interactiva
+```
+
+### Tests y Evaluación
+
+#### Tests Automatizados (`test_auto.sh`)
+Script que ejecuta automáticamente todos los tests del proyecto:
+- ✅ Verificación de archivos requeridos
+- ✅ Comprobación de librerías prohibidas
+- ✅ Tests de ejecución de todos los scripts
+- ✅ Validación de precisión (≥98%)
+- ✅ Tests de integración del pipeline completo
+- ✅ Tests de características bonus
+
+```bash
+# Ejecutar tests automatizados
+./test_auto.sh
+# o
+make test_auto
+```
+
+#### Guía de Evaluación (`evaluation.sh`)
+Script interactivo que simula la evaluación de 42:
+- 📋 Checklist completo de requisitos del subject
+- 🔍 Verificación paso a paso de cada componente
+- 📄 Referencias a archivos y líneas específicas
+- 💡 Explicaciones de la implementación
+- ⏸️ Pausas interactivas para verificación manual
+
+```bash
+# Ejecutar guía de evaluación
+./evaluation.sh
+# o
+make evaluation
 ```
 
 ### Uso Detallado

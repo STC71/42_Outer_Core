@@ -32,7 +32,7 @@ EPOCHS_MINIBATCH = 100
 BATCH_SIZE = 32
 
 .PHONY: all clean fclean re help describe visualize train predict evaluate \
-        train_sgd train_minibatch test bonus
+        train_sgd train_minibatch test bonus test_auto evaluation
 
 # Target por defecto
 all: help
@@ -62,6 +62,8 @@ help:
 	@echo "  $(GREEN)clean$(NC)           - Eliminar archivos generados (predicciones, gráficos)"
 	@echo "  $(GREEN)fclean$(NC)          - Eliminar todos los archivos generados incluidos modelos"
 	@echo "  $(GREEN)re$(NC)              - Limpiar y ejecutar pipeline completo"
+	@echo "  $(GREEN)test_auto$(NC)       - Ejecutar tests automatizados completos"
+	@echo "  $(GREEN)evaluation$(NC)      - Ejecutar guía de evaluación interactiva"
 	@echo "  $(GREEN)help$(NC)            - Mostrar este mensaje de ayuda"
 	@echo ""
 	@echo "$(BLUE)================================================================================$(NC)"
@@ -200,6 +202,26 @@ check_data:
 chmod:
 	@chmod +x *.py
 	@chmod +x test_pipeline.sh
+	@chmod +x evaluation.sh
+	@chmod +x test_auto.sh
 	@echo "$(GREEN)✓ Los scripts ahora son ejecutables$(NC)"
 
-.PHONY: quick_test check_data chmod
+# ============================================================================
+# TESTING Y EVALUACIÓN
+# ============================================================================
+
+# Ejecutar tests automatizados
+test_auto:
+	@echo "$(BLUE)================================================================================$(NC)"
+	@echo "$(BLUE)  Ejecutando Tests Automatizados...$(NC)"
+	@echo "$(BLUE)================================================================================$(NC)"
+	@./test_auto.sh
+
+# Ejecutar guía de evaluación interactiva
+evaluation:
+	@echo "$(BLUE)================================================================================$(NC)"
+	@echo "$(BLUE)  Iniciando Guía de Evaluación...$(NC)"
+	@echo "$(BLUE)================================================================================$(NC)"
+	@./evaluation.sh
+
+.PHONY: quick_test check_data chmod test_auto evaluation
