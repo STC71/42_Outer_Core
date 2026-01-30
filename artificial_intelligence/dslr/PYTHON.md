@@ -117,7 +117,7 @@ converged = False
 - [**Variables en Python** - Píldoras Informáticas](https://www.youtube.com/watch?v=Kp4Mvapo5kc&t=1200s)
 - [**Tipos de Datos** - MoureDev](https://www.youtube.com/watch?v=Kp4Mvapo5kc&t=2400s)
 
-[⬆️ Volver a la Tabla de Contenidos](#📚-tabla-de-contenidos)
+[⬆️ Volver a la Tabla de Contenidos](#-tabla-de-contenidos)
 
 ---
 
@@ -350,7 +350,7 @@ for idx in indices:
 - [**Archivos CSV en Python** - Código Facilito](https://www.youtube.com/watch?v=4cIjQYXpYD0)
 - [**Pickle Tutorial** - Ringa Tech](https://www.youtube.com/watch?v=Pl4Hp8qwwes)
 
-[⬆️ Volver a la Tabla de Contenidos](#📚-tabla-de-contenidos)
+[⬆️ Volver a la Tabla de Contenidos](#-tabla-de-contenidos)
 
 ---
 
@@ -553,7 +553,7 @@ theta_dict = {house: [0.0] * n for house in houses}
 - [**Diccionarios** - MoureDev](https://www.youtube.com/watch?v=Kp4Mvapo5kc&t=5400s)
 - [**List Comprehensions** - Código Facilito](https://www.youtube.com/watch?v=DlgG0QdrqAU)
 
-[⬆️ Volver a la Tabla de Contenidos](#📚-tabla-de-contenidos)
+[⬆️ Volver a la Tabla de Contenidos](#-tabla-de-contenidos)
 
 ---
 
@@ -714,7 +714,7 @@ def calculate_quartile(data, q):
 - [**Funciones en Python** - Píldoras Informáticas](https://www.youtube.com/watch?v=Pl4Hp8qwwes)
 - [**Matemáticas sin NumPy** - DotCSV](https://www.youtube.com/watch?v=w2RJ1D6kz-o)
 
-[⬆️ Volver a la Tabla de Contenidos](#📚-tabla-de-contenidos)
+[⬆️ Volver a la Tabla de Contenidos](#-tabla-de-contenidos)
 
 ---
 
@@ -854,7 +854,7 @@ def write_predictions(filename, indices, predictions):
 - [**Archivos CSV en Python** - Código Facilito](https://www.youtube.com/watch?v=4cIjQYXpYD0)
 - [**Manejo de Archivos** - Píldoras Informáticas](https://www.youtube.com/watch?v=4VdQmoh4vY0)
 
-[⬆️ Volver a la Tabla de Contenidos](#📚-tabla-de-contenidos)
+[⬆️ Volver a la Tabla de Contenidos](#-tabla-de-contenidos)
 
 ---
 
@@ -996,7 +996,7 @@ def validate_model(model_data):
 - [**Pickle en Python** - Ringa Tech](https://www.youtube.com/watch?v=Pl4Hp8qwwes)
 - [**Serialización de Objetos** - Código Facilito](https://www.youtube.com/watch?v=2Tw39kZIbhs)
 
-[⬆️ Volver a la Tabla de Contenidos](#📚-tabla-de-contenidos)
+[⬆️ Volver a la Tabla de Contenidos](#-tabla-de-contenidos)
 
 ---
 
@@ -1205,7 +1205,7 @@ def plot_learning_curve(cost_history):
 - [**Visualización de Datos** - DotCSV](https://www.youtube.com/watch?v=kHmC6UPEo0I)
 - [**Gráficas en Python** - Píldoras Informáticas](https://www.youtube.com/watch?v=Y0jKOfwn5MM)
 
-[⬆️ Volver a la Tabla de Contenidos](#📚-tabla-de-contenidos)
+[⬆️ Volver a la Tabla de Contenidos](#-tabla-de-contenidos)
 
 ---
 
@@ -1335,7 +1335,7 @@ def train_classifier(X, y, theta, learning_rate, num_iterations):
 - [**Manejo de Excepciones** - Píldoras Informáticas](https://www.youtube.com/watch?v=hPKcsf6pILY)
 - [**Try-Except en Python** - MoureDev](https://www.youtube.com/watch?v=Kp4Mvapo5kc&t=7200s)
 
-[⬆️ Volver a la Tabla de Contenidos](#📚-tabla-de-contenidos)
+[⬆️ Volver a la Tabla de Contenidos](#-tabla-de-contenidos)
 
 ---
 
@@ -1426,7 +1426,7 @@ predicted_house = max(probabilities.items(), key=lambda x: x[1])[0]
 - [**Funciones Lambda** - Código Facilito](https://www.youtube.com/watch?v=9hLBw12h8zw)
 - [**Map, Filter, Reduce** - Píldoras Informáticas](https://www.youtube.com/watch?v=cKlnR-CB3tk)
 
-[⬆️ Volver a la Tabla de Contenidos](#📚-tabla-de-contenidos)
+[⬆️ Volver a la Tabla de Contenidos](#-tabla-de-contenidos)
 
 ---
 
@@ -1616,7 +1616,7 @@ if __name__ == '__main__':
 - [**Arquitectura de Código en ML** - DotCSV](https://www.youtube.com/watch?v=MlK1VMfJMNw)
 - [**Organización de Proyectos Python** - Código Facilito](https://www.youtube.com/watch?v=GMfMIKQnl2w)
 
-[⬆️ Volver a la Tabla de Contenidos](#📚-tabla-de-contenidos)
+[⬆️ Volver a la Tabla de Contenidos](#-tabla-de-contenidos)
 
 ---
 
@@ -1780,7 +1780,7 @@ def sanity_checks(X, y, theta):
 - [**Clean Code en Python** - MoureDev](https://www.youtube.com/watch?v=gR9BE8r8x8k)
 - [**Type Hints** - Código Facilito](https://www.youtube.com/watch?v=QmzBH6-jR0I)
 
-[⬆️ Volver a la Tabla de Contenidos](#📚-tabla-de-contenidos)
+[⬆️ Volver a la Tabla de Contenidos](#-tabla-de-contenidos)
 
 ---
 
