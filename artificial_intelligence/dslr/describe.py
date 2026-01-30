@@ -299,20 +299,20 @@ def describe(filename, bonus=True):
     for column, values in numerical_data.items():
         mean = ft_mean(values)
         
-        stats['Count'][column] = ft_count(values)
-        stats['Mean'][column] = mean
-        stats['Std'][column] = ft_std(values, mean)
-        stats['Min'][column] = ft_min(values)
+        stats['Recuento'][column] = ft_count(values)
+        stats['Media'][column] = mean
+        stats['Desv.Est'][column] = ft_std(values, mean)
+        stats['Mín'][column] = ft_min(values)
         stats['25%'][column] = ft_quartile_1(values)
         stats['50%'][column] = ft_median(values)
         stats['75%'][column] = ft_quartile_3(values)
-        stats['Max'][column] = ft_max(values)
+        stats['Máx'][column] = ft_max(values)
         
         if bonus:
-            stats['Range'][column] = ft_range(values)
-            stats['IQR'][column] = ft_iqr(values)
-            stats['Skewness'][column] = ft_skewness(values)
-            stats['Kurtosis'][column] = ft_kurtosis(values)
+            stats['Rango'][column] = ft_range(values)
+            stats['RIC'][column] = ft_iqr(values)
+            stats['Asimetría'][column] = ft_skewness(values)
+            stats['Curtosis'][column] = ft_kurtosis(values)
     
     # Display results
     # Print header

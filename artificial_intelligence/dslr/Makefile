@@ -201,7 +201,6 @@ check_data:
 # Hacer scripts ejecutables
 chmod:
 	@chmod +x *.py
-	@chmod +x test_pipeline.sh
 	@chmod +x evaluation.sh
 	@chmod +x test_auto.sh
 	@echo "$(GREEN)✓ Los scripts ahora son ejecutables$(NC)"

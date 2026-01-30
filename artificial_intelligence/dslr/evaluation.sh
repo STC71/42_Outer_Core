@@ -24,6 +24,9 @@ POINTS_EARNED=0
 TOTAL_POINTS=0
 BONUS_POINTS=0
 
+# Array para almacenar información de bonus implementados
+declare -a BONUS_INFO
+
 # ============================================================================
 # FUNCIONES AUXILIARES
 # ============================================================================
@@ -54,6 +57,10 @@ print_pass() {
 
 print_fail() {
     echo -e "${RED}✗ FALLO:${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}⚠ ADVERTENCIA:${NC} $1"
 }
 
 print_info() {
@@ -96,6 +103,56 @@ fail_point() {
     TOTAL_POINTS=$((TOTAL_POINTS + 1))
 }
 
+find_function_lines() {
+    local file=$1
+    local function_name=$2
+    
+    if [ ! -f "$file" ]; then
+        echo "N/A"
+        return
+    fi
+    
+    # Encuentra la línea donde empieza la función
+    local start_line=$(grep -n "^def $function_name" "$file" 2>/dev/null | head -1 | cut -d: -f1)
+    
+    if [ -z "$start_line" ]; then
+        echo "N/A"
+        return
+    fi
+    
+    # Verificar que start_line es un número válido
+    if ! [[ "$start_line" =~ ^[0-9]+$ ]]; then
+        echo "N/A"
+        return
+    fi
+    
+    # Encuentra la línea donde termina (siguiente def o final del archivo)
+    local next_def=$(tail -n +$((start_line + 1)) "$file" 2>/dev/null | grep -n "^def " | head -1 | cut -d: -f1)
+    
+    local end_line
+    if [ -n "$next_def" ] && [[ "$next_def" =~ ^[0-9]+$ ]]; then
+        end_line=$((start_line + next_def - 1))
+        # Retrocede para no incluir líneas vacías al final
+        while [ $end_line -gt $start_line ]; do
+            local line_content=$(sed -n "${end_line}p" "$file" 2>/dev/null | tr -d '[:space:]')
+            if [ -n "$line_content" ]; then
+                break
+            fi
+            end_line=$((end_line - 1))
+        done
+    else
+        # Es la última función del archivo
+        local total_lines=$(wc -l < "$file" 2>/dev/null)
+        if [ -n "$total_lines" ] && [[ "$total_lines" =~ ^[0-9]+$ ]]; then
+            end_line=$total_lines
+        else
+            end_line=$start_line
+        fi
+    fi
+    
+    echo "$start_line-$end_line"
+}
+
 pause_for_evaluator() {
     echo -e "\n${YELLOW}───────────────────────────────────────────────────────────────────${NC}"
     read -p "Presiona ENTER para continuar..."
@@ -104,7 +161,7 @@ pause_for_evaluator() {
 
 ask_to_continue() {
     echo -e "\n${BLUE}╔════════════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${BLUE}║${BOLD} ¿Deseas continuar con la siguiente sección de evaluación?        ${NC}${BLUE}║${NC}"
+    echo -e "${BLUE}║${BOLD} ¿Deseas continuar con la siguiente sección de evaluación?          ${NC}${BLUE}║${NC}"
     echo -e "${BLUE}╚════════════════════════════════════════════════════════════════════╝${NC}"
     read -p "$(echo -e ${CYAN}Continuar? [S/n]: ${NC})" response
     
@@ -376,7 +433,7 @@ print_file_reference "logreg_train.py"
 print_check "Entrenando modelo..."
 
 if python3 logreg_train.py dataset_train.csv 0.1 1000 > /dev/null 2>&1; then
-    print_pass "Entrenamiento completado exitosamente"
+    print_pass "Entrenamiento completado con éxito"
     add_point
     
     if [ -f "weights.pkl" ]; then
@@ -392,9 +449,18 @@ else
 fi
 
 print_info "Verificar que se implemente:"
+
+# Buscar dinámicamente las líneas de cada función
+SIGMOID_LINES=$(find_function_lines "logreg_train.py" "sigmoid")
+COST_LINES=$(find_function_lines "logreg_train.py" "compute_cost")
+GRADIENT_LINES=$(find_function_lines "logreg_train.py" "gradient_descent_batch")
+
 echo -e "  - Función sigmoide: σ(z) = 1/(1 + e^(-z))"
+echo -e "    Presente en línea: logreg_train.py:${SIGMOID_LINES}"
 echo -e "  - Función de coste: J(θ) = -1/m Σ[y*log(h) + (1-y)*log(1-h)]"
+echo -e "    Presente en línea: logreg_train.py:${COST_LINES}"
 echo -e "  - Gradient descent: θ := θ - α * (1/m) * X^T * (h - y)"
+echo -e "    Presente en línea: logreg_train.py:${GRADIENT_LINES}"
 
 ask_to_continue
 
@@ -445,11 +511,15 @@ if [ -f "houses.csv" ] && [ -f "evaluate.py" ]; then
         echo -e "\n${CYAN}Resultado de la evaluación:${NC}"
         echo "$accuracy_output"
         
-        # Intentar extraer la precisión
-        accuracy=$(echo "$accuracy_output" | grep -oP 'Accuracy|Precisión.*?(\d+\.\d+)%' | grep -oP '\d+\.\d+' | head -1)
+        # Intentar extraer la precisión (formato decimal: 0.990)
+        score=$(echo "$accuracy_output" | grep -oP 'Your score on test set:\s+\K\d+\.\d+')
         
-        if [ -n "$accuracy" ]; then
-            print_info "Precisión obtenida: ${accuracy}%"
+        if [ -n "$score" ]; then
+            # Convertir a porcentaje
+            accuracy=$(echo "$score * 100" | bc -l)
+            accuracy=$(printf "%.2f" $accuracy)
+            
+            echo -e "\n${CYAN}Precisión extraída:${NC} ${BOLD}${accuracy}%${NC} (score: ${score})"
             
             if (( $(echo "$accuracy >= 98.0" | bc -l) )); then
                 print_pass "✓ Precisión ≥ 98% - EXCELENTE"
@@ -459,7 +529,11 @@ if [ -f "houses.csv" ] && [ -f "evaluate.py" ]; then
                 fail_point
             fi
         else
-            print_info "Verificar manualmente la precisión en la salida anterior"
+            print_info "Verificar manualmente la precisión en la salida anterior:"
+            echo -e "${YELLOW}  1. Buscar la línea: 'Your score on test set: X.XXX'${NC}"
+            echo -e "${YELLOW}  2. Multiplicar el score por 100 para obtener el porcentaje${NC}"
+            echo -e "${YELLOW}  3. Verificar que el resultado sea ≥ 98.0%${NC}"
+            echo -e "${YELLOW}  4. Ejemplo: score 0.990 = 99.0% ✓${NC}"
         fi
     else
         print_warning "Error al ejecutar evaluate.py"
@@ -484,6 +558,7 @@ bonus_implementations=(
     "logreg_train_minibatch.py:Mini-Batch Gradient Descent"
 )
 
+bonus_idx=0
 for impl in "${bonus_implementations[@]}"; do
     IFS=':' read -r file desc <<< "$impl"
     
@@ -493,6 +568,16 @@ for impl in "${bonus_implementations[@]}"; do
         if python3 "$file" dataset_train.csv 0.01 100 > /dev/null 2>&1; then
             print_pass "$desc implementado correctamente"
             add_bonus_point
+            
+            # Buscar líneas de funciones principales
+            sigmoid_lines=$(find_function_lines "$file" "sigmoid")
+            gradient_lines=$(find_function_lines "$file" "gradient_descent_stochastic")
+            if [ "$gradient_lines" = "N/A" ]; then
+                gradient_lines=$(find_function_lines "$file" "gradient_descent_minibatch")
+            fi
+            
+            BONUS_INFO[$bonus_idx]="$desc|$file|sigmoid:$sigmoid_lines,gradient:$gradient_lines"
+            bonus_idx=$((bonus_idx + 1))
         else
             print_warning "$desc encontrado pero falla al ejecutar"
         fi
@@ -505,18 +590,51 @@ print_section "4.2 - Estadísticas Adicionales en describe.py"
 if grep -q "mode\|Mode\|MODE" describe.py 2>/dev/null; then
     print_pass "Implementa estadísticas adicionales (moda, rango, etc.)"
     add_bonus_point
+    
+    # Buscar líneas donde se implementan las estadísticas adicionales
+    mode_line=$(grep -n "def.*mode\|def calculate_mode" describe.py 2>/dev/null | head -1 | cut -d: -f1)
+    range_line=$(grep -n "def.*range\|max.*min" describe.py 2>/dev/null | grep -v "# " | head -1 | cut -d: -f1)
+    
+    # Validar que sean números o usar N/A
+    if ! [[ "$mode_line" =~ ^[0-9]+$ ]]; then
+        mode_line="N/A"
+    fi
+    if ! [[ "$range_line" =~ ^[0-9]+$ ]]; then
+        range_line="N/A"
+    fi
+    
+    stats_info="mode:${mode_line},range:${range_line}"
+    BONUS_INFO[$bonus_idx]="Estadísticas adicionales en describe.py|describe.py|$stats_info"
+    bonus_idx=$((bonus_idx + 1))
 fi
 
 # 4.3 - Validación cruzada
 if [ -f "cross_validate.py" ]; then
     print_pass "Implementa validación cruzada (cross_validate.py)"
     add_bonus_point
+    
+    # Buscar función principal de validación cruzada
+    cross_val_lines=$(find_function_lines "cross_validate.py" "cross_validate")
+    if [ "$cross_val_lines" = "N/A" ]; then
+        cross_val_lines=$(find_function_lines "cross_validate.py" "k_fold_cross_validation")
+    fi
+    BONUS_INFO[$bonus_idx]="Validación cruzada|cross_validate.py|cross_validate:$cross_val_lines"
+    bonus_idx=$((bonus_idx + 1))
 fi
 
-# 4.4 - Visualizaciones adicionales
-if [ -f "learning_curve.py" ]; then
-    print_pass "Implementa curvas de aprendizaje"
+# 4.4 - Preprocesamiento de datos
+if [ -f "data_preprocessing.py" ]; then
+    print_pass "Implementa utilidades de preprocesamiento (data_preprocessing.py)"
     add_bonus_point
+    
+    # Buscar funciones principales de preprocesamiento
+    normalize_lines=$(find_function_lines "data_preprocessing.py" "normalize")
+    fill_missing_lines=$(find_function_lines "data_preprocessing.py" "fill_missing_values")
+    if [ "$fill_missing_lines" = "N/A" ]; then
+        fill_missing_lines=$(find_function_lines "data_preprocessing.py" "handle_missing")
+    fi
+    BONUS_INFO[$bonus_idx]="Preprocesamiento de datos|data_preprocessing.py|normalize:$normalize_lines,fill_missing:$fill_missing_lines"
+    bonus_idx=$((bonus_idx + 1))
 fi
 
 pause_for_evaluator
@@ -530,14 +648,28 @@ print_header "RESUMEN DE EVALUACIÓN"
 echo -e "${CYAN}╔════════════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${CYAN}║${BOLD}                      PUNTUACIÓN FINAL                              ${NC}${CYAN}║${NC}"
 echo -e "${CYAN}╠════════════════════════════════════════════════════════════════════╣${NC}"
-echo -e "${CYAN}║${NC} Puntos Obligatorios: ${BOLD}$POINTS_EARNED${NC} / ${BOLD}$TOTAL_POINTS${NC}                                  ${CYAN}║${NC}"
-echo -e "${CYAN}║${NC} Puntos Bonus:        ${BOLD}$BONUS_POINTS${NC}                                            ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC} Puntos Obligatorios: ${BOLD}$POINTS_EARNED${NC} / ${BOLD}$TOTAL_POINTS${NC}                                       ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC} Puntos Bonus:        ${BOLD}$BONUS_POINTS${NC}                                             ${CYAN}║${NC}"
 echo -e "${CYAN}╚════════════════════════════════════════════════════════════════════╝${NC}"
 
 # Calcular porcentaje
 if [ $TOTAL_POINTS -gt 0 ]; then
     percentage=$((POINTS_EARNED * 100 / TOTAL_POINTS))
-    echo -e "\n${CYAN}Porcentaje de requisitos cumplidos: ${BOLD}${percentage}%${NC}"
+    echo -e "\n${CYAN}Porcentaje de requisitos obligatorios cumplidos: ${BOLD}${percentage}%${NC}"
+    
+    # Calcular puntuación total con bonus (máximo 125%)
+    if [ $BONUS_POINTS -gt 0 ]; then
+        # Cada punto de bonus suma 5% (5 bonus = 25% adicional)
+        bonus_percentage=$((BONUS_POINTS * 5))
+        total_percentage=$((percentage + bonus_percentage))
+        
+        # Limitar a 125% máximo
+        if [ $total_percentage -gt 125 ]; then
+            total_percentage=125
+        fi
+        
+        echo -e "${CYAN}Puntuación con bonus: ${BOLD}${total_percentage}%${NC} (${percentage}% + ${bonus_percentage}% bonus)"
+    fi
 fi
 
 echo -e "\n${YELLOW}Checklist de evaluación:${NC}"
@@ -553,6 +685,37 @@ echo -e "  ${GREEN}✓${NC} Precisión ≥ 98%"
 
 if [ $BONUS_POINTS -gt 0 ]; then
     echo -e "\n${MAGENTA}Bonus implementados: $BONUS_POINTS${NC}"
+    
+    bonus_count=${#BONUS_INFO[@]}
+    for i in "${!BONUS_INFO[@]}"; do
+        IFS='|' read -r desc file funcs <<< "${BONUS_INFO[$i]}"
+        
+        if [ $i -eq $((bonus_count - 1)) ]; then
+            echo -e "${MAGENTA}└─ $((i + 1)). $desc${NC}"
+        else
+            echo -e "${MAGENTA}├─ $((i + 1)). $desc${NC}"
+        fi
+        
+        # Mostrar archivo y líneas
+        echo -e "${MAGENTA}│     Archivo: $file${NC}"
+        
+        # Parsear y mostrar funciones con sus líneas
+        IFS=',' read -ra FUNC_ARRAY <<< "$funcs"
+        for func_info in "${FUNC_ARRAY[@]}"; do
+            IFS=':' read -r func_name lines <<< "$func_info"
+            if [ "$lines" != "N/A" ] && [ -n "$lines" ]; then
+                if [ $i -eq $((bonus_count - 1)) ]; then
+                    echo -e "${MAGENTA}      - ${func_name}: líneas $lines${NC}"
+                else
+                    echo -e "${MAGENTA}│     - ${func_name}: líneas $lines${NC}"
+                fi
+            fi
+        done
+        
+        if [ $i -ne $((bonus_count - 1)) ]; then
+            echo -e "${MAGENTA}│${NC}"
+        fi
+    done
 fi
 
 echo -e "\n${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
@@ -561,8 +724,18 @@ echo -e "${BLUE}═════════════════════�
 
 # Recomendación final
 if [ $POINTS_EARNED -eq $TOTAL_POINTS ] && [ $POINTS_EARNED -gt 0 ]; then
-    echo -e "${GREEN}${BOLD}✓ TODOS LOS REQUISITOS OBLIGATORIOS CUMPLIDOS${NC}"
-    echo -e "${GREEN}El proyecto puede ser VALIDADO${NC}\n"
+    if [ $BONUS_POINTS -eq 5 ]; then
+        echo -e "${GREEN}${BOLD}✓ TODOS LOS REQUISITOS OBLIGATORIOS Y BONUS CUMPLIDOS${NC}"
+        echo -e "${GREEN}El proyecto puede ser VALIDADO con 125%${NC}\n"
+    elif [ $BONUS_POINTS -gt 0 ]; then
+        bonus_percent=$((BONUS_POINTS * 5))
+        total_percent=$((100 + bonus_percent))
+        echo -e "${GREEN}${BOLD}✓ TODOS LOS REQUISITOS OBLIGATORIOS CUMPLIDOS${NC}"
+        echo -e "${GREEN}El proyecto puede ser VALIDADO con ${total_percent}% (100% + ${bonus_percent}% bonus)${NC}\n"
+    else
+        echo -e "${GREEN}${BOLD}✓ TODOS LOS REQUISITOS OBLIGATORIOS CUMPLIDOS${NC}"
+        echo -e "${GREEN}El proyecto puede ser VALIDADO${NC}\n"
+    fi
 elif [ $percentage -ge 75 ]; then
     echo -e "${YELLOW}⚠ CASI TODOS LOS REQUISITOS CUMPLIDOS${NC}"
     echo -e "${YELLOW}Revisar los puntos fallidos antes de validar${NC}\n"
