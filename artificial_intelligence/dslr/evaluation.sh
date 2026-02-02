@@ -5,6 +5,7 @@
 # ============================================================================
 # Este script simula la evaluación de 42 punto por punto
 # Muestra exactamente qué archivos y líneas implementan cada requisito
+# Proyecto: Data Science × Logistic Regression (Harry Potter)
 # Autor: sternero
 # Fecha: Enero 2026
 # ============================================================================

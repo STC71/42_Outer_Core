@@ -1,123 +1,236 @@
-# DSLR - Data Science × Regresión Logística
-## Harry Potter y el Científico de Datos
+# 🧙‍♂️ DSLR - Data Science × Logistic Regression
 
-Este proyecto implementa un clasificador de regresión logística multiclase para clasificar a los estudiantes de Hogwarts en sus casas usando la estrategia One-vs-All (OvA).
+> **Clasificación multiclase con regresión logística**  
+> Harry Potter y el Científico de Datos - Clasifica estudiantes en las casas de Hogwarts usando machine learning desde cero.
+
+---
+
+<div align="center">
+
+*"A computer program is said to learn from experience **E** with respect to some class of tasks **T** and performance measure **P**, <br>
+if its performance at tasks in **T**, as measured by **P**, improves with experience **E**."*
+
+*"Se dice que un programa informático aprende de la experiencia **E** con respecto a cierta clase de tareas **T** y una medida de rendimiento **P**, 
+si su rendimiento en las tareas de **T**, medido por **P**, mejora con la experiencia **E**."*
+
+— **Tom M. Mitchell**
+
+Profesor e investigador en aprendizaje automático en la Universidad Carnegie Mellon (CMU); autor del libro 'Machine Learning'.
+
+</div>
+
+---
+
+## 📋 Descripción
+
+Este proyecto implementa un **clasificador de regresión logística multiclase** desde cero, sin usar librerías de alto nivel como `sklearn`. Utiliza la estrategia **One-vs-All (OvA)** para clasificar estudiantes de Hogwarts en sus casas.
+
+🎯 **Objetivo:** Entrenar un modelo que pueda predecir la casa de un estudiante basándose en sus calificaciones en diferentes asignaturas mágicas.
 
 **Resultado alcanzado: ✅ 99.0% de precisión** (Requerido: ≥98%)
 
-## Estructura del Proyecto
 
+## 🎯 Características
+
+<table>
+<tr>
+<td width="50%">
+
+### ✅ Parte Obligatoria
+
+| Componente | Descripción |
+|------------|-------------|
+| 📊 **describe.py** | Estadísticas sin funciones built-in |
+| 📈 **histogram.py** | Distribución homogénea de cursos |
+| 🔍 **scatter_plot.py** | Características similares |
+| 🎨 **pair_plot.py** | Matriz de correlación completa |
+| 🧠 **logreg_train.py** | Entrenamiento Batch Gradient Descent |
+| 🔮 **logreg_predict.py** | Predicción de casas |
+
+</td>
+<td width="50%">
+
+### ⭐ Parte Bonus
+
+| Componente | Descripción |
+|------------|-------------|
+| 📐 **Estadísticas extra** | Moda, rango, IQR, skewness |
+| ⚡ **SGD** | Gradient Descent Estocástico |
+| 🎯 **Mini-Batch GD** | Equilibrio velocidad/estabilidad |
+| ✓ **cross_validate.py** | Validación cruzada K-fold |
+| 🛠️ **preprocessing** | Limpieza y normalización avanzada |
+
+</td>
+</tr>
+</table>
+
+## 📊 Dataset
+
+Los archivos CSV contienen datos de estudiantes de Hogwarts:
+
+| Archivo | Descripción | Dimensiones |
+|---------|-------------|-------------|
+| **dataset_train.csv** | Datos de entrenamiento | 400 estudiantes × 13 asignaturas |
+| **dataset_test.csv** | Datos de prueba | 400 estudiantes × 13 asignaturas |
+| **dataset_truth.csv** | Casas reales (para validación) | 400 etiquetas |
+
+📌 **Características:** 13 asignaturas de Hogwarts (Aritmancia, Astronomía, Herbología, etc.)  
+🏠 **Clases:** 4 casas (Gryffindor, Hufflepuff, Ravenclaw, Slytherin)
+
+## 🚀 Instalación
+
+### 📦 Requisitos básicos
+```bash
+Python 3.x  # Ya instalado en sistemas 42 
 ```
-dslr/
-├── README.md                      # Este archivo
-├── MATHS.md                       # 📚 Documentación matemática completa (2700+ líneas)
-├── PYTHON.md                      # 📚 Guía completa de Python (1500+ líneas)
-├── describe.py                    # Análisis estadístico (OBLIGATORIO)
-├── histogram.py                   # Visualización de distribución homogénea (OBLIGATORIO)
-├── scatter_plot.py                # Análisis de características similares (OBLIGATORIO)
-├── pair_plot.py                   # Matriz de correlación de características (OBLIGATORIO)
-├── logreg_train.py                # Entrenamiento con descenso de gradiente (OBLIGATORIO)
-├── logreg_predict.py              # Predicción y clasificación (OBLIGATORIO)
-├── data_preprocessing.py          # Utilidades de limpieza y normalización de datos
-├── logreg_train_stochastic.py     # BONUS: Descenso de Gradiente Estocástico
-├── logreg_train_minibatch.py      # BONUS: Descenso de Gradiente Mini-Batch
-├── evaluate.py                    # Evaluación de precisión
-├── cross_validate.py              # Validación cruzada (BONUS)
-├── evaluation.sh                  # Guía de evaluación interactiva
-├── test_auto.sh                   # Tests automatizados completos
-├── Makefile                       # Automatización de tareas
-├── weights.pkl                    # Pesos del modelo entrenado (generado)
-├── houses.csv                     # Salida de predicciones (generado)
-├── dataset_train.csv              # Dataset de entrenamiento
-└── dataset_test.csv               # Dataset de prueba
+
+### 🎨 Para visualizaciones
+```bash
+pip install matplotlib
+# o usar el Makefile
+make install
 ```
 
-## Requisitos
+## 💻 Uso
 
-- Python 3.x
-- NumPy (solo para operaciones matriciales)
-- Matplotlib (para visualizaciones)
-- No se permiten métodos de pandas DataFrame
-- No se permite sklearn para el algoritmo principal
+### 📊 1. Análisis exploratorio de datos
 
-## Detalles de Implementación
-
-### Parte Obligatoria
-
-1. **describe.py**: Descripción estadística sin usar funciones incorporadas
-   - Count, Mean, Std, Min, 25%, 50%, 75%, Max
-   - Implementación personalizada de todas las funciones estadísticas
-
-2. **Visualización de Datos**:
-   - **histogram.py**: Identifica el curso con la distribución de puntuaciones más homogénea
-   - **scatter_plot.py**: Encuentra las dos características más similares
-   - **pair_plot.py**: Muestra todas las correlaciones de características para la selección
-
-3. **Regresión Logística**:
-   - **logreg_train.py**: Clasificador multiclase One-vs-All
-   - Implementación de Descenso de Gradiente por Lotes
-   - Función de coste y sigmoide personalizadas
-   - Guarda los pesos entrenados
-   - **logreg_predict.py**: Predice las asignaciones de casas
-   - Carga los pesos entrenados
-   - Genera houses.csv
-
-### Parte Bonus
-
-1. **describe.py extendido**: Medidas estadísticas adicionales (moda, rango, IQR, etc.)
-2. **Descenso de Gradiente Estocástico**: Entrenamiento más rápido con actualizaciones por muestra
-3. **Descenso de Gradiente Mini-Batch**: Equilibrio entre lotes y estocástico
-4. **Validación cruzada (cross_validate.py)**: K-fold cross-validation para validar el modelo
-5. **Preprocesamiento de datos (data_preprocessing.py)**: Utilidades de limpieza y normalización
-
-## Fundamento Matemático
-
-### Función de Coste de Regresión Logística
+```bash
+python3 describe.py dataset_train.csv
+# o usando Makefile
+make describe
 ```
-J(θ) = -1/m Σ[y⁽ⁱ⁾ log(hθ(x⁽ⁱ⁾)) + (1-y⁽ⁱ⁾) log(1-hθ(x⁽ⁱ⁾))]
+
+**¿Qué hace?**
+- ✓ Calcula estadísticas descriptivas sin pandas
+- ✓ Count, Mean, Std, Min, 25%, 50%, 75%, Max
+- ✓ Implementación manual de todas las funciones
+
+
+### 📈 2. Visualización de datos
+
+```bash
+# Distribución homogénea
+python3 histogram.py dataset_train.csv
+make histogram
+
+# Características similares
+python3 scatter_plot.py dataset_train.csv
+make scatter
+
+# Matriz de correlación completa
+python3 pair_plot.py dataset_train.csv
+make pair
 ```
+
+**¿Qué hace?**
+- ✓ Identifica el curso con distribución más homogénea
+- ✓ Encuentra las dos características más correlacionadas
+- ✓ Visualiza todas las relaciones entre características
+
+### 🧠 3. Entrenar el modelo
+
+```bash
+# Batch Gradient Descent (obligatorio)
+python3 logreg_train.py dataset_train.csv 0.1 1000
+# Argumentos: <archivo_datos> <learning_rate> <iteraciones>
+
+make train
+```
+
+**¿Qué hace?**
+- ✓ Lee y normaliza los datos
+- ✓ Entrena 4 clasificadores binarios (One-vs-All)
+- ✓ Minimiza la función de coste con gradient descent
+- ✓ Guarda los pesos en `weights.pkl`
+
+**Variantes bonus:**
+```bash
+# Stochastic Gradient Descent (más rápido)
+python3 logreg_train_stochastic.py dataset_train.csv 0.01 100
+
+# Mini-Batch Gradient Descent (equilibrio)
+python3 logreg_train_minibatch.py dataset_train.csv 0.1 100 32
+```
+
+### 🔮 4. Predecir casas
+
+```bash
+python3 logreg_predict.py dataset_test.csv weights.pkl houses.csv
+# Argumentos: <archivo_test> <archivo_pesos> <archivo_salida>
+
+make predict
+```
+
+**¿Qué hace?**
+- ✓ Carga el modelo entrenado
+- ✓ Predice la casa para cada estudiante
+- ✓ Genera `houses.csv` con el formato requerido
+
+### ✅ 5. Evaluar precisión
+
+```bash
+python3 evaluate.py dataset_truth.csv houses.csv
+make evaluate
+```
+
+**Resultado esperado:** ≥98% de precisión
+
+## 🎓 Fundamento Matemático
 
 ### Función de Hipótesis
 ```
-hθ(x) = g(θᵀx)
-donde g(z) = 1/(1 + e⁻ᶻ)
+h_θ(x) = sigmoid(θᵀx) = 1 / (1 + e^(-θᵀx))
+```
+
+### Función de Coste (Binary Cross-Entropy)
+```
+J(θ) = -1/m Σ[y^(i) log(h_θ(x^(i))) + (1-y^(i)) log(1-h_θ(x^(i)))]
 ```
 
 ### Gradiente
 ```
-∂J(θ)/∂θⱼ = 1/m Σ(hθ(x⁽ⁱ⁾) - y⁽ⁱ⁾)xⱼ⁽ⁱ⁾
+∂J(θ)/∂θ_j = 1/m Σ(h_θ(x^(i)) - y^(i))x_j^(i)
 ```
 
-## Uso
+### Actualización de Parámetros
+```
+θ_j := θ_j - α · ∂J(θ)/∂θ_j
+```
 
-### Inicio Rápido con Makefile
+📖 **Explicación detallada:** Consulta [MATHS.md](MATHS.md) para derivaciones completas, ejemplos numéricos y visualizaciones.
+
+
+## ⚡ Inicio Rápido con Makefile
 
 ```bash
 # Ver todos los comandos disponibles
 make help
 
-# Pipeline completo (obligatorio)
+# 🚀 Pipeline completo (obligatorio)
 make test
 
-# Pipeline con bonus
+# ⭐ Pipeline con bonus
 make bonus
 
-# Pasos individuales
-make describe      # Estadísticas
-make visualize     # Gráficos
+# 📊 Pasos individuales
+make describe      # Estadísticas descriptivas
+make visualize     # Todos los gráficos
 make train         # Entrenar modelo
 make predict       # Generar predicciones
 make evaluate      # Evaluar precisión
 
-# Tests automatizados
-make test_auto     # Ejecutar todos los tests automáticos
+# 🧪 Tests y evaluación
+make test_auto     # Tests automatizados completos
 make evaluation    # Guía de evaluación interactiva
 ```
 
-### Tests y Evaluación
+## 🧪 Tests y Evaluación
 
-#### Tests Automatizados (`test_auto.sh`)
-Script que ejecuta automáticamente todos los tests del proyecto:
+### 🤖 Tests Automatizados (`test_auto.sh`)
+
+Script que verifica automáticamente todo el proyecto:
+
 - ✅ Verificación de archivos requeridos
 - ✅ Comprobación de librerías prohibidas
 - ✅ Tests de ejecución de todos los scripts
@@ -126,14 +239,15 @@ Script que ejecuta automáticamente todos los tests del proyecto:
 - ✅ Tests de características bonus
 
 ```bash
-# Ejecutar tests automatizados
 ./test_auto.sh
 # o
 make test_auto
 ```
 
-#### Guía de Evaluación (`evaluation.sh`)
+### 📋 Guía de Evaluación (`evaluation.sh`)
+
 Script interactivo que simula la evaluación de 42:
+
 - 📋 Checklist completo de requisitos del subject
 - 🔍 Verificación paso a paso de cada componente
 - 📄 Referencias a archivos y líneas específicas
@@ -141,118 +255,57 @@ Script interactivo que simula la evaluación de 42:
 - ⏸️ Pausas interactivas para verificación manual
 
 ```bash
-# Ejecutar guía de evaluación
 ./evaluation.sh
 # o
 make evaluation
 ```
 
-### Uso Detallado
-
-#### 1. Análisis de Datos
-```bash
-python describe.py dataset_train.csv
-```
-
-#### 2. Visualización de Datos
-```bash
-python histogram.py dataset_train.csv      # ¿Qué curso tiene distribución homogénea?
-python scatter_plot.py dataset_train.csv   # ¿Qué características son más similares?
-python pair_plot.py dataset_train.csv      # Matriz de correlación completa
-```
-
-#### 3. Entrenamiento
-```bash
-# Descenso de Gradiente por Lotes (obligatorio)
-python logreg_train.py dataset_train.csv 0.1 1000
-# Argumentos: <datos> <tasa_aprendizaje> <iteraciones>
-
-# BONUS: Descenso de Gradiente Estocástico
-python logreg_train_stochastic.py dataset_train.csv 0.01 100
-
-# BONUS: Descenso de Gradiente Mini-Batch
-python logreg_train_minibatch.py dataset_train.csv 0.1 100 32
-# Argumentos: <datos> <lr> <épocas> <tamaño_lote>
-```
-
-#### 4. Predicción
-```bash
-python logreg_predict.py dataset_test.csv weights.pkl houses.csv
-# Argumentos: <datos_prueba> <pesos_modelo> <archivo_salida>
-```
-
-#### 5. Validación
-```bash
-python cross_validate.py dataset_train.csv 0.8
-# Argumentos: <datos_entrenamiento> <proporción_entrenamiento>
-```
-
-## Rendimiento y Resultados
+## 📊 Rendimiento y Resultados
 
 ### Modelo Principal (Batch Gradient Descent)
-- **Precisión Alcanzada**: ✅ **99.0%** (Requerido: ≥98%)
-- **Learning Rate**: 0.1
-- **Iteraciones**: 1000
-- **Tiempo de Entrenamiento**: ~5-10 segundos
-- **Features**: 13 características (todos los cursos de Hogwarts)
 
-### Factores de Éxito
-- Las 13 características numéricas usadas para clasificación
-- Normalización Z-score para escalado de características
-- Tasa de aprendizaje óptima (0.1) e iteraciones (1000)
-- Estrategia One-vs-All para clasificación multiclase
-- Manejo adecuado de valores faltantes (imputación por media)
+| Métrica | Valor |
+|---------|-------|
+| **Precisión Alcanzada** | ✅ **99.0%** |
+| **Precisión Requerida** | ≥98% |
+| **Learning Rate** | 0.1 |
+| **Iteraciones** | 1000 |
+| **Tiempo de Entrenamiento** | ~5-10 segundos |
+| **Features** | 13 asignaturas |
 
 ### Distribución de Predicciones
-- Gryffindor: ~20%
-- Hufflepuff: ~36%
-- Ravenclaw: ~28%
-- Slytherin: ~16%
+
+| Casa | Porcentaje |
+|------|------------|
+| 🦁 Gryffindor | ~20% |
+| 🦡 Hufflepuff | ~36% |
+| 🦅 Ravenclaw | ~28% |
+| 🐍 Slytherin | ~16% |
 
 ### Métricas por Casa
-Todas las casas tienen:
-- Precision: >96%
-- Recall: >96%
-- F1-Score: >0.96
 
-## Características Utilizadas
+Todas las casas alcanzan:
+- **Precision:** >96%
+- **Recall:** >96%
+- **F1-Score:** >0.96
 
-Se usan las 13 características de cursos de Hogwarts:
-- Aritmancia
-- Astronomía
-- Herbología
-- Defensa Contra las Artes Oscuras
-- Adivinación
-- Estudios Muggles
-- Runas Antiguas
-- Historia de la Magia
-- Transformación
-- Pociones
-- Cuidado de Criaturas Mágicas
-- Encantamientos
-- Vuelo
-
-## Preprocesamiento de Datos
-
-- **Valores Faltantes**: Manejados mediante imputación por media/mediana
-- **Normalización**: Escalado Min-Max o normalización Z-score
-- **Selección de Características**: Basada en análisis de correlación
-
-## Conceptos Clave Implementados
+## 🎯 Conceptos Clave Implementados
 
 ### 1. Regresión Logística
-- Algoritmo de clasificación (NO regresión, a pesar del nombre)
-- Predice probabilidades entre 0 y 1 usando función sigmoide
+- Algoritmo de **clasificación** (NO regresión, a pesar del nombre)
+- Predice **probabilidades** entre 0 y 1 usando función sigmoide
 - Función de Hipótesis: `h(x) = sigmoid(θᵀx)` donde `sigmoid(z) = 1/(1 + e⁻ᶻ)`
 
 ### 2. One-vs-All (One-vs-Rest)
-Para 4 casas, se entrenan 4 clasificadores binarios:
-1. Gryffindor vs (Hufflepuff + Ravenclaw + Slytherin)
-2. Hufflepuff vs (Gryffindor + Ravenclaw + Slytherin)
-3. Ravenclaw vs (Gryffindor + Hufflepuff + Slytherin)
-4. Slytherin vs (Gryffindor + Hufflepuff + Ravenclaw)
 
-**Predicción**: Elegir casa con mayor probabilidad
+Para 4 casas, se entrenan **4 clasificadores binarios:**
+
+1. 🦁 Gryffindor vs (Hufflepuff + Ravenclaw + Slytherin)
+2. 🦡 Hufflepuff vs (Gryffindor + Ravenclaw + Slytherin)
+3. 🦅 Ravenclaw vs (Gryffindor + Hufflepuff + Slytherin)
+4. 🐍 Slytherin vs (Gryffindor + Hufflepuff + Ravenclaw)
+
+**Predicción:** Elegir casa con mayor probabilidad
 
 ### 3. Tres Variantes de Gradient Descent
 
@@ -263,7 +316,7 @@ for iteration in range(num_iterations):
     θ = θ - α * gradient
 ```
 - ✅ Convergencia estable y suave
-- ⚠️ Lento con datasets muy grandes (>100k muestras) - No aplica en DSLR
+- ⚠️ Más lento con datasets muy grandes (no aplica aquí)
 
 #### B) Stochastic Gradient Descent (BONUS)
 ```python
@@ -274,7 +327,7 @@ for epoch in range(num_epochs):
         θ = θ - α * gradient
 ```
 - ✅ Muy rápido por iteración
-- ⚠️ Convergencia con más fluctuaciones (pero llega al mismo resultado)
+- ⚠️ Convergencia con más fluctuaciones
 
 #### C) Mini-Batch Gradient Descent (BONUS)
 ```python
@@ -287,100 +340,178 @@ for epoch in range(num_epochs):
 - ✅ Mejor compromiso: estable y eficiente
 - ✅ Convergencia suave con buen rendimiento
 
-**Nota:** Con el dataset DSLR (~400 muestras), las tres variantes alcanzan **99.0% de precisión**.
+> 💡 **Nota:** Con el dataset DSLR (~400 muestras), las tres variantes alcanzan **99.0% de precisión**.
 
-## Implementación Sin Librerías Externas
+
+## 🔧 Implementación Sin Librerías Externas
 
 Todas estas funciones están implementadas desde cero:
 
-### Estadísticas (describe.py)
+### 📊 Estadísticas (describe.py)
 - Count, Mean, Standard Deviation
 - Min, Max, Percentiles (25%, 50%, 75%)
-- BONUS: Range, IQR, Skewness, Kurtosis
+- **BONUS:** Range, IQR, Skewness, Kurtosis
 
-### Matemáticas (logreg_train.py)
+### 🧮 Matemáticas (logreg_train.py)
 - Función Sigmoid
 - Logaritmo Natural
 - Función de Coste Logística
 - Cálculo de Gradientes
 - Normalización Z-score
 
-### Análisis (scatter_plot.py)
+### 📈 Análisis (scatter_plot.py)
 - Correlación de Pearson
 - Covarianza
 
-## Solución de Problemas
+## 📚 Características Utilizadas
+
+Se utilizan las **13 asignaturas** de Hogwarts:
+
+| Asignatura | Descripción |
+|------------|-------------|
+| ✨ **Aritmancia** | Predicción del futuro con números |
+| 🌙 **Astronomía** | Estudio de cuerpos celestes |
+| 🌿 **Herbología** | Estudio de plantas mágicas |
+| ⚔️ **Defensa Contra las Artes Oscuras** | Protección contra magia negra |
+| 🔮 **Adivinación** | Predicción del futuro |
+| 👨‍💼 **Estudios Muggles** | Cultura no mágica |
+| 📜 **Runas Antiguas** | Escritura y símbolos mágicos |
+| 📚 **Historia de la Magia** | Historia del mundo mágico |
+| 🦋 **Transformación** | Cambio de forma de objetos |
+| 🧪 **Pociones** | Preparación de mezclas mágicas |
+| 🐉 **Cuidado de Criaturas Mágicas** | Manejo de animales mágicos |
+| ✨ **Encantamientos** | Hechizos y encantamientos |
+| 🧹 **Vuelo** | Manejo de escobas voladoras |
+
+## 🛠️ Preprocesamiento de Datos
+
+| Técnica | Implementación |
+|---------|----------------|
+| **Valores Faltantes** | Imputación por media/mediana |
+| **Normalización** | Z-score: `(x - μ) / σ` |
+| **Selección de Features** | Análisis de correlación |
+
+## ⚠️ Solución de Problemas
 
 ### "python: command not found"
-Usar `python3` en lugar de `python`
+```bash
+# Usar python3 en su lugar
+python3 logreg_train.py dataset_train.csv
+```
 
 ### "matplotlib not found"
 ```bash
 pip install matplotlib
+# O usa Makefile
+make install
 ```
-O las visualizaciones se omitirán (no obligatorias)
 
 ### Baja precisión (<98%)
-- Aumentar iteraciones: `python3 logreg_train.py dataset_train.csv 0.1 2000`
-- Ajustar tasa de aprendizaje: probar 0.05 o 0.2
-- Ejecutar validación cruzada: `python3 cross_validate.py dataset_train.csv`
+```bash
+# Aumentar iteraciones
+python3 logreg_train.py dataset_train.csv 0.1 2000
 
-## Archivos Generados
+# Ajustar learning rate
+python3 logreg_train.py dataset_train.csv 0.05 1000
 
-Al ejecutar el proyecto se generan:
+# Validar con cross-validation
+python3 cross_validate.py dataset_train.csv
 ```
-weights.pkl                # Modelo entrenado (Batch GD)
-weights_sgd.pkl            # BONUS: Modelo SGD
-weights_minibatch.pkl      # BONUS: Modelo Mini-Batch
-houses.csv                 # Predicciones (formato requerido)
-histogram_analysis.png     # Visualización
-scatter_plot_analysis.png  # Visualización
-pair_plot.png              # Visualización
+
+## 📁 Archivos Generados
+
+Al ejecutar el proyecto se crean:
+
+| Archivo | Descripción |
+|---------|-------------|
+| `weights.pkl` | Modelo entrenado (Batch GD) |
+| `weights_sgd.pkl` | BONUS: Modelo SGD |
+| `weights_minibatch.pkl` | BONUS: Modelo Mini-Batch |
+| `houses.csv` | Predicciones (formato requerido) |
+| `histogram_analysis.png` | Visualización de distribución |
+| `scatter_plot_analysis.png` | Visualización de correlación |
+| `pair_plot.png` | Matriz de correlación completa |
+
+## 📂 Estructura del Proyecto
+
 ```
+dslr/
+├── 📖 README.md                      # Este archivo
+├── 📐 MATHS.md                       # Documentación matemática (1780+ líneas)
+├── 🐍 PYTHON.md                      # Guía completa de Python (1860+ líneas)
+│
+├── 📊 describe.py                    # Análisis estadístico (OBLIGATORIO)
+├── 📈 histogram.py                   # Distribución homogénea (OBLIGATORIO)
+├── 🔍 scatter_plot.py                # Características similares (OBLIGATORIO)
+├── 🎨 pair_plot.py                   # Matriz de correlación (OBLIGATORIO)
+├── 🧠 logreg_train.py                # Entrenamiento Batch GD (OBLIGATORIO)
+├── 🔮 logreg_predict.py              # Predicción (OBLIGATORIO)
+│
+├── 🛠️ data_preprocessing.py          # Utilidades de limpieza
+├── ⚡ logreg_train_stochastic.py     # BONUS: SGD
+├── 🎯 logreg_train_minibatch.py      # BONUS: Mini-Batch GD
+├── ✅ evaluate.py                     # Evaluación de precisión
+├── ✓ cross_validate.py               # BONUS: Validación cruzada
+│
+├── 🧪 evaluation.sh                  # Guía de evaluación interactiva
+├── 🤖 test_auto.sh                   # Tests automatizados completos
+├── ⚙️ Makefile                        # Automatización de tareas
+│
+├── 💾 weights.pkl                    # Pesos entrenados (generado)
+├── 📄 houses.csv                     # Predicciones (generado)
+│
+├── 📊 dataset_train.csv              # Dataset de entrenamiento
+├── 🧪 dataset_test.csv               # Dataset de prueba
+└── ✓ dataset_truth.csv               # Casas reales (validación)
+```
+
 
 ## 📚 Documentación Técnica Completa
 
-Este proyecto incluye documentación exhaustiva de alto nivel profesional:
+Este proyecto incluye documentación exhaustiva de nivel profesional:
 
-### 📐 MATHS.md (2700+ líneas)
+### 📐 [MATHS.md](MATHS.md) — **1,780+ líneas**
+
 **Fundamentos matemáticos completos de Regresión Logística**
 
-**Contenido:**
-- 📊 Funciones estadísticas descriptivas sin pandas
+<details>
+<summary><b>📖 Ver contenido detallado</b></summary>
+
+- 📊 **Funciones estadísticas descriptivas** sin pandas
   - Media, desviación estándar, cuartiles
   - Implementación paso a paso de cada fórmula
   - Ejemplos numéricos con datos de estudiantes
 
-- 🎯 Regresión Logística vs Regresión Lineal
-  - ¿Por qué no se puede usar regresión lineal para clasificación?
+- 🎯 **Regresión Logística vs Regresión Lineal**
+  - ¿Por qué no usar regresión lineal para clasificación?
   - Diferencias conceptuales y matemáticas
   - Casos de uso apropiados
 
-- 📈 Función Sigmoide (Logística)
+- 📈 **Función Sigmoide (Logística)**
   - Derivación matemática completa
   - Tabla de valores y gráfico
   - Implementación en Python sin numpy
-  - Propiedades: σ'(z) = σ(z)(1 - σ(z))
+  - Propiedades: `σ'(z) = σ(z)(1 - σ(z))`
 
-- 💰 Función de Coste: Binary Cross-Entropy
+- 💰 **Función de Coste: Binary Cross-Entropy**
   - Derivación desde Maximum Likelihood
   - ¿Por qué no MSE para clasificación?
   - Interpretación probabilística
   - Implementación con manejo de overflow
 
-- 🔄 Gradient Descent: Derivación Completa
-  - Cálculo del gradiente ∂J/∂θⱼ
+- 🔄 **Gradient Descent: Derivación Completa**
+  - Cálculo del gradiente `∂J/∂θⱼ`
   - Batch, Stochastic y Mini-Batch GD
   - Comparación de ventajas/desventajas
   - Pseudocódigo y código Python
 
-- 🎪 Estrategia One-vs-All (Multiclase)
+- 🎪 **Estrategia One-vs-All (Multiclase)**
   - 4 clasificadores binarios para 4 casas
   - Predicción por máxima probabilidad
   - Ejemplo completo con 3 estudiantes
 
-- 📏 Normalización Z-score
-  - Teoría: x_norm = (x - μ) / σ
+- 📏 **Normalización Z-score**
+  - Teoría: `x_norm = (x - μ) / σ`
   - ¿Por qué normalizar?
   - Implementación y aplicación
 
@@ -388,73 +519,76 @@ Este proyecto incluye documentación exhaustiva de alto nivel profesional:
 - ✍️ **Ejemplos numéricos paso a paso**
 - 📐 **Diagramas de flujo** del algoritmo
 
-[📖 Ver MATHS.md](./MATHS.md)
+</details>
 
 ---
 
-### 🐍 PYTHON.md (1500+ líneas)
+### 🐍 [PYTHON.md](PYTHON.md) — **1,860+ líneas**
+
 **Guía completa de Python específica para DSLR**
 
-**Contenido:**
-- 🎓 Conceptos básicos de Python
+<details>
+<summary><b>📖 Ver contenido detallado</b></summary>
+
+- 🎓 **Conceptos básicos de Python**
   - Shebang, docstrings, imports
   - Variables y tipos de datos
   - Estructuras de control
 
-- 📚 Librerías utilizadas
+- 📚 **Librerías utilizadas**
   - **csv**: Lectura/escritura de datasets
   - **sys**: Argumentos y manejo de errores
   - **pickle**: Serialización del modelo
   - **matplotlib**: Visualizaciones
   - **random**: Shuffle para SGD
 
-- 🗂️ Estructuras de datos
+- 🗂️ **Estructuras de datos**
   - Listas (arrays) y operaciones
   - Diccionarios para One-vs-All
   - Tuplas y desempaquetado
   - List comprehensions avanzadas
 
-- 🧮 Funciones matemáticas personalizadas
+- 🧮 **Funciones matemáticas personalizadas**
   - Sigmoid sin numpy
   - Logaritmo natural (serie de Taylor)
   - Producto punto (dot product)
   - Estadísticas: mean, std, quartiles
 
-- 📁 Manejo de archivos CSV
+- 📁 **Manejo de archivos CSV**
   - Lectura con csv.reader
   - Conversión de tipos segura
   - Extracción de características
   - Escritura de predicciones
 
-- 💾 Serialización con Pickle
+- 💾 **Serialización con Pickle**
   - Guardar modelo completo
   - Cargar parámetros
   - Validación de integridad
 
-- 📊 Visualización con Matplotlib
+- 📊 **Visualización con Matplotlib**
   - Histogramas por casa
   - Scatter plots
   - Pair plots (matriz completa)
   - Curvas de aprendizaje
 
-- ⚠️ Manejo de errores
+- ⚠️ **Manejo de errores**
   - Try-except patterns
   - Validación de argumentos
   - Manejo de valores NaN
   - Assertions
 
-- 🎯 Programación funcional
+- 🎯 **Programación funcional**
   - Lambda functions
   - map(), filter(), reduce()
   - Aplicaciones en clasificación
 
-- 🏗️ Arquitectura One-vs-All
+- 🏗️ **Arquitectura One-vs-All**
   - Pipeline completo de entrenamiento
   - Creación de etiquetas binarias
   - Predicción multiclase
   - Código completo comentado
 
-- ✨ Optimización y buenas prácticas
+- ✨ **Optimización y buenas prácticas**
   - Docstrings completos
   - Type hints
   - Constantes y configuración
@@ -464,7 +598,7 @@ Este proyecto incluye documentación exhaustiva de alto nivel profesional:
 - 💡 **Ejemplos prácticos** del proyecto Hogwarts
 - 🔍 **Código comentado** línea por línea
 
-[📖 Ver PYTHON.md](./PYTHON.md)
+</details>
 
 ---
 
@@ -473,7 +607,7 @@ Este proyecto incluye documentación exhaustiva de alto nivel profesional:
 ✅ **Estudiantes de 42** que necesitan entender el proyecto en profundidad  
 ✅ **Evaluadores** que quieren verificar comprensión conceptual  
 ✅ **Principiantes en ML** sin conocimientos previos de machine learning  
-✅ **Desarrolladores Python** que quieren ver implementaciones sin librerías de alto nivel  
+✅ **Desarrolladores Python** que quieren ver implementaciones sin librerías de alto nivel
 
 ### 💡 Características de la Documentación
 
@@ -485,11 +619,22 @@ Este proyecto incluye documentación exhaustiva de alto nivel profesional:
 
 ---
 
-## Autores
+## 👥 Autores
 
-- sternero (42 Málaga) - Febrero 2025
-- 
+- **sternero** ([42 Málaga](https://www.42malaga.com/)) - Enero 2026
 
-## Referencias
+## 📖 Referencias
 
-- 42 School - Rama de Inteligencia Artificial
+- [42 School - Rama de Inteligencia Artificial](https://www.42.fr/)
+- [Andrew Ng - Machine Learning Course](https://www.coursera.org/learn/machine-learning)
+- [DotCSV - Canal de ML en español](https://www.youtube.com/@DotCSV)
+
+---
+
+<div align="center">
+
+**¿Dudas o sugerencias?** Consulta [MATHS.md](MATHS.md) y [PYTHON.md](PYTHON.md) para más detalles
+
+Made with 🧙‍♂️ at 42 Málaga
+
+</div>

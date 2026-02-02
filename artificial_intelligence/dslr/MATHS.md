@@ -19,14 +19,21 @@
 
 Este documento explica las matemáticas utilizadas en el proyecto **DSLR** (Data Science × Logistic Regression). Está diseñado para ser claro, directo y accesible incluso si tu experiencia previa en ML es limitada.
 
+---
+
+<div align="center">
+
 ✨ **Incluye:**
-- 📊 Fórmulas matemáticas completas con notación LaTeX
-- 🔍 Derivaciones paso a paso
-- 💡 Ejemplos numéricos del proyecto Hogwarts
-- 🎥 Videos educativos en español (enlaces al final de cada sección)
-- 📈 Visualizaciones y gráficos explicativos
+
+📊 Fórmulas matemáticas completas con notación LaTeX  
+🔍 Derivaciones paso a paso  
+💡 Ejemplos numéricos del proyecto Hogwarts  
+🎥 Videos educativos en español (enlaces al final de cada sección)  
+📈 Visualizaciones y gráficos explicativos
 
 **Resultado del proyecto:** ✅ **99.0% de precisión** en clasificación de casas de Hogwarts
+
+</div>
 
 ---
 

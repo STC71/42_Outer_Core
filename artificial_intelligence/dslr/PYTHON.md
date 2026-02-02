@@ -1,15 +1,22 @@
-# PYTHON.md - Guía Completa de Python para DSLR
+# 🐍 PYTHON.md — Guía Completa de Python para DSLR
 
 Este documento explica de forma clara y detallada todos los conceptos, librerías y funciones de Python utilizadas en el proyecto **DSLR** (Data Science × Logistic Regression), para que cualquier persona sin conocimientos previos pueda entenderlo completamente.
 
+---
+
+<div align="center">
+
 ✨ **Incluye:**
-- 🐍 Explicaciones detalladas de conceptos de Python
-- 📚 Librerías utilizadas (csv, sys, pickle, matplotlib, random)
-- 💡 Ejemplos prácticos del proyecto Hogwarts
-- 🎥 Videos educativos en español (al final de cada sección)
-- 🔍 Código comentado paso a paso
+
+🐍 Explicaciones detalladas de conceptos de Python  
+📚 Librerías utilizadas (csv, sys, pickle, matplotlib, random)  
+💡 Ejemplos prácticos del proyecto Hogwarts  
+🎥 Videos educativos en español (al final de cada sección)  
+🔍 Código comentado paso a paso
 
 **Proyecto:** Clasificación multiclase de estudiantes de Hogwarts usando Regresión Logística One-vs-All
+
+</div>
 
 ---
 

@@ -4,6 +4,7 @@
 # test_auto.sh - Testing automatizado completo para DSLR
 # ============================================================================
 # Prueba exhaustiva de la parte MANDATORY y BONUS según el subject
+# Proyecto: Data Science × Logistic Regression (Harry Potter)
 # Autor: sternero
 # Fecha: Enero 2026
 # ============================================================================
