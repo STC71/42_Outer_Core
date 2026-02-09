@@ -60,7 +60,7 @@ def is_numerical_column(column_data):
     Intenta convertir el primer valor válido a float.
     """
     for value in column_data:  # Para cada valor
-        if value and value.strip():  # Si no está vacío
+        if value and value.strip():  # Si no está vacío .strip() para eliminar espacios
             try:  # Intentar conversión
                 float(value)  # Convertir a float
                 return True  # Es numérica
@@ -96,6 +96,10 @@ def calculate_homogeneity_score(house_distributions):
     Medimos:
     1. Varianza de medias entre casas
     2. Varianza de desviaciones estándar entre casas
+    La Varianza es una medida de dispersión que indica cuánto varían los valores respecto a su media.
+    Combinamos ambas varianzas para obtener una puntuación final.
+    La desviación estándar mide la dispersión de los datos respecto a su media. 
+    Si las desviaciones estándar son similares entre casas, indica que la dispersión de las puntuaciones es homogénea.
     """
     if not house_distributions:  # Si no hay datos
         return float('inf')  # Retornar infinito (peor puntuación)
@@ -119,15 +123,27 @@ def calculate_homogeneity_score(house_distributions):
     if len(means) < 2 or len(stds) < 2:
         return float('inf')
     
-    # Variance of means (how different are the averages across houses)
+    # La varianza de las medias indica cuánto varían las medias de las puntuaciones entre las casas.
+    # Sirve para evaluar si las casas tienen puntuaciones promedio similares 
+    # (homogeneidad en el centro de la distribución).
     mean_of_means = sum(means) / len(means)
     variance_of_means = sum((m - mean_of_means) ** 2 for m in means) / len(means)
     
-    # Variance of stds (how different are the spreads across houses)
+    # Varianza de las desviaciones estándar (qué tan diferentes son las dispersiónes entre casas)
+    # Sirve para evaluar si las casas tienen una dispersión similar en sus puntuaciones 
+    # (homogeneidad en la forma de la distribución).
     mean_of_stds = sum(stds) / len(stds)
     variance_of_stds = sum((s - mean_of_stds) ** 2 for s in stds) / len(stds)
     
-    # Combined score (normalized)
+    # Combinamos ambas varianzas para obtener una puntuación final de homogeneidad.
+    # Normalizamos cada varianza dividiéndola por el cuadrado de su media para evitar 
+    # que una varianza grande domine la puntuación final.
+    # Si la media de medias es distinta de cero, normalizamos la varianza de las medias 
+    # dividiéndola por el cuadrado de la media de las medias.
+    # Si es igual a cero, dejamos la varianza sin normalizar para evitar división por cero.
+    # Si la media de desviaciones estándar es distinta de cero, normalizamos la varianza de las desviaciones estándar 
+    # dividiéndola por el cuadrado de la media de las desviaciones estándar.
+    # Si es igual a cero, dejamos la varianza sin normalizar para evitar división por cero.
     if mean_of_means != 0:
         normalized_mean_var = variance_of_means / (mean_of_means ** 2)
     else:
@@ -142,17 +158,17 @@ def calculate_homogeneity_score(house_distributions):
 
 
 def plot_histograms(filename):
-    """Plot histograms for all numerical features, grouped by house"""
+    """Graficar histogramas para todas las características numéricas, agrupadas por casa"""
     headers, data = read_csv(filename)
     
-    # Get house data
+    # Obtener datos de casas
     houses, house_indices = get_house_data(data)
     
     if not houses:
         print("No se encontraron datos de casas en el conjunto de datos")
         return
     
-    # Get numerical features (exclude Index and other non-course columns)
+    # Obtener features numéricas (excluir columnas no numéricas)
     excluded_columns = ['Index', 'Hogwarts House', 'First Name', 'Last Name', 
                        'Birthday', 'Best Hand']
     numerical_features = []
@@ -165,17 +181,22 @@ def plot_histograms(filename):
         print("No se encontraron características numéricas")
         return
     
-    # Calculate homogeneity scores
-    print("\n" + "="*80)
+    # Calcular puntuaciones de homogeneidad
+    print("\n" + "="*80) 
+    # Salto de línea más signo de igual para separar secciones. 
+    # *80 es el número de caracteres para crear una línea completa.
     print("HOMOGENEITY ANALYSIS")
     print("="*80)
     print("\nAnalizando qué curso tiene la distribución más similar entre casas...")
     print("(Puntuación más baja = más homogéneo)\n")
     
-    homogeneity_scores = {}
+    homogeneity_scores = {}     # Diccionario para almacenar puntuaciones de homogeneidad por característica
     
     for feature in numerical_features:
         house_distributions = {}
+        # feature es el nombre de la característica que estamos analizando (por ejemplo, 'Arithmancy')
+        # numerical_features es la lista de todas las características numéricas que hemos identificado en el conjunto de datos.
+        # house_distributions es un diccionario que almacenará las puntuaciones de la característica actual para cada casa de Hogwarts.
         
         for house_name, indices in house_indices.items():
             values = []
@@ -183,12 +204,48 @@ def plot_histograms(filename):
                 val = parse_float(data[feature][idx])
                 values.append(val)
             house_distributions[house_name] = values
+        # Para cada casa, usando los índices de filas correspondientes, se extraen los valores de la característica actual,
+        # guardándolos en values. Luego, asignan esta lista de valores al diccionario house_distributions bajo el nombre 
+        # de la casa.
+        # Al finalizar este bucle, house_distributions tendrá la siguiente estructura:
+        # {
+        #     'Gryffindor': [valores de la característica para estudiantes de Gryffindor],
+        #     'Hufflepuff': [valores de la característica para estudiantes de Hufflepuff],
+        #     'Ravenclaw': [valores de la característica para estudiantes de Ravenclaw],
+        #     'Slytherin': [valores de la característica para estudiantes de Slytherin]
+        # }
+        # Cada lista de valores contiene las puntuaciones de la característica actual para los estudiantes de esa casa, 
+        # convertidos a float (o None si no se pudieron convertir). 
+        # Estos valores se utilizan posteriormente para calcular la puntuación de homogeneidad de la característica entre 
+        # las casas.
+        # En resumen, este bloque de código organiza los datos de la característica actual por casa, 
+        # convirtiendo los valores a float y almacenándolos en el diccionario house_distributions para su análisis
         
         score = calculate_homogeneity_score(house_distributions)
+        # La función calculate_homogeneity_score toma el diccionario house_distributions, 
+        # que contiene las puntuaciones de la característica actual para cada casa,
+        # y calcula una puntuación de homogeneidad que indica qué tan similar es la distribución de esa característica 
+        # entre las casas.
+        # El resultado se almacena en la variable score, que representa la puntuación de homogeneidad para 
+        # la característica actual.
         homogeneity_scores[feature] = score
+        # Finalmente, la puntuación de homogeneidad calculada para la característica actual se guarda en el diccionario homogeneity_scores, 
+        # utilizando el nombre de la característica como clave. Esto permite comparar las puntuaciones de homogeneidad 
+        # de todas las características numéricas y determinar cuál tiene la distribución más homogénea entre las casas de Hogwarts.
     
-    # Sort by homogeneity score
+    # Ordenar características por puntuación de homogeneidad (de menor a mayor)
     sorted_features = sorted(homogeneity_scores.items(), key=lambda x: x[1])
+    # sorted_features es una lista de tuplas (feature, score) ordenada por la puntuación de homogeneidad de menor a mayor.
+    # Esto significa que la característica con la puntuación de homogeneidad más baja (más homogénea) estará al principio 
+    # de la lista.
+    # La función sorted toma el diccionario homogeneity_scores y lo convierte en una lista de tuplas, donde cada tupla 
+    # contiene el nombre de la característica y su puntuación de homogeneidad. Luego, se ordena esta lista utilizando 
+    # una función lambda que especifica que la clave de ordenación es la puntuación (x[1]).
+    # La función lambda es una función anónima que se utiliza para extraer la puntuación de homogeneidad de cada tupla (x[1]) 
+    # para ordenar la lista. Esta función viene de la biblioteca estándar de Python y es comúnmente utilizada para ordenar 
+    # listas de tuplas o diccionarios por un valor específico.
+    # Al ordenar por la puntuación de homogeneidad, podemos identificar fácilmente cuál característica tiene la distribución 
+    # más homogénea entre las casas de Hogwarts, ya que estará al principio de la lista
     
     print(f"{'Característica':<30} {'Puntuación Homogeneidad':>20}")
     print("-" * 52)
