@@ -8,85 +8,100 @@ Una distribución homogénea significa que las puntuaciones están distribuidas
 de forma similar en todas las casas (media, desviación estándar y forma similares).
 """
 
-import sys
-import csv
-import matplotlib.pyplot as plt
+import sys  # Para manejo de argumentos y errores
+import csv  # Para leer archivos CSV
+import matplotlib.pyplot as plt  # Para crear gráficos
 
 
 def parse_float(value):
-    """Convertir cadena a float de forma segura, devolver None si no es posible"""
-    try:
+    """
+    Convertir cadena a float de forma segura.
+    Retorna None si no es posible la conversión.
+    """
+    try:  # Intentar conversión
         return float(value)
-    except (ValueError, TypeError):
-        return None
+    except (ValueError, TypeError):  # Si hay error
+        return None  # Retornar None
 
 
 def read_csv(filename):
-    """Leer archivo CSV y devolver encabezados y datos"""
-    try:
-        with open(filename, 'r') as f:
-            reader = csv.reader(f)
-            headers = next(reader)
+    """
+    Leer archivo CSV y devolver encabezados y datos.
+    filename: ruta al archivo CSV
+    Retorna (headers, data)
+    """
+    try:  # Intentar abrir archivo
+        with open(filename, 'r') as f:  # Abrir en modo lectura
+            reader = csv.reader(f)  # Crear lector CSV
+            headers = next(reader)  # Leer encabezados
             
-            data = {header: [] for header in headers}
+            # Inicializar diccionario de datos
+            data = {header: [] for header in headers}  # Dict comprehension
             
-            for row in reader:
-                for i, value in enumerate(row):
-                    if i < len(headers):
-                        data[headers[i]].append(value)
+            # Leer todas las filas
+            for row in reader:  # Para cada fila
+                for i, value in enumerate(row):  # Para cada valor
+                    if i < len(headers):  # Si índice válido
+                        data[headers[i]].append(value)  # Añadir a columna
         
-        return headers, data
+        return headers, data  # Retornar datos
     
-    except FileNotFoundError:
+    except FileNotFoundError:  # Si archivo no existe
         print(f"Error: Archivo '{filename}' no encontrado", file=sys.stderr)
         sys.exit(1)
-    except Exception as e:
+    except Exception as e:  # Cualquier otro error
         print(f"Error leyendo archivo: {e}", file=sys.stderr)
         sys.exit(1)
 
 
 def is_numerical_column(column_data):
-    """Comprobar si una columna contiene datos numéricos"""
-    for value in column_data:
-        if value and value.strip():
-            try:
-                float(value)
-                return True
-            except ValueError:
-                return False
-    return False
+    """
+    Comprobar si una columna contiene datos numéricos.
+    Intenta convertir el primer valor válido a float.
+    """
+    for value in column_data:  # Para cada valor
+        if value and value.strip():  # Si no está vacío
+            try:  # Intentar conversión
+                float(value)  # Convertir a float
+                return True  # Es numérica
+            except ValueError:  # Si falla
+                return False  # No es numérica
+    return False  # Si no hay valores, no es numérica
 
 
 def get_house_data(data, house_column='Hogwarts House'):
-    """Organize data by house"""
-    houses = {}
-    house_indices = {}
+    """
+    Organizar datos por casa de Hogwarts.
+    Retorna diccionarios de casas e índices de filas por casa.
+    """
+    houses = {}  # Diccionario para datos por casa
+    house_indices = {}  # Índices de filas por casa
     
-    # Get all rows for each house
-    for i, house in enumerate(data[house_column]):
-        if house and house.strip():
-            if house not in houses:
-                houses[house] = []
-                house_indices[house] = []
-            house_indices[house].append(i)
+    # Obtener todas las filas para cada casa
+    for i, house in enumerate(data[house_column]):  # Para cada casa
+        if house and house.strip():  # Si hay nombre de casa válido
+            if house not in houses:  # Si es casa nueva
+                houses[house] = []  # Inicializar lista
+                house_indices[house] = []  # Inicializar índices
+            house_indices[house].append(i)  # Añadir índice de fila
     
-    return houses, house_indices
+    return houses, house_indices  # Retornar datos organizados
 
 
 def calculate_homogeneity_score(house_distributions):
     """
-    Calculate a homogeneity score for a feature across houses.
-    Lower score = more homogeneous distribution
+    Calcular puntuación de homogeneidad para una característica entre casas.
+    Puntuación más baja = distribución más homogénea.
     
-    We measure:
-    1. Variance of means across houses
-    2. Variance of standard deviations across houses
+    Medimos:
+    1. Varianza de medias entre casas
+    2. Varianza de desviaciones estándar entre casas
     """
-    if not house_distributions:
-        return float('inf')
+    if not house_distributions:  # Si no hay datos
+        return float('inf')  # Retornar infinito (peor puntuación)
     
-    means = []
-    stds = []
+    means = []  # Lista de medias por casa
+    stds = []  # Lista de desviaciones estándar por casa
     
     for house_name, values in house_distributions.items():
         clean_values = [v for v in values if v is not None]

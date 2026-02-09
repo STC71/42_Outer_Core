@@ -7,39 +7,52 @@ Carga los pesos del entrenamiento y aplica clasificación One-vs-All.
 Genera predicciones en houses.csv en el formato requerido.
 """
 
-import sys
-import csv
-import pickle
+import sys  # Para argumentos de línea de comandos y manejo de errores
+import csv  # Para leer archivos CSV y escribir predicciones
+import pickle  # Para cargar el modelo entrenado desde archivo binario
 
 
 def parse_float(value):
-    """Convertir cadena a float de forma segura, devolver None si no es posible"""
-    try:
-        return float(value)
-    except (ValueError, TypeError):
-        return None
+    """
+    Convertir cadena a float de forma segura.
+    Si la conversión falla, retorna None en lugar de error.
+    value: cadena a convertir
+    Retorna float o None si no es convertible.
+    """
+    try:  # Intentar conversión
+        return float(value)  # Convertir a float
+    except (ValueError, TypeError):  # Si hay error
+        return None  # Retornar None
 
 
 def read_csv(filename):
-    """Leer archivo CSV y devolver encabezados y datos"""
-    try:
-        with open(filename, 'r') as f:
-            reader = csv.reader(f)
-            headers = next(reader)
+    """
+    Leer archivo CSV y devolver encabezados y datos.
+    filename: ruta al archivo CSV
+    Retorna tupla (headers, data):
+    - headers: lista de nombres de columnas
+    - data: diccionario {columna: [valores]}
+    """
+    try:  # Intentar abrir archivo
+        with open(filename, 'r') as f:  # Abrir en modo lectura
+            reader = csv.reader(f)  # Crear lector CSV
+            headers = next(reader)  # Leer primera fila (encabezados)
             
-            data = {header: [] for header in headers}
+            # Inicializar diccionario con listas vacías
+            data = {header: [] for header in headers}  # Dict comprehension
             
-            for row in reader:
-                for i, value in enumerate(row):
-                    if i < len(headers):
-                        data[headers[i]].append(value)
+            # Leer todas las filas restantes
+            for row in reader:  # Para cada fila
+                for i, value in enumerate(row):  # Para cada valor en la fila
+                    if i < len(headers):  # Si no excede número de columnas
+                        data[headers[i]].append(value)  # Añadir a columna correspondiente
         
-        return headers, data
+        return headers, data  # Retornar encabezados y datos
     
-    except FileNotFoundError:
+    except FileNotFoundError:  # Si archivo no existe
         print(f"Error: Archivo '{filename}' no encontrado", file=sys.stderr)
-        sys.exit(1)
-    except Exception as e:
+        sys.exit(1)  # Salir con error
+    except Exception as e:  # Cualquier otro error
         print(f"Error leyendo archivo: {e}", file=sys.stderr)
         sys.exit(1)
 
@@ -47,45 +60,55 @@ def read_csv(filename):
 def sigmoid(z):
     """
     Función de activación sigmoide: g(z) = 1 / (1 + e^(-z))
+    Transforma cualquier valor a un rango entre 0 y 1 (probabilidad).
+    z: valor de entrada
+    Retorna valor entre 0 y 1.
     """
-    if z > 500:
-        return 1.0
-    elif z < -500:
-        return 0.0
+    if z > 500:  # Si z es muy grande, evitar overflow
+        return 1.0  # sigmoid(∞) = 1
+    elif z < -500:  # Si z es muy negativo
+        return 0.0  # sigmoid(-∞) = 0
     
-    try:
-        return 1.0 / (1.0 + (2.718281828459045 ** (-z)))
-    except:
-        return 0.5
+    try:  # Calcular sigmoid normalmente
+        return 1.0 / (1.0 + (2.718281828459045 ** (-z)))  # e ≈ 2.718...
+    except:  # Si hay error
+        return 0.5  # Retornar valor medio seguro
 
 
 def load_model(filename='weights.pkl'):
-    """Load trained model from file"""
-    try:
-        with open(filename, 'rb') as f:
-            model = pickle.load(f)
-        return model
-    except FileNotFoundError:
+    """
+    Cargar modelo entrenado desde archivo.
+    filename: ruta al archivo con pesos del modelo
+    Retorna diccionario con modelo (pesos, features, casas, parámetros).
+    """
+    try:  # Intentar cargar modelo
+        with open(filename, 'rb') as f:  # Abrir en modo lectura binaria
+            model = pickle.load(f)  # Deserializar modelo con pickle
+        return model  # Retornar modelo cargado
+    except FileNotFoundError:  # Si archivo no existe
         print(f"Error: Archivo de modelo '{filename}' no encontrado", file=sys.stderr)
         print("Por favor entrena el modelo primero usando logreg_train.py", file=sys.stderr)
-        sys.exit(1)
-    except Exception as e:
+        sys.exit(1)  # Salir con error
+    except Exception as e:  # Cualquier otro error
         print(f"Error cargando modelo: {e}", file=sys.stderr)
         sys.exit(1)
 
 
 def prepare_test_data(filename, feature_names, normalization_params):
     """
-    Prepare test data using same preprocessing as training
+    Preparar datos de prueba usando el mismo preprocesamiento que en entrenamiento.
+    - Lee archivo CSV de prueba
+    - Imputa valores faltantes con medias del entrenamiento
+    - Normaliza usando parámetros del entrenamiento
     
     Args:
-        filename: Path to test CSV
-        feature_names: List of feature names (from training)
-        normalization_params: Normalization parameters from training
+        filename: Ruta al CSV de prueba
+        feature_names: Lista de nombres de features (del entrenamiento)
+        normalization_params: Parámetros de normalización del entrenamiento
     
-    Returns:
-        X: Feature matrix with bias term
-        indices: Original row indices from dataset
+    Retorna:
+        X: Matriz de features con término de sesgo
+        indices: Índices originales de las filas del dataset
     """
     headers, data = read_csv(filename)
     

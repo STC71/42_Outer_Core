@@ -6,9 +6,9 @@ Mostrar gráfico de dispersión para responder: ¿Cuáles son las dos caracterí
 Características similares mostrarán una fuerte correlación lineal (positiva o negativa).
 """
 
-import sys
-import csv
-import matplotlib.pyplot as plt
+import sys  # Para argumentos y manejo de errores
+import csv  # Para leer archivos CSV  
+import matplotlib.pyplot as plt  # Para crear gráficos
 
 
 def parse_float(value):
@@ -57,46 +57,54 @@ def is_numerical_column(column_data):
 
 def calculate_correlation(x_values, y_values):
     """
-    Calculate Pearson correlation coefficient between two variables
-    No numpy or pandas allowed!
+    Calcular coeficiente de correlación de Pearson entre dos variables.
+    ¡No se permite numpy o pandas!
     
-    r = Σ((x - mean_x)(y - mean_y)) / sqrt(Σ(x - mean_x)² * Σ(y - mean_y)²)
+    Fórmula: r = Σ((x - media_x)(y - media_y)) / sqrt(Σ(x - media_x)² * Σ(y - media_y)²)
+    
+    Retorna valor entre -1 y 1:
+    - 1: correlación positiva perfecta
+    - 0: sin correlación
+    - -1: correlación negativa perfecta
     """
-    # Filter out None values
+    # Filtrar valores None
     pairs = [(x, y) for x, y in zip(x_values, y_values) if x is not None and y is not None]
     
-    if len(pairs) < 2:
-        return None
+    if len(pairs) < 2:  # Si no hay suficientes datos
+        return None  # No se puede calcular correlación
     
-    x_clean = [p[0] for p in pairs]
-    y_clean = [p[1] for p in pairs]
+    x_clean = [p[0] for p in pairs]  # Lista de valores x válidos
+    y_clean = [p[1] for p in pairs]  # Lista de valores y válidos
     
-    n = len(x_clean)
+    n = len(x_clean)  # Número de pares válidos
     
-    # Calculate means
-    mean_x = sum(x_clean) / n
-    mean_y = sum(y_clean) / n
+    # Calcular medias
+    mean_x = sum(x_clean) / n  # Media de x
+    mean_y = sum(y_clean) / n  # Media de y
     
-    # Calculate covariance and standard deviations
+    # Calcular covarianza y desviaciones estándar
     covariance = sum((x - mean_x) * (y - mean_y) for x, y in zip(x_clean, y_clean))
     
-    std_x_sq = sum((x - mean_x) ** 2 for x in x_clean)
-    std_y_sq = sum((y - mean_y) ** 2 for y in y_clean)
+    std_x_sq = sum((x - mean_x) ** 2 for x in x_clean)  # Suma de cuadrados x
+    std_y_sq = sum((y - mean_y) ** 2 for y in y_clean)  # Suma de cuadrados y
     
-    # Avoid division by zero
-    if std_x_sq == 0 or std_y_sq == 0:
-        return None
+    # Evitar división por cero
+    if std_x_sq == 0 or std_y_sq == 0:  # Si alguna variable es constante
+        return None  # No hay correlación
     
-    # Pearson correlation coefficient
+    # Coeficiente de correlación de Pearson
     correlation = covariance / (std_x_sq * std_y_sq) ** 0.5
     
-    return correlation
+    return correlation  # Retornar correlación
 
 
 def find_most_similar_features(data, numerical_features):
-    """Find the pair of features with highest absolute correlation"""
-    max_correlation = 0
-    best_pair = None
+    """
+    Encontrar el par de características con mayor correlación absoluta.
+    Mayor correlación = características más similares.
+    """
+    max_correlation = 0  # Máxima correlación encontrada
+    best_pair = None  # Mejor par de features
     
     correlations = []
     

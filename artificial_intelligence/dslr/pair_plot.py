@@ -10,10 +10,10 @@ Buenas características para clasificación deben:
 3. Tener varianza suficiente
 """
 
-import sys
-import csv
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
+import sys  # Para argumentos y manejo de errores
+import csv  # Para leer archivos CSV
+import matplotlib.pyplot as plt  # Para crear gráficos
+import matplotlib.patches as mpatches  # Para leyendas personalizadas
 
 
 def parse_float(value):
@@ -49,28 +49,35 @@ def read_csv(filename):
 
 
 def is_numerical_column(column_data):
-    """Check if a column contains numerical data"""
-    for value in column_data:
-        if value and value.strip():
-            try:
-                float(value)
-                return True
-            except ValueError:
-                return False
-    return False
+    """
+    Verificar si una columna contiene datos numéricos.
+    Intenta convertir primer valor válido a float.
+    """
+    for value in column_data:  # Para cada valor
+        if value and value.strip():  # Si no está vacío
+            try:  # Intentar conversión
+                float(value)  # Convertir a float
+                return True  # Es numérica
+            except ValueError:  # Si falla
+                return False  # No es numérica
+    return False  # Si no hay valores, no es numérica
 
 
 def plot_pair_plot(filename):
-    """Create pair plot for all numerical features"""
-    headers, data = read_csv(filename)
+    """
+    Crear gráfico de pares para todas las características numéricas.
+    Matriz de scatter plots que muestra relaciones entre todas las features.
+    Ayuda a identificar qué features son útiles para clasificación.
+    """
+    headers, data = read_csv(filename)  # Leer datos del CSV
     
-    # Get house data
-    house_column = 'Hogwarts House'
-    houses_list = data.get(house_column, [])
+    # Obtener datos de casas
+    house_column = 'Hogwarts House'  # Columna con casas de Hogwarts
+    houses_list = data.get(house_column, [])  # Lista de casas por estudiante
     
-    # Get numerical features (select most relevant courses)
+    # Obtener features numéricas (seleccionar cursos más relevantes)
     excluded_columns = ['Index', 'Hogwarts House', 'First Name', 'Last Name', 
-                       'Birthday', 'Best Hand']
+                       'Birthday', 'Best Hand']  # Columnas no numéricas a excluir
     
     all_numerical_features = []
     for header in headers:

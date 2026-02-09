@@ -10,16 +10,19 @@ Características:
 - División de datos
 """
 
-import csv
-import sys
+import csv  # Para leer y escribir archivos CSV
+import sys  # Para manejo de errores y argumentos
 
 
 def parse_float(value):
-    """Convertir cadena a float de forma segura, devolver None si no es posible"""
-    try:
+    """
+    Convertir cadena a float de forma segura.
+    Retorna None si no es posible la conversión.
+    """
+    try:  # Intentar conversión
         return float(value)
-    except (ValueError, TypeError):
-        return None
+    except (ValueError, TypeError):  # Si hay error
+        return None  # Retornar None
 
 
 def read_csv(filename):
@@ -47,36 +50,49 @@ def read_csv(filename):
 
 
 def is_numerical_column(column_data):
-    """Check if a column contains numerical data"""
-    for value in column_data:
-        if value and value.strip():
-            try:
-                float(value)
-                return True
-            except ValueError:
-                return False
-    return False
+    """
+    Verificar si una columna contiene datos numéricos.
+    Intenta convertir el primer valor no vacío a float.
+    """
+    for value in column_data:  # Para cada valor
+        if value and value.strip():  # Si no está vacío
+            try:  # Intentar conversión
+                float(value)  # Convertir a float
+                return True  # Es numérica
+            except ValueError:  # Si falla
+                return False  # No es numérica
+    return False  # Si no hay valores, no es numérica
 
 
 def calculate_mean(values):
-    """Calculate mean of numerical values, ignoring None"""
-    clean_values = [v for v in values if v is not None]
-    if len(clean_values) == 0:
-        return None
-    return sum(clean_values) / len(clean_values)
+    """
+    Calcular la media de valores numéricos, ignorando None.
+    values: lista de valores que puede contener None
+    Retorna la media o None si no hay valores válidos.
+    """
+    clean_values = [v for v in values if v is not None]  # Filtrar None
+    if len(clean_values) == 0:  # Si no hay valores válidos
+        return None  # Retornar None
+    return sum(clean_values) / len(clean_values)  # Retornar promedio
 
 
 def calculate_median(values):
-    """Calculate median of numerical values, ignoring None"""
-    clean_values = [v for v in values if v is not None]
-    if len(clean_values) == 0:
-        return None
-    sorted_values = sorted(clean_values)
-    n = len(sorted_values)
-    if n % 2 == 0:
+    """
+    Calcular la mediana de valores numéricos, ignorando None.
+    La mediana es el valor central cuando los datos están ordenados.
+    values: lista de valores que puede contener None
+    Retorna la mediana o None si no hay valores válidos.
+    """
+    clean_values = [v for v in values if v is not None]  # Filtrar None
+    if len(clean_values) == 0:  # Si no hay valores válidos
+        return None  # Retornar None
+    sorted_values = sorted(clean_values)  # Ordenar valores
+    n = len(sorted_values)  # Número de valores
+    if n % 2 == 0:  # Si es par
+        # Mediana = promedio de los dos valores centrales
         return (sorted_values[n//2 - 1] + sorted_values[n//2]) / 2
-    else:
-        return sorted_values[n//2]
+    else:  # Si es impar
+        return sorted_values[n//2]  # Mediana = valor central
 
 
 def impute_missing_values(data, numerical_features, method='mean'):
@@ -281,7 +297,7 @@ def main():
     
     preprocessed = preprocess_data(filename, normalization='minmax', imputation='mean')
     
-print(f"\nCaracterísticas usadas ({len(preprocessed['feature_names'])}):") 
+    print(f"\nCaracterísticas usadas ({len(preprocessed['feature_names'])}):") 
     for feat in preprocessed['feature_names']:
         print(f"  - {feat}")
     

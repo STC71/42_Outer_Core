@@ -6,78 +6,96 @@ Realizar validación cruzada en datos de entrenamiento para estimar precisión.
 Ya que el conjunto de prueba no tiene etiquetas, dividimos los datos de entrenamiento para validar.
 """
 
-import sys
-import random
-import pickle
+import sys  # Para manejo de errores
+import random  # Para mezclar datos aleatoriamente
+import pickle  # Para cargar modelo guardado
 
 
 def parse_float(value):
-    """Convertir cadena a float de forma segura"""
-    try:
+    """
+    Convertir cadena a float de forma segura.
+    Retorna None si no es posible.
+    """
+    try:  # Intentar conversión
         return float(value)
-    except (ValueError, TypeError):
-        return None
+    except (ValueError, TypeError):  # Si hay error
+        return None  # Retornar None
 
 
 def read_csv(filename):
-    """Leer archivo CSV"""
-    import csv
-    try:
-        with open(filename, 'r') as f:
-            reader = csv.reader(f)
-            headers = next(reader)
-            data = {header: [] for header in headers}
-            for row in reader:
-                for i, value in enumerate(row):
-                    if i < len(headers):
-                        data[headers[i]].append(value)
-        return headers, data
-    except FileNotFoundError:
+    """
+    Leer archivo CSV y retornar encabezados y datos.
+    filename: ruta al archivo CSV
+    Retorna tupla (headers, data).
+    """
+    import csv  # Importar módulo csv
+    try:  # Intentar abrir archivo
+        with open(filename, 'r') as f:  # Abrir en lectura
+            reader = csv.reader(f)  # Crear lector
+            headers = next(reader)  # Leer encabezados
+            data = {header: [] for header in headers}  # Inicializar dict
+            for row in reader:  # Para cada fila
+                for i, value in enumerate(row):  # Para cada valor
+                    if i < len(headers):  # Si índice válido
+                        data[headers[i]].append(value)  # Añadir valor
+        return headers, data  # Retornar datos
+    except FileNotFoundError:  # Si archivo no existe
         print(f"Error: Archivo '{filename}' no encontrado", file=sys.stderr)
-        sys.exit(1)
+        sys.exit(1)  # Salir con error
 
 
 def sigmoid(z):
-    """Sigmoid function"""
-    if z > 500:
-        return 1.0
-    elif z < -500:
-        return 0.0
-    return 1.0 / (1.0 + (2.718281828459045 ** (-z)))
+    """
+    Función sigmoide: g(z) = 1 / (1 + e^(-z))
+    Transforma valores a rango [0, 1].
+    """
+    if z > 500:  # Evitar overflow
+        return 1.0  # sigmoid(∞) = 1
+    elif z < -500:  # Evitar underflow
+        return 0.0  # sigmoid(-∞) = 0
+    return 1.0 / (1.0 + (2.718281828459045 ** (-z)))  # Calcular sigmoid
 
 
 def split_data(X, y_dict, houses, train_ratio=0.8):
-    """Split data into train and validation sets"""
-    n_samples = len(X)
-    indices = list(range(n_samples))
-    random.shuffle(indices)
+    """
+    Dividir datos en conjuntos de entrenamiento y validación.
+    train_ratio: proporción para entrenamiento (por defecto 80%)
+    Retorna X_train, X_val, y_train_dict, y_val_dict.
+    """
+    n_samples = len(X)  # Número total de ejemplos
+    indices = list(range(n_samples))  # Lista de índices
+    random.shuffle(indices)  # Mezclar aleatoriamente
     
-    split_point = int(n_samples * train_ratio)
-    train_indices = indices[:split_point]
-    val_indices = indices[split_point:]
+    split_point = int(n_samples * train_ratio)  # Punto de división
+    train_indices = indices[:split_point]  # Índices de entrenamiento
+    val_indices = indices[split_point:]  # Índices de validación
     
-    X_train = [X[i] for i in train_indices]
-    X_val = [X[i] for i in val_indices]
+    X_train = [X[i] for i in train_indices]  # Features de entrenamiento
+    X_val = [X[i] for i in val_indices]  # Features de validación
     
-    y_train_dict = {}
-    y_val_dict = {}
+    y_train_dict = {}  # Etiquetas de entrenamiento por casa
+    y_val_dict = {}  # Etiquetas de validación por casa
     
-    for house in houses:
+    for house in houses:  # Para cada casa
         y_train_dict[house] = [y_dict[house][i] for i in train_indices]
         y_val_dict[house] = [y_dict[house][i] for i in val_indices]
     
-    return X_train, X_val, y_train_dict, y_val_dict
+    return X_train, X_val, y_train_dict, y_val_dict  # Retornar splits
 
 
 def predict_one_vs_all(X, theta_dict, houses):
-    """Make predictions"""
-    predictions = []
+    """
+    Hacer predicciones usando clasificadores One-vs-All.
+    Para cada ejemplo, calcula probabilidad para cada casa y elige la máxima.
+    Retorna lista de predicciones.
+    """
+    predictions = []  # Lista para almacenar predicciones
     
-    for x in X:
-        probabilities = {}
-        for house in houses:
-            theta = theta_dict[house]
-            z = sum(theta[j] * x[j] for j in range(len(theta)))
+    for x in X:  # Para cada ejemplo
+        probabilities = {}  # Diccionario de probabilidades por casa
+        for house in houses:  # Para cada casa
+            theta = theta_dict[house]  # Obtener pesos de esta casa
+            z = sum(theta[j] * x[j] for j in range(len(theta)))  # Calcular z = θᵀx
             prob = sigmoid(z)
             probabilities[house] = prob
         
