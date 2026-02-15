@@ -248,7 +248,7 @@ def plot_histograms(filename):
     # más homogénea entre las casas de Hogwarts, ya que estará al principio de la lista
     
     print(f"{'Característica':<30} {'Puntuación Homogeneidad':>20}")
-    print("-" * 52)
+    print("-" * 52)     # Línea de separación entre encabezados y datos. 52 veces el signo de menos.
     for feature, score in sorted_features:
         print(f"{feature:<30} {score:>20.6f}")
     
@@ -257,18 +257,44 @@ def plot_histograms(filename):
     print(f"RESPUESTA: '¡{most_homogeneous}' tiene la distribución más homogénea!")
     print(f"{'='*80}\n")
     
-    # Create subplots
+    # Crear subplots
+    # Los subplots son gráficos individuales que se organizan en una cuadrícula dentro de una figura más grande.
+    # En este caso, se crean subplots para cada característica numérica, agrupados por casa, para visualizar las 
+    # distribuciones de puntuaciones.
+    # Para visualizar las distribuciones de puntuaciones de cada característica numérica por casa, se crean subplots 
+    # utilizando Matplotlib.
+    # n_features es el número total de características numéricas que se van a graficar. 
+    # n_cols es el número de columnas que se desea en la cuadrícula de subplots (en este caso, 3). 
+    # n_rows se calcula dividiendo el número de características por el número de columnas y redondeando hacia arriba 
+    # para asegurarse de que haya suficientes filas.
     n_features = len(numerical_features)
     n_cols = 3
-    n_rows = (n_features + n_cols - 1) // n_cols
+    n_rows = (n_features + n_cols - 1) // n_cols    # // es división entera, +n_cols-1 para redondear hacia arriba.
     
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(15, 5 * n_rows))
+    # fig, axes son los objetos que devuelve plt.subplots. fig es la figura principal que contiene todos los subplots,
+    # y axes es una matriz de objetos de ejes (subplots) donde se dibujarán los histogramas.
+    # La función plt.subplots se utiliza para crear una figura y una cuadrícula de subplots.
+    # n_rows y n_cols especifican el número de filas y columnas en la cuadrícula de subplots, respectivamente. 
+    # figsize define el tamaño de la figura en pulgadas (ancho, alto). 
+    # En este caso, el ancho es fijo en 15 pulgadas, mientras que el alto depende del número de filas.
+    # 5 * n_rows asegura que cada fila tenga suficiente espacio vertical para mostrar los histogramas de manera clara.
     fig.suptitle('Hogwarts Course Score Distributions by House', fontsize=16, y=0.995)
+    # fig.suptitle establece un título general para toda la figura que contiene los subplots.
+    # El título es 'Hogwarts Course Score Distributions by House', con un tamaño de fuente de 16 y una posición vertical 
+    # ajustada con y=0.995 para que quede cerca de la parte superior de la figura sin superponerse con los subplots.
     
-    # Flatten axes for easier iteration
+    # Convertir el array de ejes (axes) de matplotlib a una lista plana para facilitar el acceso, especialmente 
+    # si n_rows es 1 (en ese caso, axes no es una matriz sino un solo objeto).
     if n_rows == 1:
-        axes = [axes]
+        axes = [axes]   # Si solo hay una fila, convertir el objeto de eje único en una lista para mantener la consistencia.
     axes_flat = [ax for row in (axes if n_rows > 1 else [axes]) for ax in (row if n_rows > 1 else row)]
+    # Esta línea aplanará la matriz de ejes (axes) en una lista plana (axes_flat) para facilitar el acceso a cada subplot,
+    # independientemente de si hay una o varias filas.
+    # La comprensión de listas recorre cada fila en axes (si n_rows > 1) o directamente axes (si n_rows == 1) y luego recorre 
+    # cada eje (ax) dentro de esa fila, agregándolos a la lista axes_flat.
+    # Esto asegura que cada subplot esté accesible a través de axes_flat[idx], donde idx es el índice de la característica 
+    # que se está graficando.
     
     colors = {
         'Gryffindor': '#740001',
@@ -276,21 +302,54 @@ def plot_histograms(filename):
         'Ravenclaw': '#0E1A40',
         'Slytherin': '#1A472A'
     }
+    # Este diccionario asigna un color específico a cada casa de Hogwarts para que los histogramas sean visualmente distintivos 
+    # y fáciles de interpretar. Gryffindor es rojo oscuro, Hufflepuff es amarillo brillante, Ravenclaw es azul oscuro y 
+    # Slytherin es verde oscuro.
     
-    # Plot each feature
+    # Para cada característica numérica, se crea un histograma que muestra la distribución de las puntuaciones para cada 
+    # casa de Hogwarts.
     for idx, feature in enumerate(numerical_features):
         ax = axes_flat[idx]
+        # idx es el índice de la característica actual en la lista de características numéricas, y feature es el nombre de 
+        # esa característica. enumerate se utiliza para obtener tanto el índice como el valor de cada característica mientras 
+        # se itera sobre la lista numerical_features (es una función incorporada de Python que devuelve un iterador que produce 
+        # pares de índice y valor). numerical_features es la lista de características numéricas que se han identificado en el 
+        # conjunto de datos previamente en la función plot_histograms. ax es el objeto de eje (subplot) correspondiente a la 
+        # característica actual, obtenido de la lista aplanada de ejes (axes_flat). 
+        # Este es el subplot donde se dibujará el histograma para la característica actual.
         
         # Collect data for each house
+        # Para cada casa, se recopilan los valores de la característica actual utilizando los índices de filas correspondientes.
         for house_name in sorted(houses.keys()):
             indices = house_indices[house_name]
+            # Para cada casa, se obtienen los índices de las filas correspondientes a esa casa utilizando 
+            # house_indices[house_name] que es un diccionario que mapea el nombre de la casa a una lista de índices de filas 
+            # en el conjunto de datos. house_name es el nombre de la casa actual (por ejemplo, 'Gryffindor'), 
+            # y indices es la lista de índices de filas para esa casa.
             values = [parse_float(data[feature][i]) for i in indices]
+            # Para cada índice en indices, se extrae el valor de la característica actual (data[feature][i]) y se intenta 
+            # convertir a float utilizando parse_float. [ especifica que se está creando una lista de valores.
+            # Esto crea una lista de valores numéricos (o None si no se pudieron convertir) para la característica actual y 
+            # la casa actual. Estos valores se almacenan en la variable values,
             values = [v for v in values if v is not None]
+            # Se filtran los valores None para asegurarse de que solo se utilicen valores numéricos válidos en el histograma,
+            # creando una nueva lista que solo contiene los valores que no son None.
             
             if values:
                 color = colors.get(house_name, '#808080')
+                # Se obtiene el color correspondiente a la casa actual del diccionario colors. 
+                # Si la casa no está en el diccionario, se asigna un color gris por defecto ('#808080').
                 ax.hist(values, bins=20, alpha=0.6, label=house_name, 
                        color=color, edgecolor='black', linewidth=0.5)
+                # Se dibuja un histograma de los valores para la casa actual en el subplot ax utilizando ax.hist.
+                # hist es una función de Matplotlib que crea un histograma a partir de los datos proporcionados.
+                # values es la lista de valores numéricos para la característica actual y la casa actual. 
+                # bins=20 especifica que el histograma tendrá 20 barras (bins).
+                # alpha=0.6 establece la transparencia de las barras del histograma para que sean visibles las superposiciones 
+                # entre casas.
+                # label=house_name asigna una etiqueta al histograma para que aparezca en la leyenda.
+                # color=color establece el color de las barras del histograma según la casa.
+                # edgecolor='black' y linewidth=0.5 añaden un borde negro a las barras del histograma para mejorar su visibilidad.
         
         # Highlight most homogeneous
         if feature == most_homogeneous:
@@ -326,4 +385,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main()  # Ejecutar función principal si se ejecuta como script
+    # El bloque if __name__ == "__main__": asegura que la función main() solo se ejecute cuando el script 
+    # se ejecute directamente, y no cuando se importe como módulo en otro script. Esto es una práctica común 
+    # en Python para organizar el código y permitir la reutilización de funciones sin ejecutar el código 
+    # principal automáticamente.
