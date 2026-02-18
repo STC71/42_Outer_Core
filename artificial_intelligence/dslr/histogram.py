@@ -355,22 +355,37 @@ def plot_histograms(filename):
         if feature == most_homogeneous:
             ax.set_title(f'{feature}\n★ MOST HOMOGENEOUS ★', fontweight='bold', 
                         fontsize=10, color='red')
+            # si la característica actual es la más homogénea, se establece un título especial con un asterisco rojo
         else:
             ax.set_title(feature, fontsize=10)
+            # si no es la más homogénea, se establece el título normal de la característica
         
-        ax.set_xlabel('Score', fontsize=8)
-        ax.set_ylabel('Frequency', fontsize=8)
-        ax.legend(fontsize=6, loc='upper right')
-        ax.grid(True, alpha=0.3)
+        ax.set_xlabel('Score', fontsize=8)          # se establece la etiqueta del eje x
+        ax.set_ylabel('Frequency', fontsize=8)      # se establece la etiqueta del eje y
+        ax.legend(fontsize=6, loc='upper right')    # se establece la leyenda con tamaño de fuente 6 y posición en la esquina superior derecha
+        ax.grid(True, alpha=0.3)                    # se establece una cuadrícula con transparencia 0.3 para mejorar la legibilidad de los histogramas
     
     # Hide empty subplots
     for idx in range(len(numerical_features), len(axes_flat)):
         axes_flat[idx].set_visible(False)
+    # Si hay subplots adicionales que no se utilizan (por ejemplo, si el número de características no es un múltiplo de n_cols),
+    # se ocultan para que no aparezcan vacíos en la figura.
+    # Se itera desde el índice del último subplot utilizado (len(numerical_features)) hasta el total de subplots disponibles 
+    # (len(axes_flat)), y se establece set_visible(False) para cada uno de esos subplots, ocultándolos de la visualización.
+    # len(numerical_features) es el número de características numéricas que se han graficado, y len(axes_flat) es el número 
+    # total de subplots disponibles en la figura.
+    # axes_flat[idx].set_visible(False) oculta el subplot en la posición idx, lo que es útil para mantener la presentación 
+    # limpia cuando no se utilizan todos los subplots disponibles.
     
     plt.tight_layout()
+    # tight_layout ajusta automáticamente el espaciado entre subplots para evitar solapamientos y asegurar que los títulos, 
+    # etiquetas y leyendas sean legibles.
     plt.savefig('histogram_analysis.png', dpi=100, bbox_inches='tight')
+    # savefig guarda la figura actual como un archivo de imagen. 'histogram_analysis.png' es el nombre del archivo, 
+    # dpi=100 establece la resolución de la imagen, y bbox_inches='tight' ajusta el recorte de la figura para que 
+    # se ajuste al contenido sin espacios en blanco innecesarios.
     print("Histograma guardado como 'histogram_analysis.png'")
-    plt.show()
+    plt.show()      # Muestra la figura con los histogramas en pantalla
 
 
 def main():
@@ -379,9 +394,11 @@ def main():
         print("Uso: python histogram.py <dataset.csv>")
         print("Ejemplo: python histogram.py dataset_train.csv")
         sys.exit(1)
+    # si no se proporciona un argumento de línea de comandos, se muestra un mensaje de uso y se termina el programa con un 
+    # código de salida 1 (indica error).
     
-    filename = sys.argv[1]
-    plot_histograms(filename)
+    filename = sys.argv[1]      # se obtiene el nombre del archivo CSV del primer argumento de línea de comandos
+    plot_histograms(filename)   # se llama a la función plot_histograms con el nombre del archivo para generar los histogramas
 
 
 if __name__ == "__main__":

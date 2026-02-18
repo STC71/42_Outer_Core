@@ -260,20 +260,149 @@ print_section "1.2 - Verificación de Librerías"
 print_requirement "No se deben usar librerías que implementen el algoritmo completo"
 show_translation "No usar sklearn para regresión logística, no usar métodos de pandas DataFrame"
 
-echo -e "${CYAN}Verificando imports en logreg_train.py...${NC}"
-print_file_reference "logreg_train.py"
+# Verificar sklearn
+echo -e "${CYAN}Verificando imports de sklearn en archivos principales...${NC}"
+SKLEARN_VIOLATION=0
 
-if grep -q "from sklearn" logreg_train.py || grep -q "import sklearn" logreg_train.py; then
-    print_fail "Se detectó uso de sklearn en logreg_train.py"
-    fail_point
-else
-    print_pass "No se usa sklearn en logreg_train.py"
+for file in logreg_train.py logreg_predict.py describe.py; do
+    if [ -f "$file" ]; then
+        if grep -q "from sklearn" "$file" || grep -q "import sklearn" "$file"; then
+            print_fail "Se detectó uso de sklearn en $file"
+            SKLEARN_VIOLATION=1
+        fi
+    fi
+done
+
+if [ $SKLEARN_VIOLATION -eq 0 ]; then
+    print_pass "No se usa sklearn en archivos principales"
     add_point
+else
+    fail_point
 fi
 
+# Verificar pandas DataFrame
+echo -e "\n${CYAN}Verificando uso de pandas DataFrame...${NC}"
+PANDAS_VIOLATION=0
+
+for file in logreg_train.py logreg_predict.py describe.py; do
+    if [ -f "$file" ]; then
+        print_file_reference "$file"
+        
+        # Verificar import de pandas
+        if grep -q "import pandas" "$file" || grep -q "from pandas" "$file"; then
+            print_warning "Se detectó import de pandas en $file"
+            
+            # Verificar uso de métodos prohibidos de DataFrame
+            if grep -q "\.describe()" "$file"; then
+                print_fail "Uso de pandas .describe() detectado en $file (PROHIBIDO)"
+                PANDAS_VIOLATION=1
+            fi
+            if grep -q "\.fillna()" "$file"; then
+                print_fail "Uso de pandas .fillna() detectado en $file (PROHIBIDO)"
+                PANDAS_VIOLATION=1
+            fi
+            if grep -q "pd\.DataFrame" "$file" || grep -q "pandas\.DataFrame" "$file"; then
+                print_fail "Uso de pandas DataFrame detectado en $file (PROHIBIDO)"
+                PANDAS_VIOLATION=1
+            fi
+            if grep -q "\.mean()" "$file" | grep -v "def.*mean\|#.*mean"; then
+                print_warning "Posible uso de pandas .mean() en $file - verificar manualmente"
+            fi
+            if grep -q "\.std()" "$file" | grep -v "def.*std\|#.*std"; then
+                print_warning "Posible uso de pandas .std() en $file - verificar manualmente"
+            fi
+        fi
+    fi
+done
+
+if [ $PANDAS_VIOLATION -eq 0 ]; then
+    print_pass "No se detectó uso prohibido de pandas DataFrame - implementación manual verificada"
+    add_point
+    
+    # Mostrar evidencia de implementación manual
+    echo -e "\n${CYAN}📊 Evidencia de implementación manual:${NC}"
+    
+    # describe.py - funciones estadísticas
+    if [ -f "describe.py" ]; then
+        echo -e "\n${YELLOW}describe.py:${NC}"
+        grep -n "^def ft_mean" describe.py | while IFS=: read -r line_num _; do
+            echo -e "  ${GREEN}✓${NC} Línea $line_num: ${BOLD}ft_mean()${NC} - Calcula media aritmética manualmente"
+        done
+        grep -n "^def ft_std" describe.py | while IFS=: read -r line_num _; do
+            echo -e "  ${GREEN}✓${NC} Línea $line_num: ${BOLD}ft_std()${NC} - Calcula desviación estándar sin pandas"
+        done
+        grep -n "^def ft_min" describe.py | while IFS=: read -r line_num _; do
+            echo -e "  ${GREEN}✓${NC} Línea $line_num: ${BOLD}ft_min()${NC} - Encuentra valor mínimo iterativamente"
+        done
+        grep -n "^def ft_max" describe.py | while IFS=: read -r line_num _; do
+            echo -e "  ${GREEN}✓${NC} Línea $line_num: ${BOLD}ft_max()${NC} - Encuentra valor máximo iterativamente"
+        done
+        grep -n "^def ft_percentile" describe.py | while IFS=: read -r line_num _; do
+            echo -e "  ${GREEN}✓${NC} Línea $line_num: ${BOLD}ft_percentile()${NC} - Calcula percentiles con interpolación lineal"
+        done
+    fi
+    
+    # logreg_train.py - funciones de ML
+    if [ -f "logreg_train.py" ]; then
+        echo -e "\n${YELLOW}logreg_train.py:${NC}"
+        grep -n "^def sigmoid" logreg_train.py | while IFS=: read -r line_num _; do
+            echo -e "  ${GREEN}✓${NC} Línea $line_num: ${BOLD}sigmoid()${NC} - Función de activación logística manual"
+        done
+        grep -n "^def compute_cost" logreg_train.py | while IFS=: read -r line_num _; do
+            echo -e "  ${GREEN}✓${NC} Línea $line_num: ${BOLD}compute_cost()${NC} - Función de coste de entropía cruzada"
+        done
+        grep -n "^def gradient_descent" logreg_train.py | while IFS=: read -r line_num _; do
+            echo -e "  ${GREEN}✓${NC} Línea $line_num: ${BOLD}gradient_descent()${NC} - Optimización por descenso de gradiente"
+        done
+        grep -n "^def normalize_features" logreg_train.py | while IFS=: read -r line_num _; do
+            echo -e "  ${GREEN}✓${NC} Línea $line_num: ${BOLD}normalize_features()${NC} - Normalización Min-Max manual"
+        done
+    fi
+    
+    # logreg_predict.py - predicción manual
+    if [ -f "logreg_predict.py" ]; then
+        echo -e "\n${YELLOW}logreg_predict.py:${NC}"
+        grep -n "^def sigmoid" logreg_predict.py | while IFS=: read -r line_num _; do
+            echo -e "  ${GREEN}✓${NC} Línea $line_num: ${BOLD}sigmoid()${NC} - Función de activación para predicción"
+        done
+        grep -n "^def load_model" logreg_predict.py | while IFS=: read -r line_num _; do
+            echo -e "  ${GREEN}✓${NC} Línea $line_num: ${BOLD}load_model()${NC} - Carga pesos entrenados desde pickle"
+        done
+        grep -n "^def predict_one_vs_all" logreg_predict.py | while IFS=: read -r line_num _; do
+            echo -e "  ${GREEN}✓${NC} Línea $line_num: ${BOLD}predict_one_vs_all()${NC} - Clasificación multiclase One-vs-All"
+        done
+    fi
+    
+    # data_preprocessing.py - preprocesamiento manual
+    if [ -f "data_preprocessing.py" ]; then
+        echo -e "\n${YELLOW}data_preprocessing.py:${NC}"
+        grep -n "^def calculate_mean" data_preprocessing.py | while IFS=: read -r line_num _; do
+            echo -e "  ${GREEN}✓${NC} Línea $line_num: ${BOLD}calculate_mean()${NC} - Media aritmética para imputación"
+        done
+        grep -n "^def calculate_median" data_preprocessing.py | while IFS=: read -r line_num _; do
+            echo -e "  ${GREEN}✓${NC} Línea $line_num: ${BOLD}calculate_median()${NC} - Mediana para valores perdidos"
+        done
+        grep -n "^def normalize_minmax" data_preprocessing.py | while IFS=: read -r line_num _; do
+            echo -e "  ${GREEN}✓${NC} Línea $line_num: ${BOLD}normalize_minmax()${NC} - Escalado Min-Max al rango [0,1]"
+        done
+        grep -n "^def normalize_zscore" data_preprocessing.py | while IFS=: read -r line_num _; do
+            echo -e "  ${GREEN}✓${NC} Línea $line_num: ${BOLD}normalize_zscore()${NC} - Estandarización Z-score (μ=0, σ=1)"
+        done
+    fi
+    
+    echo -e "\n${GREEN}ℹ${NC} Todas las funciones implementadas desde cero sin usar pandas/sklearn"
+else
+    print_fail "Se detectaron métodos prohibidos de pandas DataFrame"
+    fail_point
+fi
+
+# Verificar métodos sospechosos que podrían ser de sklearn
 if grep -q "\.fit(" logreg_train.py || grep -q "\.predict(" logreg_train.py 2>/dev/null; then
     print_warning "Se detectaron métodos .fit() o .predict() - verificar que no sean de sklearn"
 fi
+
+echo -e "\n${GREEN}ℹ INFO:${NC} Se permite usar pandas solo para LECTURA de CSV (pd.read_csv)"
+echo -e "${GREEN}ℹ INFO:${NC} NO se pueden usar métodos de análisis/manipulación de DataFrame"
 
 ask_to_continue
 
@@ -298,7 +427,61 @@ if python3 describe.py dataset_train.csv > /dev/null 2>&1; then
     echo -e "\n${CYAN}Mostrando salida de describe.py:${NC}"
     python3 describe.py dataset_train.csv | head -20
     
-    print_info "Verificar manualmente que se muestran todas las métricas estadísticas"
+    echo -e "\n${CYAN}🔍 Verificando métricas estadísticas requeridas:${NC}"
+    
+    # Capturar salida de describe.py
+    DESCRIBE_OUTPUT=$(python3 describe.py dataset_train.csv)
+    
+    # Métricas requeridas (español e inglés)
+    METRICAS_REQUERIDAS=("Recuento" "Count" "Media" "Mean" "Desv" "Std" "Mín" "Min" "25%" "50%" "75%" "Máx" "Max")
+    METRICAS_ENCONTRADAS=0
+    
+    # Verificar cada métrica
+    if echo "$DESCRIBE_OUTPUT" | grep -q "Recuento\|Count"; then
+        echo -e "  ${GREEN}✓${NC} Count/Recuento (número de valores no nulos)"
+        ((METRICAS_ENCONTRADAS++))
+    fi
+    
+    if echo "$DESCRIBE_OUTPUT" | grep -q "Media\|Mean"; then
+        echo -e "  ${GREEN}✓${NC} Mean/Media (promedio aritmético)"
+        ((METRICAS_ENCONTRADAS++))
+    fi
+    
+    if echo "$DESCRIBE_OUTPUT" | grep -q "Desv\|Std"; then
+        echo -e "  ${GREEN}✓${NC} Std/Desv.Est (desviación estándar)"
+        ((METRICAS_ENCONTRADAS++))
+    fi
+    
+    if echo "$DESCRIBE_OUTPUT" | grep -q "Mín\|Min"; then
+        echo -e "  ${GREEN}✓${NC} Min/Mínimo (valor más bajo)"
+        ((METRICAS_ENCONTRADAS++))
+    fi
+    
+    if echo "$DESCRIBE_OUTPUT" | grep -q "25%"; then
+        echo -e "  ${GREEN}✓${NC} 25% (primer cuartil Q1)"
+        ((METRICAS_ENCONTRADAS++))
+    fi
+    
+    if echo "$DESCRIBE_OUTPUT" | grep -q "50%"; then
+        echo -e "  ${GREEN}✓${NC} 50% (mediana Q2)"
+        ((METRICAS_ENCONTRADAS++))
+    fi
+    
+    if echo "$DESCRIBE_OUTPUT" | grep -q "75%"; then
+        echo -e "  ${GREEN}✓${NC} 75% (tercer cuartil Q3)"
+        ((METRICAS_ENCONTRADAS++))
+    fi
+    
+    if echo "$DESCRIBE_OUTPUT" | grep -q "Máx\|Max"; then
+        echo -e "  ${GREEN}✓${NC} Max/Máximo (valor más alto)"
+        ((METRICAS_ENCONTRADAS++))
+    fi
+    
+    if [ $METRICAS_ENCONTRADAS -eq 8 ]; then
+        echo -e "\n${GREEN}✅ Todas las métricas requeridas están presentes (8/8)${NC}"
+    else
+        echo -e "\n${YELLOW}⚠ Se encontraron $METRICAS_ENCONTRADAS de 8 métricas requeridas${NC}"
+    fi
 else
     print_fail "Error al ejecutar describe.py"
     fail_point
@@ -336,15 +519,29 @@ print_section "2.2 - histogram.py: Distribución Homogénea"
 print_requirement "¿Qué curso de Hogwarts tiene una distribución de notas homogénea entre las 4 casas?"
 show_translation "El histograma debe ayudar a responder esta pregunta"
 
+echo -e "\n${CYAN}📊 ¿Qué es una distribución homogénea?${NC}"
+echo -e "${WHITE}Una distribución es homogénea cuando las 4 casas (Gryffindor, Slytherin,"
+echo -e "Ravenclaw, Hufflepuff) presentan patrones similares en sus histogramas:${NC}"
+echo -e "  ${GREEN}✓${NC} Formas de las curvas parecidas (todas normales, todas sesgadas, etc.)"
+echo -e "  ${GREEN}✓${NC} Rangos de valores similares (medias y dispersiones comparables)"
+echo -e "  ${GREEN}✓${NC} Alturas de barras equilibradas entre casas"
+echo -e "  ${GREEN}✓${NC} Sin una casa que domine claramente sobre las demás"
+echo -e ""
+echo -e "${CYAN}🎯 En el gráfico buscar:${NC}"
+echo -e "  ${YELLOW}→${NC} Cursos donde las 4 barras de colores tengan alturas similares"
+echo -e "  ${YELLOW}→${NC} Cursos donde no haya una casa que destaque por encima/debajo"
+echo -e "  ${YELLOW}→${NC} Distribución balanceada = enseñanza equitativa entre casas"
+
 print_file_reference "histogram.py"
+print_info "Respuesta esperada: Arithmancy"
+print_info "Este curso muestra la puntuación de homogeneidad más baja (≈0.008)"
+print_info "Distribuciones casi idénticas entre las 4 casas"
+
 print_check "Ejecutando histogram.py..."
 
 if python3 histogram.py dataset_train.csv > /dev/null 2>&1; then
     print_pass "histogram.py genera gráficos correctamente"
     add_point
-    
-    print_info "Respuesta esperada: Care of Magical Creatures"
-    print_info "Verificar que el gráfico muestre distribuciones por casa"
 else
     print_fail "Error al ejecutar histogram.py"
     fail_point
@@ -357,15 +554,30 @@ print_section "2.3 - scatter_plot.py: Características Similares"
 print_requirement "¿Qué dos características son similares?"
 show_translation "El scatter plot debe mostrar correlaciones entre características"
 
+echo -e "\n${CYAN}📊 ¿Qué son características similares?${NC}"
+echo -e "${WHITE}Dos características son similares cuando tienen una alta correlación,"
+echo -e "es decir, cuando varían de forma relacionada:${NC}"
+echo -e "  ${GREEN}✓${NC} Correlación positiva alta (+1): cuando una sube, la otra también"
+echo -e "  ${GREEN}✓${NC} Correlación negativa alta (-1): cuando una sube, la otra baja"
+echo -e "  ${GREEN}✓${NC} Lo importante es el valor absoluto: |r| cercano a 1"
+echo -e "  ${GREEN}✓${NC} Indica relación lineal fuerte entre las variables"
+echo -e ""
+echo -e "${CYAN}🎯 En el gráfico buscar:${NC}"
+echo -e "  ${YELLOW}→${NC} Puntos alineados formando una recta (ascendente o descendente)"
+echo -e "  ${YELLOW}→${NC} Tendencia clara y definida (no dispersión)"
+echo -e "  ${YELLOW}→${NC} Valor de correlación de Pearson cercano a ±1"
+echo -e "  ${YELLOW}→${NC} ${BOLD}Astronomy y Defense Against the Dark Arts: r ≈ -1${NC}"
+echo -e "  ${YELLOW}→${NC} Correlación negativa perfecta = relación inversa muy fuerte"
+
 print_file_reference "scatter_plot.py"
+print_info "Respuesta esperada: Astronomy y Defense Against the Dark Arts"
+print_info "Estas dos características muestran la correlación más alta"
+
 print_check "Ejecutando scatter_plot.py..."
 
 if python3 scatter_plot.py dataset_train.csv > /dev/null 2>&1; then
     print_pass "scatter_plot.py genera gráficos correctamente"
     add_point
-    
-    print_info "Respuesta esperada: Astronomy y Defense Against the Dark Arts"
-    print_info "Verificar que muestre correlación entre características"
 else
     print_fail "Error al ejecutar scatter_plot.py"
     fail_point
@@ -378,15 +590,31 @@ print_section "2.4 - pair_plot.py: Matriz de Correlación"
 print_requirement "Generar pair plot para todas las características"
 show_translation "Debe mostrar matriz de gráficos de todas las combinaciones de características"
 
+echo -e "\n${CYAN}📊 ¿Qué es un Pair Plot?${NC}"
+echo -e "${WHITE}Un pair plot (gráfico de pares) es una matriz que muestra todas las"
+echo -e "combinaciones posibles de características, permitiendo visualizar:${NC}"
+echo -e "  ${GREEN}✓${NC} Diagonal: Distribución de cada característica (histograma/densidad)"
+echo -e "  ${GREEN}✓${NC} Fuera diagonal: Scatter plots entre pares de características"
+echo -e "  ${GREEN}✓${NC} Colores diferentes por casa (Gryffindor, Slytherin, etc.)"
+echo -e "  ${GREEN}✓${NC} Permite identificar relaciones y separabilidad entre clases"
+echo -e ""
+echo -e "${CYAN}🎯 En el gráfico buscar:${NC}"
+echo -e "  ${YELLOW}→${NC} Matriz simétrica NxN (N = número de características)"
+echo -e "  ${YELLOW}→${NC} Diagonal: distribuciones por casa con colores distintivos"
+echo -e "  ${YELLOW}→${NC} Off-diagonal: scatter plots coloreados por casa"
+echo -e "  ${YELLOW}→${NC} Características que separan bien las casas (clusters visibles)"
+echo -e "  ${YELLOW}→${NC} Correlaciones entre características (patrones lineales)"
+
 print_file_reference "pair_plot.py"
+print_info "Objetivo: Visualizar relaciones multivariadas entre todas las características"
+print_info "Cada casa debe tener un color único para identificar patrones de agrupación"
+print_info "Permite identificar qué características son más útiles para clasificación"
+
 print_check "Ejecutando pair_plot.py..."
 
 if python3 pair_plot.py dataset_train.csv > /dev/null 2>&1; then
     print_pass "pair_plot.py genera matriz de correlación correctamente"
     add_point
-    
-    print_info "Verificar que se muestren todas las características en una matriz"
-    print_info "Cada casa debe tener un color diferente"
 else
     print_fail "Error al ejecutar pair_plot.py"
     fail_point

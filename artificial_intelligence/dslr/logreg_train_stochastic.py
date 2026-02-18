@@ -74,54 +74,72 @@ def compute_cost(X, y, theta):
 
 def gradient_descent_stochastic(X, y, theta, learning_rate, num_epochs, verbose=False):
     """
-    STOCHASTIC Gradient Descent - updates weights after EACH example
+    Descenso de Gradiente ESTOCÁSTICO - actualiza pesos después de CADA ejemplo individual.
+    
+    DIFERENCIA CLAVE con gradiente por lotes (batch):
+    - Batch: calcula gradiente usando TODOS los ejemplos, luego actualiza pesos (1 actualización por iteración)
+    - Stochastic: actualiza pesos después de CADA ejemplo (m actualizaciones por época)
+    
+    VENTAJAS:
+    - Más rápido en datasets grandes (no necesita procesar todos los datos antes de actualizar)
+    - Puede escapar de mínimos locales debido a las actualizaciones ruidosas
+    - Menor uso de memoria (procesa un ejemplo a la vez)
+    
+    DESVENTAJAS:
+    - Trayectoria más ruidosa hacia el mínimo (más oscilación)
+    - Puede no converger exactamente al mínimo (oscila alrededor)
+    - Más difícil de paralelizar
     
     Args:
-        X: Feature matrix
-        y: Labels
-        theta: Initial weights
-        learning_rate: Learning rate
-        num_epochs: Number of passes through the dataset
-        verbose: Print progress
+        X: Matriz de características (m x n) como lista de listas
+        y: Etiquetas (m,) como lista de 0s y 1s
+        theta: Pesos iniciales (n,) como lista
+        learning_rate: Tasa de aprendizaje (alpha) - controla tamaño de paso
+        num_epochs: Número de épocas (pasadas completas por todo el dataset)
+        verbose: Imprimir progreso durante entrenamiento
     
     Returns:
-        Optimized theta, cost history
+        Theta optimizado, historial de coste
     """
-    m = len(y)
-    n = len(theta)
-    cost_history = []
+    m = len(y)  # Número de ejemplos de entrenamiento
+    n = len(theta)  # Número de parámetros (features + bias)
+    cost_history = []  # Lista para almacenar historial de coste
     
-    # Create indices for shuffling
-    indices = list(range(m))
+    # Crear lista de índices para mezclar (shuffling)
+    indices = list(range(m))  # [0, 1, 2, ..., m-1]
     
-    for epoch in range(num_epochs):
-        # Shuffle data at beginning of each epoch
-        random.shuffle(indices)
+    for epoch in range(num_epochs):  # Para cada época (pasada por el dataset)
+        # Mezclar datos al inicio de cada época
+        # Esto previene sesgos del orden de los datos y mejora convergencia
+        random.shuffle(indices)  # Mezclar aleatoriamente los índices
         
-        # Update weights for each training example
-        for idx in indices:
-            i = indices[idx]
+        # Actualizar pesos para cada ejemplo de entrenamiento
+        for idx in indices:  # Para cada índice mezclado
+            i = indices[idx]  # Obtener índice del ejemplo actual
             
-            # Compute prediction for single example
-            z = sum(theta[j] * X[i][j] for j in range(n))
-            h = sigmoid(z)
+            # Calcular predicción para UN SOLO ejemplo (esto es lo estocástico)
+            z = sum(theta[j] * X[i][j] for j in range(n))  # Producto punto θᵀx
+            h = sigmoid(z)  # Aplicar sigmoide para obtener probabilidad
             
-            # Error
-            error = h - y[i]
+            # Calcular error para este ejemplo: (h - y)
+            error = h - y[i]  # Diferencia entre predicción y valor real
             
-            # Update weights immediately: θⱼ := θⱼ - α * (h - y) * xⱼ
-            for j in range(n):
-                theta[j] -= learning_rate * error * X[i][j]
+            # Actualizar pesos INMEDIATAMENTE basándose en este único ejemplo
+            # Fórmula: θⱼ := θⱼ - α * (h - y) * xⱼ
+            # No se promedia sobre todos los ejemplos como en batch gradient descent
+            for j in range(n):  # Para cada parámetro
+                theta[j] -= learning_rate * error * X[i][j]  # Actualización inmediata
         
-        # Compute cost after each epoch for monitoring
-        if epoch % 10 == 0 or epoch == num_epochs - 1:
-            cost = compute_cost(X, y, theta)
-            cost_history.append(cost)
+        # Calcular coste después de cada época para monitoreo
+        # Se calcula cada 10 épocas para no ralentizar el entrenamiento
+        if epoch % 10 == 0 or epoch == num_epochs - 1:  # Cada 10 o última época
+            cost = compute_cost(X, y, theta)  # Calcular coste con todos los datos
+            cost_history.append(cost)  # Guardar en historial
             
-            if verbose and epoch % 50 == 0:
+            if verbose and epoch % 50 == 0:  # Si verbose y cada 50 épocas
                 print(f"  Epoch {epoch:5d}: Cost = {cost:.6f}")
     
-    return theta, cost_history
+    return theta, cost_history  # Retornar pesos optimizados e historial
 
 
 # Copy the rest of the necessary functions from logreg_train.py

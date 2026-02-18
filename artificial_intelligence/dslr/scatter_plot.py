@@ -12,47 +12,68 @@ import matplotlib.pyplot as plt  # Para crear gráficos
 
 
 def parse_float(value):
-    """Convertir cadena a float de forma segura, devolver None si no es posible"""
-    try:
-        return float(value)
-    except (ValueError, TypeError):
-        return None
+    """
+    Convertir cadena a float de forma segura.
+    Retorna None si no es posible la conversión en lugar de lanzar excepción.
+    value: cadena de texto a convertir
+    Retorna float o None si no es convertible.
+    """
+    try:  # Intentar conversión
+        return float(value)  # Convertir a float
+    except (ValueError, TypeError):  # Si hay error de valor o tipo
+        return None  # Retornar None en lugar de lanzar excepción
 
 
 def read_csv(filename):
-    """Leer archivo CSV y devolver encabezados y datos"""
-    try:
-        with open(filename, 'r') as f:
-            reader = csv.reader(f)
-            headers = next(reader)
+    """
+    Leer archivo CSV y extraer encabezados y datos.
+    filename: ruta al archivo CSV
+    Retorna tupla (headers, data) donde:
+    - headers: lista de nombres de columnas
+    - data: diccionario {columna: [valores]}
+    """
+    try:  # Intentar abrir el archivo
+        with open(filename, 'r') as f:  # Abrir en modo lectura
+            reader = csv.reader(f)  # Crear lector CSV
+            headers = next(reader)  # Leer primera fila (encabezados)
+            # next() obtiene la siguiente línea del iterador
             
-            data = {header: [] for header in headers}
+            # Inicializar estructura de datos: diccionario con listas vacías
+            data = {header: [] for header in headers}  # Dict comprehension
             
-            for row in reader:
-                for i, value in enumerate(row):
-                    if i < len(headers):
-                        data[headers[i]].append(value)
+            # Leer todas las filas del archivo
+            for row in reader:  # Iterar sobre cada fila
+                for i, value in enumerate(row):  # enumerate da (indice, valor)
+                    if i < len(headers):  # Verificar índice válido
+                        data[headers[i]].append(value)  # Añadir a columna correspondiente
         
         return headers, data
     
-    except FileNotFoundError:
+    except FileNotFoundError:  # Si el archivo no existe
         print(f"Error: Archivo '{filename}' no encontrado", file=sys.stderr)
-        sys.exit(1)
-    except Exception as e:
+        # file=sys.stderr redirige salida a error estándar
+        sys.exit(1)  # Salir con código de error 1
+    except Exception as e:  # Capturar cualquier otro error
         print(f"Error leyendo archivo: {e}", file=sys.stderr)
-        sys.exit(1)
+        sys.exit(1)  # Terminar programa con error
 
 
 def is_numerical_column(column_data):
-    """Comprobar si una columna contiene datos numéricos"""
-    for value in column_data:
-        if value and value.strip():
-            try:
-                float(value)
-                return True
-            except ValueError:
-                return False
-    return False
+    """
+    Verificar si una columna contiene datos numéricos.
+    Intenta convertir el primer valor no vacío a float.
+    column_data: lista de valores de una columna
+    Retorna True si la columna es numérica, False en caso contrario.
+    """
+    for value in column_data:  # Iterar sobre valores de la columna
+        if value and value.strip():  # Si el valor existe y no es solo espacios
+            # value.strip() elimina espacios en blanco al inicio y final
+            try:  # Intentar conversión
+                float(value)  # Intentar convertir a float
+                return True  # Si funciona, es columna numérica
+            except ValueError:  # Si falla la conversión
+                return False  # No es columna numérica
+    return False  # Si no hay valores válidos, no es numérica
 
 
 def calculate_correlation(x_values, y_values):
@@ -67,32 +88,38 @@ def calculate_correlation(x_values, y_values):
     - 0: sin correlación
     - -1: correlación negativa perfecta
     """
-    # Filtrar valores None
+    # Filtrar valores None y emparejar x e y
+    # zip() combina dos listas en pares: [(x1,y1), (x2,y2), ...]
     pairs = [(x, y) for x, y in zip(x_values, y_values) if x is not None and y is not None]
+    # List comprehension que solo incluye pares donde ambos valores son válidos
     
-    if len(pairs) < 2:  # Si no hay suficientes datos
+    if len(pairs) < 2:  # Si no hay suficientes datos (mínimo 2 necesarios)
         return None  # No se puede calcular correlación
     
-    x_clean = [p[0] for p in pairs]  # Lista de valores x válidos
-    y_clean = [p[1] for p in pairs]  # Lista de valores y válidos
+    x_clean = [p[0] for p in pairs]  # Lista de valores x válidos (primer elemento de cada par)
+    y_clean = [p[1] for p in pairs]  # Lista de valores y válidos (segundo elemento de cada par)
     
-    n = len(x_clean)  # Número de pares válidos
+    n = len(x_clean)  # Número de pares válidos para cálculo
     
-    # Calcular medias
-    mean_x = sum(x_clean) / n  # Media de x
-    mean_y = sum(y_clean) / n  # Media de y
+    # Calcular medias (promedios) de ambas variables
+    mean_x = sum(x_clean) / n  # Media de x: suma de todos los valores x / cantidad
+    mean_y = sum(y_clean) / n  # Media de y: suma de todos los valores y / cantidad
     
-    # Calcular covarianza y desviaciones estándar
+    # Calcular covarianza (cómo varían juntas las dos variables) y desviaciones estándar
+    # Covarianza: Σ((x - media_x) * (y - media_y))
     covariance = sum((x - mean_x) * (y - mean_y) for x, y in zip(x_clean, y_clean))
+    # Para cada par (x,y), multiplicamos sus desviaciones respecto a sus medias
     
-    std_x_sq = sum((x - mean_x) ** 2 for x in x_clean)  # Suma de cuadrados x
-    std_y_sq = sum((y - mean_y) ** 2 for y in y_clean)  # Suma de cuadrados y
+    std_x_sq = sum((x - mean_x) ** 2 for x in x_clean)  # Suma de cuadrados de desviaciones de x
+    std_y_sq = sum((y - mean_y) ** 2 for y in y_clean)  # Suma de cuadrados de desviaciones de y
+    # Estas son las varianzas no normalizadas (sin dividir por n)
     
-    # Evitar división por cero
-    if std_x_sq == 0 or std_y_sq == 0:  # Si alguna variable es constante
-        return None  # No hay correlación
+    # Evitar división por cero (ocurre si alguna variable es constante)
+    if std_x_sq == 0 or std_y_sq == 0:  # Si una variable no varía
+        return None  # No se puede calcular correlación
     
-    # Coeficiente de correlación de Pearson
+    # Coeficiente de correlación de Pearson: covarianza / (desv_std_x * desv_std_y)
+    # ** 0.5 es equivalente a raíz cuadrada
     correlation = covariance / (std_x_sq * std_y_sq) ** 0.5
     
     return correlation  # Retornar correlación
@@ -101,164 +128,223 @@ def calculate_correlation(x_values, y_values):
 def find_most_similar_features(data, numerical_features):
     """
     Encontrar el par de características con mayor correlación absoluta.
-    Mayor correlación = características más similares.
+    Mayor correlación (en valor absoluto) = características más similares.
+    data: diccionario con los datos del CSV
+    numerical_features: lista de nombres de columnas numéricas
+    Retorna (mejor_par, máxima_correlación, todas_correlaciones)
     """
-    max_correlation = 0  # Máxima correlación encontrada
-    best_pair = None  # Mejor par de features
+    max_correlation = 0  # Máxima correlación encontrada (en valor absoluto)
+    best_pair = None  # Mejor par de características (tupla)
     
-    correlations = []
+    correlations = []  # Lista para almacenar todas las correlaciones calculadas
     
-    # Calculate correlation for all pairs
-    for i, feature1 in enumerate(numerical_features):
-        for feature2 in numerical_features[i+1:]:
-            x_values = [parse_float(v) for v in data[feature1]]
-            y_values = [parse_float(v) for v in data[feature2]]
+    # Calcular correlación para todos los pares posibles de características
+    for i, feature1 in enumerate(numerical_features):  # Para cada característica
+        # numerical_features[i+1:] evita duplicados y auto-comparaciones
+        for feature2 in numerical_features[i+1:]:  # Para cada característica posterior
+            # Convertir valores de ambas características a float
+            x_values = [parse_float(v) for v in data[feature1]]  # Lista de valores de feature1
+            y_values = [parse_float(v) for v in data[feature2]]  # Lista de valores de feature2
             
+            # Calcular coeficiente de correlación de Pearson
             corr = calculate_correlation(x_values, y_values)
             
-            if corr is not None:
-                correlations.append((feature1, feature2, corr))
+            if corr is not None:  # Si se pudo calcular la correlación
+                correlations.append((feature1, feature2, corr))  # Guardar resultado
                 
-                if abs(corr) > abs(max_correlation):
-                    max_correlation = corr
-                    best_pair = (feature1, feature2)
+                # Actualizar máximo si esta correlación es mayor (en valor absoluto)
+                if abs(corr) > abs(max_correlation):  # abs() da valor absoluto
+                    max_correlation = corr  # Actualizar máxima correlación
+                    best_pair = (feature1, feature2)  # Actualizar mejor par
     
-    return best_pair, max_correlation, correlations
+    return best_pair, max_correlation, correlations  # Retornar mejor par, su correlación y lista completa
 
 
 def plot_scatter(filename):
-    """Plot scatter plots for feature pairs"""
-    headers, data = read_csv(filename)
+    """
+    Crear gráficos de dispersión para analizar similitud entre características.
+    Identifica y visualiza las dos características más correlacionadas (más similares).
+    filename: ruta al archivo CSV con los datos
+    """
+    headers, data = read_csv(filename)  # Leer datos del CSV
     
-    # Get house data for coloring
-    house_column = 'Hogwarts House'
-    houses_list = data.get(house_column, [])
+    # Obtener columna de casas para colorear puntos por casa
+    house_column = 'Hogwarts House'  # Nombre de la columna de casas
+    houses_list = data.get(house_column, [])  # Lista de casas (o vacía si no existe)
+    # .get(key, default) retorna el valor o default si no existe
     
-    # Get numerical features
+    # Obtener características numéricas (excluir columnas no numéricas)
     excluded_columns = ['Index', 'Hogwarts House', 'First Name', 'Last Name', 
-                       'Birthday', 'Best Hand']
-    numerical_features = []
+                       'Birthday', 'Best Hand']  # Columnas a excluir del análisis
+    numerical_features = []  # Lista para almacenar nombres de columnas numéricas
     
-    for header in headers:
+    for header in headers:  # Iterar sobre cada encabezado
+        # Si la columna no está excluida y contiene datos numéricos
         if header not in excluded_columns and is_numerical_column(data[header]):
-            numerical_features.append(header)
+            numerical_features.append(header)  # Añadir a lista de características numéricas
     
-    if len(numerical_features) < 2:
+    if len(numerical_features) < 2:  # Si hay menos de 2 características numéricas
         print("No hay suficientes características numéricas para comparación")
-        return
+        return  # Salir de la función
     
-    # Find most similar features
-    print("\n" + "="*80)
+    # Encontrar características más similares (mayor correlación)
+    print("\n" + "="*80)  # Línea de separación
     print("ÁNLISIS DE SIMILITUD DE CARACTERÍSTICAS")
     print("="*80)
     print("\nCalculando correlaciones entre todos los pares de características...\n")
     
+    # Buscar el mejor par de características y todas las correlaciones
     best_pair, max_corr, all_correlations = find_most_similar_features(data, numerical_features)
     
-    if best_pair is None:
+    if best_pair is None:  # Si no se pudieron calcular correlaciones
         print("No se pudieron encontrar características similares")
-        return
+        return  # Salir de la función
     
-    # Sort correlations by absolute value
+    # Ordenar correlaciones por valor absoluto (de mayor a menor)
+    # sorted() ordena la lista, key= especifica criterio de ordenación
+    # lambda es función anónima: lambda x: abs(x[2]) toma el tercer elemento (correlación) y calcula su valor absoluto
+    # reverse=True ordena de mayor a menor
     sorted_corr = sorted(all_correlations, key=lambda x: abs(x[2]), reverse=True)
     
+    # Mostrar tabla de correlaciones
     print(f"{'Característica 1':<30} {'Característica 2':<30} {'Correlación':>15}")
-    print("-" * 77)
-    for feat1, feat2, corr in sorted_corr[:10]:
-        print(f"{feat1:<30} {feat2:<30} {corr:>15.6f}")
+    # f"" es f-string para formatear, <30 alinea a la izquierda con ancho 30, >15 alinea a la derecha con ancho 15
+    print("-" * 77)  # Línea separadora de 77 caracteres
+    for feat1, feat2, corr in sorted_corr[:10]:  # Mostrar top 10 correlaciones
+        # [:10] toma los primeros 10 elementos de la lista
+        print(f"{feat1:<30} {feat2:<30} {corr:>15.6f}")  # .6f formatea con 6 decimales
     
+    # Mostrar respuesta destacada
     print(f"\n{'='*80}")
     print(f"RESPUESTA: '{best_pair[0]}' y '{best_pair[1]}'")
     print(f"Correlación: {max_corr:.6f}")
     print(f"{'='*80}\n")
     
-    # Plot the most similar pair
-    feature1, feature2 = best_pair
+    # Preparar datos del mejor par para graficar
+    feature1, feature2 = best_pair  # Desempaquetar tupla con los nombres de las características
     
-    x_values = [parse_float(v) for v in data[feature1]]
-    y_values = [parse_float(v) for v in data[feature2]]
+    # Convertir valores a float
+    x_values = [parse_float(v) for v in data[feature1]]  # Valores de característica 1
+    y_values = [parse_float(v) for v in data[feature2]]  # Valores de característica 2
     
-    # Prepare colors by house
+    # Preparar colores por casa de Hogwarts
     colors = {
-        'Gryffindor': '#740001',
-        'Hufflepuff': '#FFD800',
-        'Ravenclaw': '#0E1A40',
-        'Slytherin': '#1A472A'
-    }
+        'Gryffindor': '#740001',   # Rojo oscuro
+        'Hufflepuff': '#FFD800',   # Amarillo dorado
+        'Ravenclaw': '#0E1A40',    # Azul oscuro
+        'Slytherin': '#1A472A'     # Verde oscuro
+    }  # Diccionario que mapea nombre de casa a código de color hexadecimal
     
-    point_colors = []
-    for house in houses_list:
-        if house and house.strip() in colors:
-            point_colors.append(colors[house.strip()])
-        else:
-            point_colors.append('#808080')  # Gray for unknown
+    # Crear lista de colores para cada punto según su casa
+    point_colors = []  # Lista para almacenar color de cada punto
+    for house in houses_list:  # Para cada casa en la lista
+        if house and house.strip() in colors:  # Si existe y está en el diccionario
+            point_colors.append(colors[house.strip()])  # Añadir color correspondiente
+        else:  # Si no se reconoce la casa
+            point_colors.append('#808080')  # Gris para casas desconocidas
     
-    # Create scatter plot
+    # Crear figura con 2 subplots (1 fila, 2 columnas)
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
+    # plt.subplots retorna figura y array de ejes
+    # figsize=(ancho, alto) en pulgadas
     
-    # Main scatter plot with house colors
-    for house in colors.keys():
-        house_x = []
-        house_y = []
-        for i, h in enumerate(houses_list):
+    # Gráfico de dispersión principal con colores por casa
+    for house in colors.keys():  # Para cada casa de Hogwarts
+        house_x = []  # Lista para valores x de esta casa
+        house_y = []  # Lista para valores y de esta casa
+        # Filtrar puntos que pertenecen a esta casa y tienen valores válidos
+        for i, h in enumerate(houses_list):  # Para cada estudiante con su índice
+            # Si es de esta casa y ambos valores son válidos
             if h == house and x_values[i] is not None and y_values[i] is not None:
-                house_x.append(x_values[i])
-                house_y.append(y_values[i])
+                house_x.append(x_values[i])  # Añadir valor x
+                house_y.append(y_values[i])  # Añadir valor y
         
-        if house_x:
+        if house_x:  # Si hay puntos para esta casa
+            # Dibujar puntos de dispersión para esta casa
             ax1.scatter(house_x, house_y, c=colors[house], label=house, 
                        alpha=0.6, s=30, edgecolors='black', linewidth=0.5)
+            # scatter() crea gráfico de dispersión
+            # c= color, label= etiqueta para leyenda
+            # alpha= transparencia (0-1), s= tamaño de puntos
+            # edgecolors= color del borde, linewidth= grosor del borde
     
-    ax1.set_xlabel(feature1, fontsize=12)
-    ax1.set_ylabel(feature2, fontsize=12)
+    # Configurar etiquetas y título del gráfico principal
+    ax1.set_xlabel(feature1, fontsize=12)  # Etiqueta del eje x
+    ax1.set_ylabel(feature2, fontsize=12)  # Etiqueta del eje y
+    # set_title establece el título del subplot
     ax1.set_title(f'Most Similar Features\n{feature1} vs {feature2}\n'
                   f'Correlation: {max_corr:.4f}', fontsize=14, fontweight='bold')
-    ax1.legend()
-    ax1.grid(True, alpha=0.3)
+    # \n crea salto de línea en el título
+    # .4f formatea con 4 decimales, fontweight='bold' hace el texto en negrita
+    ax1.legend()  # Mostrar leyenda con las casas
+    ax1.grid(True, alpha=0.3)  # Mostrar cuadrícula con transparencia 0.3
     
-    # Also show top 6 correlations as small multiples
-    top_6 = sorted_corr[1:7]  # Skip the first one since we already showed it
+    # Mostrar top 6 correlaciones adicionales (comentario informativo)
+    top_6 = sorted_corr[1:7]  # Tomar elementos del índice 1 al 6 (saltamos el primero que ya mostramos)
+    # [1:7] es slice que toma elementos desde índice 1 (inclusive) hasta 7 (exclusive)
     
-    for idx, (feat1, feat2, corr) in enumerate(top_6):
-        row = idx // 3
-        col = idx % 3
+    for idx, (feat1, feat2, corr) in enumerate(top_6):  # Iterar con índice
+        row = idx // 3  # Calcular fila (división entera: 0,1,2 -> fila 0; 3,4,5 -> fila 1)
+        col = idx % 3   # Calcular columna (resto de división: 0,1,2 se repite)
         
-        # We'll just show this in the second subplot as a summary
+        # Podríamos mostrar esto en el segundo subplot como resumen
+        # (actualmente solo mostramos tabla de texto)
     
-    # Show correlation matrix visualization
-    ax2.axis('off')
+    # Mostrar matriz de correlaciones como visualización de texto
+    ax2.axis('off')  # Desactivar ejes del segundo subplot (no mostramos ejes x,y)
     
-    # Display top correlations as text
-    text_content = "Top 10 Feature Correlations:\n"
-    text_content += "="*50 + "\n\n"
+    # Preparar contenido de texto con top 10 correlaciones
+    text_content = "Top 10 Feature Correlations:\n"  # Título
+    text_content += "="*50 + "\n\n"  # Línea separadora
     
-    for i, (feat1, feat2, corr) in enumerate(sorted_corr[:10], 1):
-        # Truncate feature names if too long
-        f1 = feat1[:20] + "..." if len(feat1) > 20 else feat1
-        f2 = feat2[:20] + "..." if len(feat2) > 20 else feat2
-        text_content += f"{i:2}. {f1} & {f2}\n"
-        text_content += f"    Correlation: {corr:+.4f}\n\n"
+    # Construir lista de correlaciones con formato
+    for i, (feat1, feat2, corr) in enumerate(sorted_corr[:10], 1):  # enumerate empieza en 1
+        # enumerate(lista, start) permite especificar el número inicial
+        # Truncar nombres de características si son demasiado largos
+        f1 = feat1[:20] + "..." if len(feat1) > 20 else feat1  # Si >20 chars, truncar y añadir "..."
+        f2 = feat2[:20] + "..." if len(feat2) > 20 else feat2  # Operador ternario: valor_si_true if condición else valor_si_false
+        text_content += f"{i:2}. {f1} & {f2}\n"  # Número y nombres de características
+        # :2 formatea con ancho 2 (alinea números)
+        text_content += f"    Correlation: {corr:+.4f}\n\n"  # Correlación con signo (+ o -)
+        # :+ fuerza mostrar signo positivo, .4f formatea con 4 decimales
     
+    # Mostrar texto en el subplot 2
     ax2.text(0.1, 0.95, text_content, transform=ax2.transAxes,
             fontsize=10, verticalalignment='top', family='monospace',
             bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+    # text(x, y, texto, ...) coloca texto en posición (x,y)
+    # transform=ax2.transAxes usa coordenadas relativas (0-1) en lugar de datos
+    # verticalalignment='top' alinea texto desde arriba
+    # family='monospace' usa fuente monoespaciada (caracteres mismo ancho)
+    # bbox= caja alrededor del texto: boxstyle='round' esquinas redondeadas, facecolor= color de fondo, alpha= transparencia
     
-    plt.tight_layout()
+    # Ajustar espaciado entre subplots automáticamente
+    plt.tight_layout()  # Evita solapamiento de elementos
+    # Guardar figura como archivo PNG
     plt.savefig('scatter_plot_analysis.png', dpi=100, bbox_inches='tight')
+    # savefig() guarda la figura actual
+    # dpi= resolución en puntos por pulgada (dots per inch)
+    # bbox_inches='tight' ajusta el recorte para minimizar espacio en blanco
     print("Gráfico de dispersión guardado como 'scatter_plot_analysis.png'")
-    plt.show()
+    plt.show()  # Mostrar gráfico en pantalla
 
 
 def main():
-    """Main function"""
-    if len(sys.argv) < 2:
+    """
+    Función principal del programa.
+    Procesa argumentos de línea de comandos y ejecuta el análisis de dispersión.
+    """
+    if len(sys.argv) < 2:  # Si no se proporciona archivo como argumento
+        # sys.argv es lista: [nombre_script, arg1, arg2, ...]
         print("Uso: python scatter_plot.py <dataset.csv>")
         print("Ejemplo: python scatter_plot.py dataset_train.csv")
-        sys.exit(1)
+        sys.exit(1)  # Salir con código de error
     
-    filename = sys.argv[1]
-    plot_scatter(filename)
+    filename = sys.argv[1]  # Obtener nombre de archivo del primer argumento
+    plot_scatter(filename)  # Ejecutar análisis y visualización
 
 
 if __name__ == "__main__":
-    main()
+    main()  # Ejecutar función principal solo si se ejecuta como script
+    # __name__ == "__main__" es True solo cuando el archivo se ejecuta directamente
+    # (no cuando se importa como módulo)

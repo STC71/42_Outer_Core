@@ -59,128 +59,193 @@ def sigmoid(z):
 def split_data(X, y_dict, houses, train_ratio=0.8):
     """
     Dividir datos en conjuntos de entrenamiento y validación.
-    train_ratio: proporción para entrenamiento (por defecto 80%)
-    Retorna X_train, X_val, y_train_dict, y_val_dict.
+    La validación cruzada es crucial para evaluar el rendimiento del modelo
+    en datos no vistos sin tocar el conjunto de prueba oficial.
+    
+    Args:
+        X: Matriz de características
+        y_dict: Diccionario casa -> etiquetas binarias
+        houses: Lista de casas de Hogwarts
+        train_ratio: Proporción de datos para entrenamiento (por defecto 0.8 = 80%)
+    
+    Returns:
+        Tupla (X_train, X_val, y_train_dict, y_val_dict)
     """
-    n_samples = len(X)  # Número total de ejemplos
-    indices = list(range(n_samples))  # Lista de índices
-    random.shuffle(indices)  # Mezclar aleatoriamente
+    n_samples = len(X)  # Número total de ejemplos en el dataset
+    indices = list(range(n_samples))  # Crear lista de índices [0, 1, 2, ..., n-1]
+    random.shuffle(indices)  # Mezclar aleatoriamente para evitar sesgo
+    # shuffle() modifica la lista in-place, mezclando los índices aleatoriamente
     
-    split_point = int(n_samples * train_ratio)  # Punto de división
-    train_indices = indices[:split_point]  # Índices de entrenamiento
-    val_indices = indices[split_point:]  # Índices de validación
+    # Calcular punto de división entre train y validation
+    split_point = int(n_samples * train_ratio)  # Ejemplo: 800 si n=1000 y ratio=0.8
+    train_indices = indices[:split_point]  # Primeros 80% para entrenamiento
+    val_indices = indices[split_point:]  # Últimos 20% para validación
+    # [:n] toma elementos desde inicio hasta n (exclusive)
+    # [n:] toma elementos desde n hasta el final
     
+    # Crear conjuntos de características usando índices seleccionados
     X_train = [X[i] for i in train_indices]  # Features de entrenamiento
     X_val = [X[i] for i in val_indices]  # Features de validación
+    # List comprehension que selecciona filas según los índices
     
-    y_train_dict = {}  # Etiquetas de entrenamiento por casa
-    y_val_dict = {}  # Etiquetas de validación por casa
+    # Dividir etiquetas para cada casa
+    y_train_dict = {}  # Diccionario para etiquetas de entrenamiento
+    y_val_dict = {}  # Diccionario para etiquetas de validación
     
-    for house in houses:  # Para cada casa
+    for house in houses:  # Para cada casa de Hogwarts
+        # Seleccionar etiquetas según los índices de train y validation
         y_train_dict[house] = [y_dict[house][i] for i in train_indices]
         y_val_dict[house] = [y_dict[house][i] for i in val_indices]
     
-    return X_train, X_val, y_train_dict, y_val_dict  # Retornar splits
+    return X_train, X_val, y_train_dict, y_val_dict  # Retornar todos los conjuntos
 
 
 def predict_one_vs_all(X, theta_dict, houses):
     """
     Hacer predicciones usando clasificadores One-vs-All.
-    Para cada ejemplo, calcula probabilidad para cada casa y elige la máxima.
-    Retorna lista de predicciones.
+    Para cada ejemplo, calcula la probabilidad de pertenecer a cada casa
+    y selecciona la casa con mayor probabilidad.
+    
+    Args:
+        X: Matriz de características (m x n)
+        theta_dict: Diccionario casa -> vector de pesos
+        houses: Lista de nombres de casas
+    
+    Returns:
+        Lista de nombres de casas predichas
     """
     predictions = []  # Lista para almacenar predicciones
     
-    for x in X:  # Para cada ejemplo
-        probabilities = {}  # Diccionario de probabilidades por casa
-        for house in houses:  # Para cada casa
-            theta = theta_dict[house]  # Obtener pesos de esta casa
-            z = sum(theta[j] * x[j] for j in range(len(theta)))  # Calcular z = θᵀx
-            prob = sigmoid(z)
-            probabilities[house] = prob
+    for x in X:  # Para cada ejemplo en el conjunto de datos
+        # Calcular probabilidad para cada casa
+        probabilities = {}  # Diccionario: casa -> probabilidad
+        for house in houses:  # Para cada casa de Hogwarts
+            theta = theta_dict[house]  # Obtener vector de pesos de esta casa
+            # Calcular z = θᵀx (producto punto entre pesos y características)
+            z = sum(theta[j] * x[j] for j in range(len(theta)))  # Suma de productos
+            # Aplicar función sigmoide para obtener probabilidad
+            prob = sigmoid(z)  # Convierte z a valor entre 0 y 1
+            probabilities[house] = prob  # Guardar probabilidad
         
+        # Predecir la casa con la probabilidad más alta
         predicted_house = max(probabilities, key=probabilities.get)
-        predictions.append(predicted_house)
+        # max(..., key=func) encuentra la clave con el valor máximo según func
+        # probabilities.get obtiene el valor (probabilidad) asociado a cada casa
+        predictions.append(predicted_house)  # Añadir predicción a la lista
     
-    return predictions
+    return predictions  # Retornar lista de predicciones
 
 
 def calculate_accuracy(predictions, y_dict, houses):
-    """Calculate accuracy from predictions"""
-    # Convert y_dict to actual labels
-    n_samples = len(predictions)
-    actual_labels = []
+    """
+    Calcular la precisión (accuracy) de las predicciones.
+    Precisión = (número de predicciones correctas) / (total de predicciones) * 100
     
-    for i in range(n_samples):
-        for house in houses:
-            if y_dict[house][i] == 1:
-                actual_labels.append(house)
-                break
+    Args:
+        predictions: Lista de casas predichas
+        y_dict: Diccionario casa -> etiquetas binarias
+        houses: Lista de nombres de casas
     
+    Returns:
+        Tupla (accuracy, correct, total)
+    """
+    # Convertir y_dict (formato One-vs-All) a etiquetas reales
+    n_samples = len(predictions)  # Número de predicciones
+    actual_labels = []  # Lista para etiquetas verdaderas
+    
+    # Para cada muestra, encontrar qué casa tiene etiqueta 1
+    for i in range(n_samples):  # Para cada ejemplo
+        for house in houses:  # Revisar cada casa
+            if y_dict[house][i] == 1:  # Si la etiqueta es 1 para esta casa
+                actual_labels.append(house)  # Esta es la casa verdadera
+                break  # Salir del bucle (solo una casa puede ser 1)
+    
+    # Contar predicciones correctas
+    # zip combina predictions y actual_labels en pares: [(pred1, actual1), (pred2, actual2), ...]
     correct = sum(1 for pred, actual in zip(predictions, actual_labels) if pred == actual)
-    accuracy = (correct / n_samples * 100) if n_samples > 0 else 0.0
+    # sum() cuenta cuántos pares tienen predicción igual a etiqueta real
+    # La expresión `1 for ... if pred == actual` genera un 1 por cada coincidencia
     
-    return accuracy, correct, n_samples
+    # Calcular porcentaje de precisión
+    accuracy = (correct / n_samples * 100) if n_samples > 0 else 0.0
+    # Dividir correctas por total y multiplicar por 100 para obtener porcentaje
+    
+    return accuracy, correct, n_samples  # Retornar precisión, aciertos y total
 
 
 def main():
-    """Main cross-validation function"""
-    if len(sys.argv) < 2:
+    """
+    Función principal de validación cruzada.
+    Divide datos, entrena el modelo y evalúa su rendimiento en datos no vistos.
+    """
+    if len(sys.argv) < 2:  # Si no se proporciona archivo
         print("Uso: python cross_validate.py <dataset_train.csv> [ratio_entrenamiento]")
         print("Ejemplo: python cross_validate.py dataset_train.csv 0.8")
-        sys.exit(1)
+        sys.exit(1)  # Salir con error
     
-    filename = sys.argv[1]
+    # Extraer argumentos
+    filename = sys.argv[1]  # Archivo de datos de entrenamiento
+    # Usar ratio del argumento o 0.8 por defecto (80% train, 20% validation)
     train_ratio = float(sys.argv[2]) if len(sys.argv) > 2 else 0.8
     
+    # Mostrar información inicial
     print("="*80)
     print("DSLR - Validación Cruzada")
     print("="*80)
     print(f"Conjunto de datos: {filename}")
     print(f"División Train/Val: {train_ratio*100:.0f}% / {(1-train_ratio)*100:.0f}%")
+    # .0f formatea como entero (0 decimales)
     
-    # Set seed for reproducibility
-    random.seed(42)
+    # Establecer semilla para reproducibilidad
+    random.seed(42)  # Usar semilla fija para obtener mismos resultados
+    # Esto hace que random.shuffle produzca la misma secuencia cada vez
     
-    # Import training functions (simplified version)
+    # Importar funciones de entrenamiento (versión simplificada)
     from logreg_train import prepare_data, train_one_vs_all
+    # Reutilizamos funciones del script de entrenamiento
     
-    # Prepare full dataset
+    # Preparar conjunto de datos completo
     X, y_dict, feature_names, houses, normalization_params = prepare_data(filename)
     
-    # Split into train and validation
+    # Dividir en conjuntos de entrenamiento y validación
     print("\nDividiendo datos...")
     X_train, X_val, y_train_dict, y_val_dict = split_data(X, y_dict, houses, train_ratio)
     
+    # Mostrar tamaños de los conjuntos
     print(f"Muestras de entrenamiento: {len(X_train)}")
     print(f"Muestras de validación: {len(X_val)}")
     
-    # Train on training set
+    # Entrenar con conjunto de entrenamiento
     print("\nEntrenando con conjunto de entrenamiento...")
     theta_dict = train_one_vs_all(X_train, y_train_dict, houses, 
                                   learning_rate=0.1, num_iterations=1000, 
                                   verbose=False)
+    # verbose=False para no imprimir progreso detallado
     
-    # Predict on validation set
+    # Predecir en conjunto de validación (datos que el modelo no ha visto)
     print("\nEvaluando con conjunto de validación...")
     predictions = predict_one_vs_all(X_val, theta_dict, houses)
     
-    # Calculate accuracy
+    # Calcular precisión (qué porcentaje de predicciones son correctas)
     accuracy, correct, total = calculate_accuracy(predictions, y_val_dict, houses)
     
+    # Mostrar resultados
     print("\n" + "="*80)
     print("RESULTADOS DE VALIDACIÓN")
     print("="*80)
-    print(f"\nPrecisión: {accuracy:.2f}%")
-    print(f"Correctas: {correct} / {total}")
+    print(f"\nPrecisión: {accuracy:.2f}%")  # Porcentaje con 2 decimales
+    print(f"Correctas: {correct} / {total}")  # Aciertos sobre total
     
-    if accuracy >= 98.0:
+    # Verificar si cumple el requisito de precisión >= 98%
+    if accuracy >= 98.0:  # Si precisión es suficiente
         print(f"\n✓ APROBADO: Precisión >= 98%")
-    else:
+    else:  # Si precisión es insuficiente
         print(f"\n✗ FALLADO: Precisión < 98% (necesita mejorar)")
+        # Sugerencias: ajustar hyperparámetros, añadir más features, más iteraciones
     
     print("\n" + "="*80)
 
 
 if __name__ == "__main__":
-    main()
+    main()  # Ejecutar función principal si se ejecuta como script
+    # __name__ == "__main__" es True solo cuando el archivo se ejecuta directamente

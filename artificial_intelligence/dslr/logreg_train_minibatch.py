@@ -74,76 +74,98 @@ def compute_cost(X, y, theta):
 def gradient_descent_minibatch(X, y, theta, learning_rate, num_epochs, 
                                batch_size=32, verbose=False):
     """
-    MINI-BATCH Gradient Descent - updates weights using small batches
+    Descenso de Gradiente por MINI-LOTES - actualiza pesos usando pequeños lotes de datos.
+    
+    DIFERENCIAS CLAVE entre las tres variantes:
+    - Batch: usa TODOS los ejemplos (m ejemplos) → 1 actualización por época
+    - Stochastic: usa 1 ejemplo → m actualizaciones por época
+    - Mini-batch: usa n ejemplos (batch_size) → m/n actualizaciones por época
+    
+    VENTAJAS del Mini-batch (lo mejor de ambos mundos):
+    - Más rápido que batch en datasets grandes
+    - Menos ruidoso que stochastic (gradiente más estable)
+    - Permite paralelización (GPUs pueden procesar batches eficientemente)
+    - Buen balance entre velocidad y estabilidad
+    - Es el método más usado en deep learning moderno
+    
+    DESVENTAJAS:
+    - Requiere ajustar un hiperparámetro adicional (batch_size)
+    - Puede requerir más memoria que stochastic
     
     Args:
-        X: Feature matrix
-        y: Labels
-        theta: Initial weights
-        learning_rate: Learning rate
-        num_epochs: Number of passes through dataset
-        batch_size: Number of examples per batch
-        verbose: Print progress
+        X: Matriz de características (m x n) como lista de listas
+        y: Etiquetas (m,) como lista de 0s y 1s
+        theta: Pesos iniciales (n,) como lista
+        learning_rate: Tasa de aprendizaje (alpha) - controla tamaño de paso
+        num_epochs: Número de épocas (pasadas completas por todo el dataset)
+        batch_size: Tamaño del mini-lote (típicamente 32, 64, 128, 256)
+        verbose: Imprimir progreso durante entrenamiento
     
     Returns:
-        Optimized theta, cost history
+        Theta optimizado, historial de coste
     """
-    m = len(y)
-    n = len(theta)
-    cost_history = []
+    m = len(y)  # Número total de ejemplos de entrenamiento
+    n = len(theta)  # Número de parámetros (features + bias)
+    cost_history = []  # Lista para almacenar historial de coste
     
-    # Create indices for shuffling
-    indices = list(range(m))
+    # Crear lista de índices para mezclar (shuffling)
+    indices = list(range(m))  # [0, 1, 2, ..., m-1]
     
-    for epoch in range(num_epochs):
-        # Shuffle data at beginning of each epoch
-        random.shuffle(indices)
+    for epoch in range(num_epochs):  # Para cada época
+        # Mezclar datos al inicio de cada época
+        # Esto previene que el modelo aprenda el orden de los datos
+        random.shuffle(indices)  # Mezclar aleatoriamente los índices
         
-        # Process mini-batches
-        num_batches = (m + batch_size - 1) // batch_size
+        # Procesar datos en mini-lotes
+        # Calcular número de lotes: redondear hacia arriba para incluir último lote más pequeño
+        num_batches = (m + batch_size - 1) // batch_size  # División entera con redondeo hacia arriba
+        # Ejemplo: si m=100 y batch_size=32, tendremos 4 lotes (32, 32, 32, 4)
         
-        for batch_idx in range(num_batches):
-            # Get batch indices
-            start_idx = batch_idx * batch_size
-            end_idx = min(start_idx + batch_size, m)
-            batch_indices = indices[start_idx:end_idx]
-            batch_len = len(batch_indices)
+        for batch_idx in range(num_batches):  # Para cada mini-lote
+            # Obtener índices del lote actual
+            start_idx = batch_idx * batch_size  # Índice inicial del lote
+            end_idx = min(start_idx + batch_size, m)  # Índice final (puede ser menor para último lote)
+            batch_indices = indices[start_idx:end_idx]  # Slice de índices para este lote
+            batch_len = len(batch_indices)  # Tamaño real del lote (puede ser < batch_size para último)
             
-            if batch_len == 0:
-                continue
+            if batch_len == 0:  # Si lote vacío (no debería ocurrir)
+                continue  # Saltar este lote
             
-            # Compute gradient for this batch
-            gradient = [0.0] * n
+            # Calcular gradiente para este mini-lote
+            gradient = [0.0] * n  # Inicializar vector gradiente con ceros
             
-            for idx in batch_indices:
-                # Compute prediction
-                z = sum(theta[j] * X[idx][j] for j in range(n))
-                h = sigmoid(z)
+            # Acumular gradiente sobre ejemplos del lote
+            for idx in batch_indices:  # Para cada ejemplo en el lote
+                # Calcular predicción para este ejemplo
+                z = sum(theta[j] * X[idx][j] for j in range(n))  # Producto punto θᵀx
+                h = sigmoid(z)  # Aplicar sigmoide
                 
-                # Error
-                error = h - y[idx]
+                # Calcular error: (h - y)
+                error = h - y[idx]  # Diferencia entre predicción y valor real
                 
-                # Accumulate gradient
-                for j in range(n):
-                    gradient[j] += error * X[idx][j]
+                # Acumular contribución al gradiente: ∂J/∂θⱼ += (h - y) * xⱼ
+                for j in range(n):  # Para cada parámetro
+                    gradient[j] += error * X[idx][j]  # Acumular gradiente
             
-            # Average gradient over batch
-            for j in range(n):
-                gradient[j] /= batch_len
+            # Promediar gradiente sobre el tamaño del lote
+            # Esto es similar a batch pero solo usa batch_size ejemplos en lugar de todos
+            for j in range(n):  # Para cada parámetro
+                gradient[j] /= batch_len  # Dividir por tamaño del lote
             
-            # Update weights
-            for j in range(n):
-                theta[j] -= learning_rate * gradient[j]
+            # Actualizar pesos usando el gradiente promediado del lote
+            # Fórmula: θⱼ := θⱼ - α * (1/batch_size) * Σ(h - y) * xⱼ
+            for j in range(n):  # Para cada parámetro
+                theta[j] -= learning_rate * gradient[j]  # Actualización de pesos
         
-        # Compute cost after each epoch
-        if epoch % 10 == 0 or epoch == num_epochs - 1:
-            cost = compute_cost(X, y, theta)
-            cost_history.append(cost)
+        # Calcular coste después de cada época para monitoreo
+        if epoch % 10 == 0 or epoch == num_epochs - 1:  # Cada 10 épocas o última
+            cost = compute_cost(X, y, theta)  # Calcular coste con todos los datos
+            cost_history.append(cost)  # Guardar en historial
             
-            if verbose and epoch % 50 == 0:
+            if verbose and epoch % 50 == 0:  # Si verbose y cada 50 épocas
                 print(f"  Epoch {epoch:5d}: Cost = {cost:.6f}")
     
-    return theta, cost_history
+    return theta, cost_history  # Retornar pesos optimizados e historial
 
 
 def read_csv(filename):

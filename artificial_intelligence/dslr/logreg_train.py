@@ -300,82 +300,96 @@ def prepare_data(filename, selected_features=None):
         houses: Lista de casas de Hogwarts
         normalization_params: Parámetros de normalización
     """
-    headers, data = read_csv(filename)
+    headers, data = read_csv(filename)  # Leer encabezados y datos del CSV
     
-    # Get numerical features
+    # Obtener características numéricas (excluir columnas no relevantes)
+    # Estas columnas no son numéricas o no son útiles para predicción
     excluded_columns = ['Index', 'Hogwarts House', 'First Name', 'Last Name', 
-                       'Birthday', 'Best Hand']
+                       'Birthday', 'Best Hand']  # Columnas a excluir
     
-    all_numerical_features = []
-    for header in headers:
+    # Filtrar solo columnas numéricas no excluidas
+    all_numerical_features = []  # Lista para todas las características numéricas
+    for header in headers:  # Para cada encabezado de columna
+        # Si no está excluida y es numérica
         if header not in excluded_columns and is_numerical_column(data[header]):
-            all_numerical_features.append(header)
+            all_numerical_features.append(header)  # Añadir a lista
     
-    # Use selected features or default best features
-    if selected_features is None:
-        # Default: use features that work well (determined from analysis)
-        # These can be adjusted after running pair_plot analysis
-        selected_features = all_numerical_features
+    # Usar características seleccionadas o por defecto las mejores
+    if selected_features is None:  # Si no se especificaron características
+        # Por defecto: usar todas las características disponibles
+        # Estas pueden ajustarse después de ejecutar análisis de pair_plot
+        selected_features = all_numerical_features  # Usar todas
     
-    # Get unique houses
-    houses = []
-    for house in data['Hogwarts House']:
+    # Obtener casas de Hogwarts únicas (nuestras clases para clasificación)
+    houses = []  # Lista para almacenar nombres de casas únicas
+    for house in data['Hogwarts House']:  # Para cada casa en los datos
+        # Si la casa existe, no está vacía y no está ya en la lista
         if house and house.strip() and house not in houses:
-            houses.append(house)
-    houses = sorted(houses)
+            houses.append(house)  # Añadir casa nueva
+    houses = sorted(houses)  # Ordenar alfabéticamente para consistencia
     
-    print(f"\nClases encontradas: {houses}")
+    # Mostrar información sobre los datos
+    print(f"\nClases encontradas: {houses}")  # Casas de Hogwarts a clasificar
     print(f"Número de características: {len(selected_features)}")
+    # Mostrar primeras 5 características si hay muchas, o todas si hay pocas
     print(f"Características: {selected_features[:5]}..." if len(selected_features) > 5 else f"Características: {selected_features}")
     
-    # Build feature matrix X (with imputation for missing values)
-    X = []
-    raw_labels = []
+    # Construir matriz de características X (con imputación para valores faltantes)
+    X = []  # Matriz de características (lista de listas)
+    raw_labels = []  # Etiquetas originales (nombres de casas)
     
-    # First pass: collect all values to compute means for imputation
-    feature_means = {}
-    for feature in selected_features:
-        values = [parse_float(v) for v in data[feature]]
-        clean_values = [v for v in values if v is not None]
-        if clean_values:
+    # Primera pasada: recolectar valores para calcular medias para imputación
+    # La imputación reemplaza valores faltantes con la media de esa característica
+    feature_means = {}  # Diccionario: característica -> media
+    for feature in selected_features:  # Para cada característica seleccionada
+        values = [parse_float(v) for v in data[feature]]  # Convertir a float
+        clean_values = [v for v in values if v is not None]  # Filtrar None
+        if clean_values:  # Si hay valores válidos
+            # Calcular media: suma / cantidad
             feature_means[feature] = sum(clean_values) / len(clean_values)
-        else:
-            feature_means[feature] = 0.0
+        else:  # Si no hay valores válidos
+            feature_means[feature] = 0.0  # Usar 0 como valor por defecto
     
-    # Second pass: build feature matrix
-    for i in range(len(data['Hogwarts House'])):
-        house = data['Hogwarts House'][i]
-        if not house or not house.strip():
-            continue
+    # Segunda pasada: construir matriz de características
+    for i in range(len(data['Hogwarts House'])):  # Para cada estudiante
+        house = data['Hogwarts House'][i]  # Obtener casa del estudiante
+        if not house or not house.strip():  # Si no tiene casa asignada
+            continue  # Saltar este estudiante
         
-        # Add bias term (1.0) as first feature
-        row = [1.0]
+        # Añadir término de sesgo (bias) como primera característica (siempre 1.0)
+        # El bias permite que el modelo tenga un "offset" en su predicción
+        row = [1.0]  # Comenzar fila con bias
         
-        # Add other features
-        skip_row = False
-        for feature in selected_features:
-            value = parse_float(data[feature][i])
-            if value is None:
-                # Impute with mean
+        # Añadir otras características
+        skip_row = False  # Bandera para saltar filas problemáticas
+        for feature in selected_features:  # Para cada característica
+            value = parse_float(data[feature][i])  # Obtener valor
+            if value is None:  # Si el valor está faltante
+                # Imputar con la media calculada anteriormente
                 value = feature_means[feature]
-            row.append(value)
+            row.append(value)  # Añadir valor a la fila
         
-        if not skip_row:
-            X.append(row)
-            raw_labels.append(house.strip())
+        if not skip_row:  # Si la fila es válida
+            X.append(row)  # Añadir fila a matriz X
+            raw_labels.append(house.strip())  # Añadir etiqueta (casa)
     
-    # Normalize features (except bias term)
+    # Normalizar características (excepto término de sesgo)
+    # La normalización mejora la convergencia del descenso de gradiente
     X_normalized, normalization_params = normalize_features(X)
     
-    # Create binary labels for each house (One-vs-All)
-    y_dict = {}
-    for house in houses:
+    # Crear etiquetas binarias para cada casa (estrategia One-vs-All)
+    # Para cada casa, creamos un clasificador binario: esa casa (1) vs todas las demás (0)
+    y_dict = {}  # Diccionario: casa -> lista de etiquetas binarias
+    for house in houses:  # Para cada casa de Hogwarts
+        # Crear lista de 1s y 0s: 1 si el estudiante pertenece a esta casa, 0 si no
         y_dict[house] = [1 if label == house else 0 for label in raw_labels]
+        # List comprehension que crea etiquetas binarias
     
+    # Mostrar estadísticas del conjunto de datos
     print(f"Muestras de entrenamiento: {len(X_normalized)}")
-    for house in houses:
-        count = sum(y_dict[house])
-        print(f"  {house}: {count} muestras")
+    for house in houses:  # Para cada casa
+        count = sum(y_dict[house])  # Contar cuántos estudiantes pertenecen a esta casa
+        print(f"  {house}: {count} muestras")  # Mostrar conteo
     
     return X_normalized, y_dict, selected_features, houses, normalization_params
 
@@ -387,68 +401,88 @@ def prepare_data(filename, selected_features=None):
 def train_one_vs_all(X, y_dict, houses, learning_rate=0.1, num_iterations=1000, 
                      verbose=True):
     """
-    Train One-vs-All logistic regression classifiers
+    Entrenar clasificadores de regresión logística One-vs-All.
+    Estrategia One-vs-All: entrenar un clasificador binario por cada casa.
+    Cada clasificador predice si un estudiante pertenece a esa casa o no.
     
     Args:
-        X: Feature matrix
-        y_dict: Dictionary of house -> binary labels
-        houses: List of house names
-        learning_rate: Learning rate
-        num_iterations: Number of iterations
-        verbose: Print progress
+        X: Matriz de características (m x n) normalizada
+        y_dict: Diccionario casa -> etiquetas binarias [0/1]
+        houses: Lista de nombres de casas de Hogwarts
+        learning_rate: Tasa de aprendizaje (alpha) para descenso de gradiente
+        num_iterations: Número de iteraciones de optimización
+        verbose: Imprimir información de progreso durante entrenamiento
     
     Returns:
-        Dictionary of house -> theta (weights)
+        Diccionario casa -> theta (vector de pesos optimizado)
     """
-    n_features = len(X[0])
-    theta_dict = {}
+    n_features = len(X[0])  # Número de características (incluyendo bias)
+    theta_dict = {}  # Diccionario para almacenar pesos de cada clasificador
     
-    print("\n" + "="*80)
+    # Mostrar información de inicio de entrenamiento
+    print("\n" + "="*80)  # Línea separadora
     print("ENTRENANDO REGRESIÓN LOGÍSTICA (One-vs-All)")
     print("="*80)
     print(f"Tasa de aprendizaje: {learning_rate}")
     print(f"Iteraciones: {num_iterations}")
     print(f"Optimización: Descenso de Gradiente por Lotes")
+    # Descenso de gradiente por lotes usa todos los ejemplos en cada iteración
     
-    for house in houses:
+    # Entrenar un clasificador para cada casa
+    for house in houses:  # Para cada casa de Hogwarts
         print(f"\nEntrenando clasificador para '{house}' vs Todos...")
         
-        y = y_dict[house]
+        y = y_dict[house]  # Obtener etiquetas binarias para esta casa
         
-        # Initialize weights to zeros
-        theta = [0.0] * n_features
+        # Inicializar pesos a ceros (punto de partida del algoritmo)
+        theta = [0.0] * n_features  # Vector de pesos inicial
         
-        # Train using batch gradient descent
+        # Entrenar usando descenso de gradiente por lotes
         theta_optimized, cost_history = gradient_descent_batch(
             X, y, theta, learning_rate, num_iterations, verbose=verbose
-        )
+        )  # Optimizar pesos minimizando función de coste
         
-        theta_dict[house] = theta_optimized
+        theta_dict[house] = theta_optimized  # Guardar pesos optimizados
         
-        if cost_history:
+        if cost_history:  # Si hay historial de coste
+            # Mostrar coste final (indica qué tan bien ajusta el modelo)
             print(f"  Coste final: {cost_history[-1]:.6f}")
     
+    # Mostrar mensaje de finalización
     print("\n" + "="*80)
     print("ENTRENAMIENTO COMPLETADO")
     print("="*80)
     
-    return theta_dict
+    return theta_dict  # Retornar diccionario con todos los clasificadores entrenados
 
 
 def save_model(theta_dict, feature_names, houses, normalization_params, filename='weights.pkl'):
-    """Save trained model to file"""
+    """
+    Guardar modelo entrenado en archivo binario usando pickle.
+    El modelo incluye pesos, nombres de características, casas y parámetros de normalización.
+    
+    Args:
+        theta_dict: Diccionario casa -> vector de pesos
+        feature_names: Lista de nombres de características usadas
+        houses: Lista de nombres de casas de Hogwarts
+        normalization_params: Parámetros para normalizar features (media y std)
+        filename: Nombre del archivo donde guardar el modelo
+    """
+    # Crear diccionario con toda la información del modelo
     model = {
-        'theta_dict': theta_dict,
-        'feature_names': feature_names,
-        'houses': houses,
-        'normalization_params': normalization_params,
-        'algorithm': 'batch_gradient_descent'
-    }
+        'theta_dict': theta_dict,               # Pesos de cada clasificador
+        'feature_names': feature_names,         # Nombres de características
+        'houses': houses,                       # Nombres de casas
+        'normalization_params': normalization_params,  # Parámetros de normalización
+        'algorithm': 'batch_gradient_descent'   # Algoritmo usado
+    }  # Este diccionario contendrá toda la información necesaria para hacer predicciones
     
-    with open(filename, 'wb') as f:
-        pickle.dump(model, f)
+    # Guardar modelo en archivo binario usando pickle
+    with open(filename, 'wb') as f:  # Abrir en modo escritura binaria
+        pickle.dump(model, f)  # Serializar y guardar modelo
+        # pickle.dump convierte el objeto Python en bytes y lo guarda en archivo
     
-    print(f"\nModelo guardado en: {filename}")
+    print(f"\nModelo guardado en: {filename}")  # Confirmar guardado
 
 
 def main():

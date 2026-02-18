@@ -110,181 +110,214 @@ def prepare_test_data(filename, feature_names, normalization_params):
         X: Matriz de features con término de sesgo
         indices: Índices originales de las filas del dataset
     """
-    headers, data = read_csv(filename)
+    headers, data = read_csv(filename)  # Leer encabezados y datos del CSV
     
-    # Compute means for imputation (from training data params)
-    feature_means = {}
-    for i, feature in enumerate(feature_names):
-        if i + 1 < len(normalization_params):  # +1 because of bias term
-            params = normalization_params[i + 1]
-            feature_means[feature] = params['mean']
-        else:
-            feature_means[feature] = 0.0
+    # Calcular medias para imputación (usando parámetros del entrenamiento)
+    # La imputación debe usar las mismas medias que se usaron durante el entrenamiento
+    feature_means = {}  # Diccionario: feature -> media
+    for i, feature in enumerate(feature_names):  # Para cada feature del modelo
+        # +1 porque el primer elemento de normalization_params es el bias (que no se normaliza)
+        if i + 1 < len(normalization_params):  # Si hay parámetros disponibles
+            params = normalization_params[i + 1]  # Obtener parámetros de esta feature
+            feature_means[feature] = params['mean']  # Usar media del entrenamiento
+        else:  # Si no hay parámetros
+            feature_means[feature] = 0.0  # Usar 0 como valor por defecto
     
-    # Build feature matrix
-    X = []
-    indices = []
+    # Construir matriz de características
+    X = []  # Matriz de features
+    indices = []  # Lista de índices originales
     
+    # Procesar cada fila del dataset de prueba
     for i in range(len(data.get('Index', data[headers[0]]))):
-        # Add bias term
-        row = [1.0]
+        # Comenzar con término de sesgo (bias) = 1.0
+        # El bias es necesario para que el modelo pueda hacer predicciones
+        row = [1.0]  # Primer elemento es el bias
         
-        # Add features in same order as training
-        for feature in feature_names:
-            if feature in data:
-                value = parse_float(data[feature][i])
-                if value is None:
-                    # Impute with mean from training
+        # Añadir features en el MISMO orden que durante el entrenamiento
+        # El orden es crucial para que los pesos se apliquen correctamente
+        for feature in feature_names:  # Para cada feature del modelo
+            if feature in data:  # Si la feature existe en los datos de prueba
+                value = parse_float(data[feature][i])  # Convertir a float
+                if value is None:  # Si el valor está faltante
+                    # Imputar con la media del entrenamiento
                     value = feature_means.get(feature, 0.0)
-            else:
-                value = 0.0
+            else:  # Si la feature no existe en el dataset
+                value = 0.0  # Usar 0 como valor por defecto
             
-            row.append(value)
+            row.append(value)  # Añadir valor a la fila
         
-        X.append(row)
+        X.append(row)  # Añadir fila completa a la matriz
         
-        # Store original index
-        if 'Index' in data:
-            indices.append(data['Index'][i])
-        else:
-            indices.append(str(i))
+        # Almacenar índice original de la fila
+        if 'Index' in data:  # Si hay columna de índices
+            indices.append(data['Index'][i])  # Usar índice del CSV
+        else:  # Si no hay columna de índices
+            indices.append(str(i))  # Usar índice numérico
     
-    # Normalize using training parameters
-    X_normalized = []
-    for i in range(len(X)):
-        row = []
-        for j in range(len(X[i])):
-            if j == 0:  # Bias term
-                row.append(X[i][j])
-            elif j < len(normalization_params):
-                params = normalization_params[j]
-                if params['std'] == 0:
-                    row.append(X[i][j])
-                else:
+    # Normalizar usando los parámetros del entrenamiento
+    # CRUCIAL: Usar los mismos parámetros que se usaron para normalizar los datos de entrenamiento
+    # Si usamos diferentes parámetros, las predicciones serán incorrectas
+    X_normalized = []  # Lista para matriz normalizada
+    for i in range(len(X)):  # Para cada ejemplo
+        row = []  # Nueva fila normalizada
+        for j in range(len(X[i])):  # Para cada feature
+            if j == 0:  # Si es el término de sesgo (bias)
+                row.append(X[i][j])  # No normalizar bias (siempre es 1.0)
+            elif j < len(normalization_params):  # Si hay parámetros disponibles
+                params = normalization_params[j]  # Obtener parámetros
+                if params['std'] == 0:  # Si desviación estándar es 0
+                    row.append(X[i][j])  # No normalizar (evitar división por 0)
+                else:  # Si se puede normalizar
+                    # Aplicar normalización Z-score: (x - media) / std
                     normalized_val = (X[i][j] - params['mean']) / params['std']
-                    row.append(normalized_val)
-            else:
-                row.append(X[i][j])
-        X_normalized.append(row)
+                    row.append(normalized_val)  # Añadir valor normalizado
+            else:  # Si no hay parámetros para esta feature
+                row.append(X[i][j])  # Mantener valor original
+        X_normalized.append(row)  # Añadir fila normalizada a matriz
     
-    return X_normalized, indices
+    return X_normalized, indices  # Retornar matriz normalizada e índices
 
 
 def predict_one_vs_all(X, theta_dict, houses):
     """
-    Make predictions using One-vs-All strategy
-    
-    For each sample, compute probability for each house and pick the highest
+    Hacer predicciones usando estrategia One-vs-All.
+    Para cada muestra, calcular probabilidad de pertenecer a cada casa y elegir la más alta.
+    Esto implementa clasificación multiclase usando múltiples clasificadores binarios.
     
     Args:
-        X: Feature matrix
-        theta_dict: Dictionary of house -> weights
-        houses: List of house names
+        X: Matriz de características (m x n) normalizada
+        theta_dict: Diccionario casa -> vector de pesos
+        houses: Lista de nombres de casas de Hogwarts
     
     Returns:
-        List of predicted house names
+        Lista de nombres de casas predichas (una por cada muestra en X)
     """
-    predictions = []
+    predictions = []  # Lista para almacenar predicciones
     
-    for x in X:
-        # Compute probability for each house
-        probabilities = {}
+    for x in X:  # Para cada muestra de prueba
+        # Calcular probabilidad de pertenecer a cada casa
+        probabilities = {}  # Diccionario: casa -> probabilidad
         
-        for house in houses:
-            theta = theta_dict[house]
+        for house in houses:  # Para cada casa de Hogwarts
+            theta = theta_dict[house]  # Obtener pesos de este clasificador
             
-            # Compute z = θᵀx
-            z = sum(theta[j] * x[j] for j in range(len(theta)))
+            # Calcular z = θᵀx (producto punto de pesos y features)
+            # Esto es la combinación lineal de las features ponderadas por los pesos
+            z = sum(theta[j] * x[j] for j in range(len(theta)))  # Producto punto
+            # sum() calcula θ0*x0 + θ1*x1 + ... + θn*xn
             
-            # Compute probability = sigmoid(z)
-            prob = sigmoid(z)
-            probabilities[house] = prob
+            # Calcular probabilidad = sigmoid(z)
+            # sigmoid transforma z (que puede ser cualquier número) a un valor entre 0 y 1
+            prob = sigmoid(z)  # Aplicar función sigmoide
+            probabilities[house] = prob  # Guardar probabilidad para esta casa
         
-        # Predict house with highest probability
+        # Predecir la casa con mayor probabilidad
+        # max(..., key=...) encuentra la casa con el valor más alto en el diccionario
         predicted_house = max(probabilities, key=probabilities.get)
-        predictions.append(predicted_house)
+        # probabilities.get obtiene el valor (probabilidad) asociado a cada clave (casa)
+        predictions.append(predicted_house)  # Añadir predicción a la lista
     
-    return predictions
+    return predictions  # Retornar lista de predicciones
 
 
 def save_predictions(predictions, indices, output_filename='houses.csv'):
     """
-    Save predictions to CSV file in required format
+    Guardar predicciones en archivo CSV en el formato requerido.
+    El formato debe ser: Index, Hogwarts House
     
-    Format:
+    Args:
+        predictions: Lista de casas predichas
+        indices: Lista de índices originales de las muestras
+        output_filename: Nombre del archivo de salida
+    
+    Formato del archivo:
     Index,Hogwarts House
     0,Gryffindor
     1,Hufflepuff
     ...
     """
-    with open(output_filename, 'w', newline='') as f:
-        writer = csv.writer(f)
+    with open(output_filename, 'w', newline='') as f:  # Abrir en modo escritura
+        # newline='' previene líneas en blanco adicionales en Windows
+        writer = csv.writer(f)  # Crear escritor CSV
         
-        # Write header
-        writer.writerow(['Index', 'Hogwarts House'])
+        # Escribir encabezados
+        writer.writerow(['Index', 'Hogwarts House'])  # Primera fila
         
-        # Write predictions
-        for idx, house in zip(indices, predictions):
-            writer.writerow([idx, house])
+        # Escribir predicciones (una por fila)
+        for idx, house in zip(indices, predictions):  # zip combina dos listas en pares
+            writer.writerow([idx, house])  # Escribir fila con índice y predicción
     
-    print(f"Predicciones guardadas en: {output_filename}")
+    print(f"Predicciones guardadas en: {output_filename}")  # Confirmar guardado
 
 
 def main():
-    """Main prediction function"""
-    if len(sys.argv) < 2:
+    """
+    Función principal de predicción.
+    Lee argumentos, carga modelo, prepara datos de prueba, hace predicciones y guarda resultados.
+    """
+    if len(sys.argv) < 2:  # Si no se proporciona archivo de prueba
         print("Uso: python logreg_predict.py <dataset_test.csv> [weights.pkl] [salida.csv]")
         print("Ejemplo: python logreg_predict.py dataset_test.csv weights.pkl houses.csv")
-        sys.exit(1)
+        sys.exit(1)  #  con error
     
-    test_filename = sys.argv[1]
-    weights_filename = sys.argv[2] if len(sys.argv) > 2 else 'weights.pkl'
-    output_filename = sys.argv[3] if len(sys.argv) > 3 else 'houses.csv'
+    # Extraer argumentos de línea de comandos
+    test_filename = sys.argv[1]  # Archivo con datos de prueba
+    weights_filename = sys.argv[2] if len(sys.argv) > 2 else 'weights.pkl'  # Archivo del modelo
+    output_filename = sys.argv[3] if len(sys.argv) > 3 else 'houses.csv'  # Archivo de salida
+    # Operador ternario: valor_si_true if condición else valor_si_false
     
+    # Mostrar información inicial
     print("="*80)
     print("DSLR - Predicción de Regresión Logística")
     print("="*80)
     print(f"Dataset de prueba: {test_filename}")
     print(f"Pesos del modelo: {weights_filename}")
     
-    # Load model
+    # Cargar modelo entrenado desde archivo
     print("\nCargando modelo entrenado...")
-    model = load_model(weights_filename)
+    model = load_model(weights_filename)  # Cargar modelo usando pickle
     
-    theta_dict = model['theta_dict']
-    feature_names = model['feature_names']
-    houses = model['houses']
-    normalization_params = model['normalization_params']
+    # Extraer componentes del modelo
+    theta_dict = model['theta_dict']  # Diccionario con pesos de cada clasificador
+    feature_names = model['feature_names']  # Nombres de las características usadas
+    houses = model['houses']  # Nombres de las casas de Hogwarts
+    normalization_params = model['normalization_params']  # Parámetros de normalización
     
+    # Mostrar información del modelo cargado
     print(f"¡Modelo cargado exitosamente!")
-    print(f"Clases: {houses}")
-    print(f"Características: {len(feature_names)}")
-    print(f"Algoritmo: {model.get('algorithm', 'batch_gradient_descent')}")
+    print(f"Clases: {houses}")  # Mostrar casas que puede predecir
+    print(f"Características: {len(feature_names)}")  # Número de features
+    print(f"Algoritmo: {model.get('algorithm', 'batch_gradient_descent')}")  # Algoritmo usado
+    # .get(key, default) retorna el valor o default si la clave no existe
     
-    # Prepare test data
+    # Preparar datos de prueba con el mismo preprocesamiento del entrenamiento
     print("\nPreparando datos de prueba...")
     X_test, indices = prepare_test_data(test_filename, feature_names, normalization_params)
-    print(f"Muestras de prueba: {len(X_test)}")
+    print(f"Muestras de prueba: {len(X_test)}")  # Mostrar cantidad de ejemplos
     
-    # Make predictions
+    # Hacer predicciones usando el modelo One-vs-All
     print("\nHaciendo predicciones...")
     predictions = predict_one_vs_all(X_test, theta_dict, houses)
     
-    # Show prediction distribution
+    # Mostrar distribución de predicciones (cuántos estudiantes en cada casa)
     print("\nDistribución de predicciones:")
-    for house in houses:
-        count = predictions.count(house)
+    for house in houses:  # Para cada casa
+        count = predictions.count(house)  # Contar cuántos fueron asignados a esta casa
+        # Calcular porcentaje
         percentage = (count / len(predictions)) * 100 if predictions else 0
-        print(f"  {house}: {count} ({percentage:.1f}%)")
+        print(f"  {house}: {count} ({percentage:.1f}%)")  # Mostrar conteo y porcentaje
+        # .1f formatea con 1 decimal
     
-    # Save predictions
-    print()
+    # Guardar predicciones en archivo CSV
+    print()  # Línea en blanco
     save_predictions(predictions, indices, output_filename)
     
+    # Mostrar mensaje de finalización
     print("\n" + "="*80)
     print("PREDICCIÓN COMPLETADA")
     print("="*80)
 
 
 if __name__ == "__main__":
-    main()
+    main()  # Ejecutar función principal si se ejecuta como script
+    # __name__ == "__main__" es True solo cuando el archivo se ejecuta directamente
