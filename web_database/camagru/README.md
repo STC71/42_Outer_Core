@@ -650,7 +650,7 @@ mv malicious.php malicious.jpg
 
 ## ✅ Compliance del Subject
 
-Ver [COMPLIANCE_ES.md](COMPLIANCE_ES.md) para el checklist completo.
+Ver [COMPLIANCE.md](COMPLIANCE.md) para el checklist completo.
 
 ### Resumen
 
@@ -667,10 +667,10 @@ Ver [COMPLIANCE_ES.md](COMPLIANCE_ES.md) para el checklist completo.
 
 ## 📚 Documentación Adicional
 
-- [QUICKSTART_ES.md](QUICKSTART_ES.md) - Guía de instalación paso a paso
-- [COMPLIANCE_ES.md](COMPLIANCE_ES.md) - Checklist detallado del subject
-- [SUMMARY_ES.md](SUMMARY_ES.md) - Resumen técnico ejecutivo
-- [PROJECT_OVERVIEW_ES.md](PROJECT_OVERVIEW_ES.md) - Vista general de arquitectura
+- [QUICKSTART.md](QUICKSTART.md) - Guía de instalación paso a paso
+- [COMPLIANCE.md](COMPLIANCE.md) - Checklist detallado del subject
+- [SUMMARY.md](SUMMARY.md) - Resumen técnico ejecutivo
+- [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) - Vista general de arquitectura
 
 ### Diagramas
 
@@ -745,19 +745,11 @@ Este es un proyecto educativo de 42 School. No se aceptan contribuciones externa
 ### Directrices
 
 - Seguir el subject de 42 (no frameworks)
-- Mantener código limpio y comentado en español
+- Mantener código limpio y comentado
 - Probar todas las características de seguridad
 - Documentar cambios importantes
 
 ---
-
-## 📞 Soporte
-
-### Recursos de 42
-
-- **Subject PDF:** `en.subject.pdf`
-- **Intra 42:** https://intra.42.fr
-- **Slack:** Canal #camagru
 
 ### Issues
 
@@ -765,7 +757,7 @@ Si encuentras un bug:
 1. Verifica que Docker esté funcionando
 2. Revisa logs: `docker-compose logs`
 3. Comprueba `.env` configuración
-4. Consulta [QUICKSTART_ES.md](QUICKSTART_ES.md)
+4. Consulta [QUICKSTART.md](QUICKSTART.md)
 
 ---
 
