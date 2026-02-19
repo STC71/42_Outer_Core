@@ -171,14 +171,6 @@ def plot_pair_plot(filename):
                         # alpha=0.5: transparencia para ver superposiciones
                         # edgecolor= color del borde de las barras
                 
-                # Etiqueta en diagonal (nombre de la característica)
-                ax.set_ylabel(feature_y[:15], fontsize=8, rotation=0, 
-                            ha='right', va='center')
-                # [:15] trunca el nombre a 15 caracteres
-                # rotation=0 mantiene el texto horizontal
-                # ha='right' alinea horizontalmente a la derecha
-                # va='center' alinea verticalmente al centro
-                
             else:  # Fuera de la diagonal (diferentes características en x e y)
                 # Off-diagonal: gráfico de dispersión (scatter plot)
                 # Muestra relación entre dos características diferentes
@@ -207,6 +199,15 @@ def plot_pair_plot(filename):
             # Solo mostrar etiquetas en bordes externos de la matriz
             if j > 0:  # Si no es la primera columna
                 ax.set_ylabel('')  # No mostrar etiqueta en eje y
+            else:  # Si es la primera columna
+                # Establecer etiqueta de y en la primera columna
+                ax.set_ylabel(feature_y[:15], fontsize=8, rotation=0, 
+                            ha='right', va='center')
+                # [:15] trunca el nombre a 15 caracteres
+                # rotation=0 mantiene el texto horizontal
+                # ha='right' alinea horizontalmente a la derecha
+                # va='center' alinea verticalmente al centro
+            
             if i < n_features - 1:  # Si no es la última fila
                 ax.set_xlabel('')  # No mostrar etiqueta en eje x
             
