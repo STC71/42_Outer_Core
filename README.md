@@ -173,11 +173,104 @@ Una aplicación web full-stack inspirada en Instagram con captura de fotos desde
 
 Cada proyecto contiene sus propias instrucciones de configuración y dependencias. Navega al directorio del proyecto específico y consulta su README individual para información detallada.
 
+### 📦 Trabajando con Git Submodules
+
+Este repositorio utiliza **Git Submodules** para organizar cada proyecto de forma independiente. Cada proyecto (dslr, ft_linear_regression, libasm, camagru) es un repositorio separado que puede clonarse y trabajarse individualmente o como parte de esta colección.
+
+#### 🔽 Clonar el Repositorio Completo
+
+Para obtener todos los proyectos con sus contenidos:
+
+```bash
+# Opción 1: Clonar con submódulos (recomendado)
+git clone --recursive https://github.com/STC71/42_Outer_Core.git
+
+# Opción 2: Si ya clonaste sin --recursive
+git clone https://github.com/STC71/42_Outer_Core.git
+cd 42_Outer_Core
+git submodule update --init --recursive
+```
+
+#### 🔄 Actualizar Submódulos
+
+Para obtener las últimas actualizaciones de todos los proyectos:
+
+```bash
+# Actualizar todos los submódulos a sus últimos commits
+git submodule update --remote --merge
+
+# Actualizar el repositorio principal y todos los submódulos
+git pull --recurse-submodules
+```
+
+#### 📝 Trabajar en un Submódulo
+
+Si quieres hacer cambios en un proyecto específico:
+
+```bash
+# 1. Navegar al submódulo
+cd artificial_intelligence/dslr
+
+# 2. El submódulo está en "detached HEAD", crear/cambiar a una rama
+git checkout main  # o git checkout -b mi-feature
+
+# 3. Hacer cambios y commit normalmente
+echo "# Cambio" >> README.md
+git add .
+git commit -m "Actualización del README"
+
+# 4. Push al repositorio del submódulo
+git push origin main
+
+# 5. Volver al repositorio principal y actualizar la referencia
+cd ../..
+git add artificial_intelligence/dslr
+git commit -m "Actualizar submódulo dslr"
+git push
+```
+
+#### 🎯 Clonar Solo un Proyecto Específico
+
+Si solo necesitas trabajar con un proyecto individual:
+
+```bash
+# Clonar directamente el repositorio del proyecto
+git clone https://github.com/STC71/42_dslr.git
+git clone https://github.com/STC71/42_ft_linear_regression.git
+git clone https://github.com/STC71/42_libasm.git
+git clone https://github.com/STC71/42_camagru.git
+```
+
+#### ⚠️ Consideraciones Importantes
+
+- Los submódulos **no se actualizan automáticamente** con `git pull` del repositorio principal
+- Cada submódulo apunta a un **commit específico**, no a una rama
+- Al hacer cambios en un submódulo, necesitas hacer commit **primero en el submódulo** y **luego en el repositorio principal**
+- Usa `git status` en el repositorio principal para ver si hay actualizaciones pendientes en los submódulos
+
+#### 📚 Comandos Útiles
+
+```bash
+# Ver el estado de todos los submódulos
+git submodule status
+
+# Ejecutar un comando en todos los submódulos
+git submodule foreach 'git pull origin main'
+
+# Ver diferencias en submódulos
+git diff --submodule
+
+# Eliminar un submódulo (si es necesario)
+git submodule deinit -f ruta/al/submodulo
+git rm -f ruta/al/submodulo
+rm -rf .git/modules/ruta/al/submodulo
+```
+
 ### Requisitos Generales
 
 ```bash
-# Clonar el repositorio
-git clone https://github.com/STC71/42_Outer_Core.git
+# Clonar el repositorio con submódulos
+git clone --recursive https://github.com/STC71/42_Outer_Core.git
 cd 42_Outer_Core
 
 # Navegar al proyecto específico
@@ -307,6 +400,6 @@ Este proyecto es parte del currículo de 42 Málaga. Por favor, respeta las pol�
 
 **Hecho con ❤️ en 42 Málaga**
 
-*Última Actualización: Febrero 2026*
+*Última Actualización: Marzo 2026*
 
 </div>
