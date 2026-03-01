@@ -1,0 +1,12 @@
+[submodule "artificial_intelligence/dslr"]
+	path = artificial_intelligence/dslr
+	url = git@github.com:STC71/42_dslr.git
+[submodule "artificial_intelligence/ft_linear_regression"]
+	path = artificial_intelligence/ft_linear_regression
+	url = git@github.com:STC71/42_ft_linear_regression.git
+[submodule "unix_kernel/libasm"]
+	path = unix_kernel/libasm
+	url = git@github.com:STC71/42_libasm.git
+[submodule "web_database/camagru"]
+	path = web_database/camagru
+	url = git@github.com:STC71/42_camagru.git
