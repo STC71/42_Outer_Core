@@ -10,3 +10,6 @@
 [submodule "web_database/camagru"]
 	path = web_database/camagru
 	url = git@github.com:STC71/42_camagru.git
+[submodule "artificial_intelligence/multilayer-perceptron"]
+	path = artificial_intelligence/multilayer-perceptron
+	url = git@github.com:STC71/42_multilayer-perceptron.git
