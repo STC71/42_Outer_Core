@@ -4,7 +4,7 @@
 
 ![42 School](https://img.shields.io/badge/42-School-000000?style=for-the-badge&logo=42&logoColor=white)
 ![Status](https://img.shields.io/badge/Estado-En%20Progreso-yellow?style=for-the-badge)
-![Projects](https://img.shields.io/badge/Proyectos-4-blue?style=for-the-badge)
+![Projects](https://img.shields.io/badge/Proyectos-5-blue?style=for-the-badge)
 
 **Colección de proyectos avanzados del currículo Outer Core de 42 School**
 
@@ -78,6 +78,33 @@ Clasificador multiclase de Regresión Logística usando estrategia One-vs-All pa
 **Estado:** ✅ Completado (125/100 puntos estimados)
 
 [📂 Ver Proyecto](./artificial_intelligence/dslr/)
+
+</details>
+
+<details open>
+<summary><b>multilayer-perceptron</b> - Deep Learning y Redes Neuronales</summary>
+
+Red neuronal artificial (Multilayer Perceptron) implementada desde cero para clasificación binaria. Predice diagnósticos de cáncer de mama (maligno/benigno) usando el dataset de Wisconsin Breast Cancer.
+
+**Características:**
+- 🧠 **Red neuronal feedforward** - Mínimo 2 capas ocultas
+- 🔙 **Backpropagation** - Implementación manual del algoritmo
+- 📉 **Gradient Descent** - Optimización de pesos
+- 🎲 **Funciones de activación** - Sigmoid, Tanh, ReLU, Softmax
+- 📊 **Dataset** - 569 muestras con 30 características
+- 📈 **Visualización** - Curvas de Loss y Accuracy (train/validation)
+- 🎯 **Métricas** - Binary cross-entropy, precisión
+- 🔧 **Configuración flexible** - Arquitectura modular de capas
+- ⚙️ **Hiperparámetros** - Learning rate, batch size, epochs ajustables
+- 🧹 **Preprocesamiento** - Normalización y división de datos
+
+**Stack Tecnológico:** Python, NumPy, Matplotlib (sin TensorFlow/Keras/PyTorch)
+
+**Conceptos clave:** Feedforward, Backpropagation, Gradient Descent, Activations, Overfitting
+
+**Estado:** 🚧 En Desarrollo
+
+[📂 Ver Proyecto](./artificial_intelligence/multilayer-perceptron/)
 
 </details>
 
@@ -235,8 +262,9 @@ Si solo necesitas trabajar con un proyecto individual:
 
 ```bash
 # Clonar directamente el repositorio del proyecto
-git clone https://github.com/STC71/42_dslr.git
 git clone https://github.com/STC71/42_ft_linear_regression.git
+git clone https://github.com/STC71/42_dslr.git
+git clone https://github.com/STC71/42_multilayer-perceptron.git
 git clone https://github.com/STC71/42_libasm.git
 git clone https://github.com/STC71/42_camagru.git
 ```
@@ -283,6 +311,7 @@ cd [categoría]/[nombre_proyecto]
 
 - [Configuración ft_linear_regression](./artificial_intelligence/ft_linear_regression/README.md)
 - [Configuración DSLR](./artificial_intelligence/dslr/README.md)
+- [Configuración multilayer-perceptron](./artificial_intelligence/multilayer-perceptron/README.md)
 - [Configuración libasm](./unix_kernel/libasm/README.md)
 - [Configuración Camagru (Docker + Manual)](./web_database/camagru/QUICKSTART.md)
 
@@ -298,6 +327,7 @@ cd [categoría]/[nombre_proyecto]
 |-----------|----------|----------|--------|------------|
 | IA | ft_linear_regression | Python | ✅ Completado | 100% |
 | IA | DSLR | Python | ✅ Completado | 100% |
+| IA | multilayer-perceptron | Python | 🚧 En Desarrollo | 40% |
 | Unix | libasm | Assembly/C | ✅ Completado | 100% |
 | Web | Camagru | PHP/JS/SQL | ✅ Completado | 100% |
 
