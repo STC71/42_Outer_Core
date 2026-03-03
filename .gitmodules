@@ -13,3 +13,6 @@
 [submodule "artificial_intelligence/multilayer-perceptron"]
 	path = artificial_intelligence/multilayer-perceptron
 	url = git@github.com:STC71/42_multilayer-perceptron.git
+[submodule "virus/dr-quine"]
+	path = virus/dr-quine
+	url = git@github.com:STC71/42_dr-quine.git
