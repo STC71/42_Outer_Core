@@ -4,7 +4,7 @@
 
 ![42 School](https://img.shields.io/badge/42-School-000000?style=for-the-badge&logo=42&logoColor=white)
 ![Status](https://img.shields.io/badge/Estado-En%20Progreso-yellow?style=for-the-badge)
-![Projects](https://img.shields.io/badge/Proyectos-5-blue?style=for-the-badge)
+![Projects](https://img.shields.io/badge/Proyectos-6-blue?style=for-the-badge)
 
 **Colección de proyectos avanzados del currículo Outer Core de 42 School**
 
@@ -164,6 +164,31 @@ Una aplicación web full-stack inspirada en Instagram con captura de fotos desde
 
 </details>
 
+### 🦠 Virus & Security
+
+<details open>
+<summary><b>Dr. Quine</b> - Recursión y Auto-replicación</summary>
+
+Proyecto introductorio al teorema de recursión de Kleene mediante la implementación de quines - programas que se auto-replican imprimiendo su propio código fuente.
+
+**Características:**
+- 🔄 **Quines básicos** - Programas que imprimen su propio código
+- 🧬 **Auto-replicación controlada** - Propagación con N generaciones
+- 🔬 **Fundamentos de malware** - Conceptos de virus informáticos
+- 🧠 **Teorema de Kleene** - Recursión y puntos fijos en computación
+- 📝 **Implementación dual** - C y Assembly x86-64
+- 🎯 **Tres programas**: Colleen (quine básico), Grace (auto-escritura), Sully (replicación N veces)
+
+**Stack Tecnológico:** C, Assembly x86-64 (NASM)
+
+**Conceptos clave:** Metaprogramación, auto-replicación, teorema de recursión, puntos fijos
+
+**Estado:** 🚧 En Desarrollo
+
+[📂 Ver Proyecto](./virus/dr-quine/)
+
+</details>
+
 <div align="right">
 
 [⬆️ Volver arriba](#-42-outer-core)
@@ -267,6 +292,7 @@ git clone https://github.com/STC71/42_dslr.git
 git clone https://github.com/STC71/42_multilayer-perceptron.git
 git clone https://github.com/STC71/42_libasm.git
 git clone https://github.com/STC71/42_camagru.git
+git clone https://github.com/STC71/42_dr-quine.git
 ```
 
 #### ⚠️ Consideraciones Importantes
@@ -314,6 +340,7 @@ cd [categoría]/[nombre_proyecto]
 - [Configuración multilayer-perceptron](./artificial_intelligence/multilayer-perceptron/README.md)
 - [Configuración libasm](./unix_kernel/libasm/README.md)
 - [Configuración Camagru (Docker + Manual)](./web_database/camagru/QUICKSTART.md)
+- [Configuración Dr. Quine](./virus/dr-quine/README.md)
 
 <div align="right">
 
@@ -330,6 +357,7 @@ cd [categoría]/[nombre_proyecto]
 | IA | multilayer-perceptron | Python | 🚧 En Desarrollo | 40% |
 | Unix | libasm | Assembly/C | ✅ Completado | 100% |
 | Web | Camagru | PHP/JS/SQL | ✅ Completado | 100% |
+| Virus | Dr. Quine | C/Assembly | 🚧 En Desarrollo | 10% |
 
 <div align="right">
 
@@ -344,6 +372,7 @@ Este repositorio demuestra competencia en:
 - **Machine Learning**: Construcción de algoritmos de ML desde cero
 - **Programación de Bajo Nivel**: Lenguaje ensamblador y llamadas al sistema
 - **Desarrollo Web**: Arquitectura de aplicaciones full-stack
+- **Seguridad Informática**: Auto-replicación, malware y teoría de la computación
 - **Ingeniería de Software**: Código limpio, testing, documentación
 - **Resolución de Problemas**: Pensamiento algorítmico y optimización
 
