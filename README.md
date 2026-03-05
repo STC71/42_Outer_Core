@@ -176,14 +176,14 @@ Proyecto introductorio al teorema de recursión de Kleene mediante la implementa
 - 🧬 **Auto-replicación controlada** - Propagación con N generaciones
 - 🔬 **Fundamentos de malware** - Conceptos de virus informáticos
 - 🧠 **Teorema de Kleene** - Recursión y puntos fijos en computación
-- 📝 **Implementación dual** - C y Assembly x86-64
+- 📝 **Implementación triple** - C, Assembly x86-64 y Python (bonus)
 - 🎯 **Tres programas**: Colleen (quine básico), Grace (auto-escritura), Sully (replicación N veces)
 
-**Stack Tecnológico:** C, Assembly x86-64 (NASM)
+**Stack Tecnológico:** C, Assembly x86-64 (NASM), Python
 
 **Conceptos clave:** Metaprogramación, auto-replicación, teorema de recursión, puntos fijos
 
-**Estado:** 🚧 En Desarrollo
+**Estado:** ✅ Completado
 
 [📂 Ver Proyecto](./virus/dr-quine/)
 
@@ -357,7 +357,7 @@ cd [categoría]/[nombre_proyecto]
 | IA | multilayer-perceptron | Python | 🚧 En Desarrollo | 40% |
 | Unix | libasm | Assembly/C | ✅ Completado | 100% |
 | Web | Camagru | PHP/JS/SQL | ✅ Completado | 100% |
-| Virus | Dr. Quine | C/Assembly | 🚧 En Desarrollo | 10% |
+| Virus | Dr. Quine | C/ASM/Python | ✅ Completado | 100% |
 
 <div align="right">
 

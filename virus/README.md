@@ -12,10 +12,10 @@ Exploración del teorema de recursión de Kleene a través de la implementación
 - 🧬 Teorema de recursión de Kleene aplicado
 - 🔬 Introducción a conceptos de malware
 - 🎯 Programs con propiedades de auto-modificación
-- 📝 Implementación dual en C y Assembly x86-64
+- 📝 Implementación en C, Assembly x86-64 y Python (bonus)
 - 🧠 Comprensión profunda de metaprogramación
 
-**Stack:** C, Assembly x86-64 (NASM)
+**Stack:** C, Assembly x86-64 (NASM), Python (bonus)
 
 ---
 
