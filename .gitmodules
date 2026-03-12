@@ -16,3 +16,6 @@
 [submodule "virus/dr-quine"]
 	path = virus/dr-quine
 	url = git@github.com:STC71/42_dr-quine.git
+[submodule "web_database/darkly"]
+	path = web_database/darkly
+	url = git@github.com:STC71/42_darkly.git
