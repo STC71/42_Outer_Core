@@ -1,0 +1,12 @@
+# PDF files
+*.pdf
+
+# Tor/Onion
+hidden_service/
+keys/
+*.key
+*.pem
+
+# Web files
+*.log
+nginx.conf

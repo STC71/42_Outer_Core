@@ -1,0 +1,15 @@
+# PDF files
+*.pdf
+
+# OTP keys and secrets
+*.key
+*.secret
+ft_otp.key
+
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# Logs
+*.log

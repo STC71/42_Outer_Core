@@ -4,7 +4,7 @@
 
 ![42 School](https://img.shields.io/badge/42-School-000000?style=for-the-badge&logo=42&logoColor=white)
 ![Status](https://img.shields.io/badge/Estado-En%20Progreso-yellow?style=for-the-badge)
-![Projects](https://img.shields.io/badge/Proyectos-6-blue?style=for-the-badge)
+![Projects](https://img.shields.io/badge/Proyectos-11-blue?style=for-the-badge)
 
 **Colección de proyectos avanzados del currículo Outer Core de 42 School**
 
@@ -16,7 +16,13 @@
 
 ## Descripción
 
-Bienvenido a **42 Outer Core**, una colección curada de proyectos avanzados desarrollados como parte del currículo de 42 School. Este repositorio presenta implementaciones en múltiples dominios incluyendo Inteligencia Artificial, Programación de Sistemas Unix y Desarrollo Web.
+Bienvenido a **42 Outer Core**, una colección curada de proyectos avanzados desarrollados como parte del currículo de 42 School. Este repositorio presenta implementaciones en múltiples dominios:
+
+- 🤖 **Inteligencia Artificial**: Machine Learning, Deep Learning, Data Science
+- 🐧 **Unix Kernel**: Assembly, sistemas de bajo nivel
+- 🌐 **Web & Database**: Full-stack development, arquitectura web
+- 🔐 **Cybersecurity**: Web security, network security, cryptography, anonymity
+- 🦠 **Virus & Security**: Auto-replicación, metaprogramación
 
 Cada proyecto está diseñado para empujar los límites del conocimiento técnico, enfatizando código limpio, pensamiento algorítmico y resolución de problemas del mundo real.
 
@@ -164,6 +170,73 @@ Una aplicación web full-stack inspirada en Instagram con captura de fotos desde
 
 </details>
 
+<details open>
+<summary><b>Darkly</b> - Auditoría de Seguridad Web</summary>
+
+Proyecto de introducción a ciberseguridad web y OWASP. Audita un sitio web vulnerable para descubrir 14 vulnerabilidades de seguridad comunes.
+
+**Características:**
+- 🔍 **14 Vulnerabilidades a descubrir** - OWASP Top 10
+- 🎯 **SQL Injection** - Básica y avanzada
+- 💉 **Cross-Site Scripting (XSS)** - Reflected y stored
+- 📁 **File Inclusion** - Local y remote file inclusion
+- 🍪 **Cookie Manipulation** - Session hijacking
+- 🌐 **HTTP Header Spoofing** - User-Agent, Referer
+- 🔐 **Authentication Bypass** - Weak passwords, brute force
+- 📤 **File Upload** - Extension bypass
+- 🔀 **Open Redirect** - Phishing vectors
+- 📝 **Comprehensive Documentation** - Exploitation steps + prevention
+
+**Bonus:**
+- 🎓 5 explicaciones avanzadas con demostración de prevención
+
+**Stack Tecnológico:** Web Security, HTTP, curl, Browser DevTools, Burp Suite
+
+**Documentación:** 📚 [README](./web_database/darkly/README.md) + [Implementation Guide](./web_database/darkly/IMPLEMENTATION_GUIDE.md) con guía paso a paso de explotación
+
+**Estado:** 📝 En Progreso
+
+[📂 Ver Proyecto](./web_database/darkly/) | [📖 Guía de Implementación](./web_database/darkly/IMPLEMENTATION_GUIDE.md)
+
+</details>
+
+### 🔐 Piscine Cybersecurity
+
+<details open>
+<summary><b>Piscine Pedagógico Ciber</b> - Colección de Proyectos de Ciberseguridad</summary>
+
+Colección de 4 proyectos de la Piscina de Ciberseguridad de 42 School, cubriendo seguridad web, análisis de red, criptografía y anonimato.
+
+#### 🕷️ **01 - Arachnida** (Web Scraping & Metadata)
+- **Spider**: Web scraper recursivo para extraer imágenes
+- **Scorpion**: Analizador de metadatos EXIF
+- **Skills**: Python, HTTP, Beautiful Soup, Pillow
+
+#### 🧅 **02 - ft_onion** (Tor Hidden Service)
+- Desplegar servicio web en la red Tor
+- Configuración de Nginx + Tor + SSH
+- **Skills**: Nginx, Tor, SSH hardening, Docker
+
+#### 🔑 **03 - ft_otp** (Time-based OTP)
+- Implementación de TOTP (RFC 6238)
+- Sistema de autenticación 2FA
+- **Skills**: HMAC, Cryptography, Time synchronization
+
+#### 🔍 **04 - Inquisitor** (ARP Poisoning)
+- Ataque Man-in-the-Middle con ARP spoofing
+- Interceptación de tráfico FTP
+- **Skills**: Network security, libpcap, Packet sniffing
+
+**Stack Tecnológico:** Python, C/C++, Shell, Tor, Nginx, Docker, libpcap
+
+**Documentación:** 📚 Cada proyecto con README detallado + [README General](./piscine_pedago_ciber/README.md)
+
+**Estado:** 🚧 En Desarrollo
+
+[📂 Ver Proyectos](./piscine_pedago_ciber/)
+
+</details>
+
 ### 🦠 Virus & Security
 
 <details open>
@@ -210,8 +283,15 @@ Proyecto introductorio al teorema de recursión de Kleene mediante la implementa
 ![NumPy](https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=numpy&logoColor=white)
 ![Matplotlib](https://img.shields.io/badge/Matplotlib-11557c?style=for-the-badge)
 ![SQL](https://img.shields.io/badge/SQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![Make](https://img.shields.io/badge/Make-6D00CC?style=for-the-badge)
+
+### Security & Network
+![OWASP](https://img.shields.io/badge/OWASP-000000?style=for-the-badge&logo=owasp&logoColor=white)
+![Tor](https://img.shields.io/badge/Tor-7D4698?style=for-the-badge&logo=tor-project&logoColor=white)
+![Wireshark](https://img.shields.io/badge/Wireshark-1679A7?style=for-the-badge&logo=wireshark&logoColor=white)
 
 </div>
 
@@ -335,11 +415,25 @@ cd [categoría]/[nombre_proyecto]
 
 ### Enlaces Rápidos a Guías de Configuración
 
+**Inteligencia Artificial:**
 - [Configuración ft_linear_regression](./artificial_intelligence/ft_linear_regression/README.md)
 - [Configuración DSLR](./artificial_intelligence/dslr/README.md)
 - [Configuración multilayer-perceptron](./artificial_intelligence/multilayer-perceptron/README.md)
+
+**Unix Kernel:**
 - [Configuración libasm](./unix_kernel/libasm/README.md)
+
+**Web & Database:**
 - [Configuración Camagru (Docker + Manual)](./web_database/camagru/QUICKSTART.md)
+- [Configuración Darkly (VM + ISO)](./web_database/darkly/README.md)
+
+**Cybersecurity Piscine:**
+- [Arachnida (Web Scraping)](./piscine_pedago_ciber/01_arachnida_Web/README.md)
+- [ft_onion (Tor)](./piscine_pedago_ciber/02_ft_onion_Web/README.md)
+- [ft_otp (TOTP)](./piscine_pedago_ciber/03_ft_otp_OTP/README.md)
+- [Inquisitor (ARP)](./piscine_pedago_ciber/04_Inquisitor_Network/README.md)
+
+**Virus & Security:**
 - [Configuración Dr. Quine](./virus/dr-quine/README.md)
 
 <div align="right">
