@@ -1,4 +1,4 @@
-# 🔐 Piscina de Ciberseguridad - 42 School
+# 🔐 Piscina Pedago de Ciberseguridad - 42 Málaga
 
 Colección de proyectos de ciberseguridad de la Piscina de Ciberseguridad de 42, cubriendo seguridad web, análisis de red, criptografía y anonimato.
 
@@ -13,7 +13,7 @@ Colección de proyectos de ciberseguridad de la Piscina de Ciberseguridad de 42,
 
 ## 🎯 Descripción General
 
-La **Piscina de Ciberseguridad** es un programa intensivo centrado en habilidades prácticas de ciberseguridad. Estos proyectos cubren conceptos fundamentales de seguridad y vectores de ataque:
+La **Piscina Pedago de Ciberseguridad** es un programa intensivo centrado en habilidades prácticas de ciberseguridad. Estos proyectos cubren conceptos fundamentales de seguridad y vectores de ataque:
 
 - **Seguridad Web**: Scraping, análisis de metadatos
 - **Seguridad de Red**: Envenenamiento ARP, interceptación de tráfico
