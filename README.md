@@ -3,7 +3,7 @@
 <div align="center">
 
 ![42 School](https://img.shields.io/badge/42-School-000000?style=for-the-badge&logo=42&logoColor=white)
-![Status](https://img.shields.io/badge/Estado-En%20Progreso-yellow?style=for-the-badge)
+![Status](https://img.shields.io/badge/Estado-Completado-green?style=for-the-badge)
 ![Projects](https://img.shields.io/badge/Proyectos-11-blue?style=for-the-badge)
 
 **Colección de proyectos avanzados del currículo Outer Core de 42 School**

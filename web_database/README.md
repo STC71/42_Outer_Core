@@ -9,7 +9,7 @@ Esta carpeta contiene proyectos del currículo de Desarrollo Web y Bases de Dato
 | Project | Type | Difficulty | Status |
 |---------|------|------------|--------|
 | [Camagru](./camagru/) | Full-Stack Web App | ⭐⭐⭐ | ✅ Complete |
-| [Darkly](./darkly/) | Web Security Audit | ⭐⭐⭐ | 📝 In Progress |
+| [Darkly](./darkly/) | Web Security Audit | ⭐⭐⭐ | ✅ Complete |
 
 ---
 
@@ -66,18 +66,30 @@ Proyecto de introducción a ciberseguridad web y OWASP. Audita un sitio web vuln
 11. **Account Recovery** vulnerabilities
 
 ### 🛠️ Skills Developed
-- Web vulnerability assessment
-- SQL injection techniques
-- XSS exploitation
-- Authentication bypass
-- HTTP protocol manipulation
-- Security documentation
-- OWASP Top 10 understanding
+- Web vulnerability assessment (14 vulnerabilities)
+- SQL injection techniques (basic & advanced)
+- XSS exploitation (reflected & data URI)
+- Authentication bypass (cookies, brute force, reset password)
+- HTTP header spoofing and manipulation
+- File upload bypass techniques
+- Path traversal exploitation
+- Information disclosure discovery
+- Security documentation and reporting
+- OWASP Top 10 understanding and analysis
+- Automatic flag validation with evaluation.sh
 
 ### 📖 Documentation
-- [README.md](./darkly/README.md) - Project overview
-- [IMPLEMENTATION_GUIDE.md](./darkly/IMPLEMENTATION_GUIDE.md) - Step-by-step exploitation guide
+- [README.md](./darkly/README.md) - Complete project guide with Quick Start
+- [VULNERABILITIES_INDEX.md](./darkly/VULNERABILITIES_INDEX.md) - Quick reference table
+- [QUICK_SOLUTIONS.md](./darkly/QUICK_SOLUTIONS.md) - Payloads and commands
+- [evaluation.sh](./darkly/evaluation.sh) - Automatic flag validation script
 - Individual folder for each vulnerability with complete documentation
+
+### 🚀 Getting Started
+```bash
+cd darkly/
+./evaluation.sh  # Automated validation of all flags
+```
 
 [📖 Full Documentation](./darkly/README.md)
 
