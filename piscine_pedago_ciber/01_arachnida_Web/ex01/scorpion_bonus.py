@@ -729,8 +729,13 @@ def main():
         
         # Si no se especificó ninguna acción
         else:
-            print("Por favor especifica una acción (--remove-all, --remove-tag, --set-tag, --list-tags)", 
-                 file=sys.stderr)
+            print("Por favor especifica una acción (--remove-all, --remove-tag, --set-tag, --list-tags)\n"
+                  "--remove-all: Eliminar todos los datos EXIF\n"
+                  "--remove-tag ETIQUETA: Eliminar etiqueta EXIF específica\n"
+                  "--set-tag ETIQUETA VALOR: Establecer valor de etiqueta EXIF\n"
+                  "          etiqueta EXIF es el nombre legible de la etiqueta (ej: DateTime, Model)\n"
+                  "--list-tags: Listar todas las etiquetas EXIF", 
+                  file=sys.stderr)
             sys.exit(1)
     
     except ValueError as e:

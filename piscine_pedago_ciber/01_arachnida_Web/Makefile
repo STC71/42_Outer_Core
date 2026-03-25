@@ -102,6 +102,8 @@ all:
 clean:
 	@echo "$(NEGRITA)$(AMARILLO)[clean]$(RESET) Intentando desactivar ambiente virtual..."
 	@deactivate 2>/dev/null || true
+	@echo "$(NEGRITA)$(AMARILLO)[clean]$(RESET) Eliminando carpeta de datos..."
+	@rm -rf data/ 2>/dev/null || true
 	@echo "$(NEGRITA)$(AMARILLO)[clean]$(RESET) ✓ Limpieza completada"
 
 fclean: clean

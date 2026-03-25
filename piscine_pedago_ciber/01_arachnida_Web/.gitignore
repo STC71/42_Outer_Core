@@ -16,6 +16,10 @@ downloads/
 *.png
 *.gif
 *.bmp
+*.bak
 
 # Logs
 *.log
+
+# data files
+data/*

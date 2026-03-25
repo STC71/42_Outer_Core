@@ -2,7 +2,7 @@
 
 ################################################################################
 #                                                                              #
-#                         🕷️  ARACHNIDA TEST SUITE  🦂                         #
+#                           ARACHNIDA TEST SUITE                           #
 #                                                                              #
 #                    Automated Testing Framework v1.0                          #
 #           Comprehensive validation of Spider & Scorpion projects             #
@@ -55,14 +55,14 @@ print_section() {
 # Function to print a test title
 print_test_title() {
     echo ""
-    print_color "$YELLOW" "  📋 $1"
+    print_color "$YELLOW" "   $1"
     print_color "$YELLOW" "  ─────────────────────────────────────────────────────────────────────────────────"
 }
 
 # Function to print test explanation
 print_explanation() {
     echo ""
-    print_color "$WHITE" "  📝 Explicación:"
+    print_color "$WHITE" "   Explicación:"
     echo "$1" | fold -w 85 | sed 's/^/     /'
 }
 
@@ -72,13 +72,13 @@ print_result() {
     local message=$2
     
     if [ "$status" = "PASS" ]; then
-        print_color "$GREEN" "  ✅ $message"
+        print_color "$GREEN" "   $message"
     elif [ "$status" = "FAIL" ]; then
-        print_color "$RED" "  ❌ $message"
+        print_color "$RED" "   $message"
     elif [ "$status" = "INFO" ]; then
-        print_color "$BLUE" "  ℹ️  $message"
+        print_color "$BLUE" "    $message"
     elif [ "$status" = "WARN" ]; then
-        print_color "$YELLOW" "  ⚠️  $message"
+        print_color "$YELLOW" "    $message"
     fi
 }
 
@@ -126,7 +126,7 @@ clear
 print_color "$CYAN" "
 ████████████████████████████████████████████████████████████████████████████████
 █                                                                              █
-█                      🕷️   ARACHNIDA TEST SUITE v1.0   🦂                     █
+█                         ARACHNIDA TEST SUITE v1.0                            █
 █                                                                              █
 █              Validación Completa: Spider & Scorpion + Bonificación           █
 █                                                                              █
@@ -147,14 +147,14 @@ print_color "$DIM" "  automática utilizando técnicas de web scraping, y cómo 
 print_color "$DIM" "  (metadatos) contenida en los archivos descargados."
 echo ""
 
-print_section "🎯 Objetivos del Proyecto"
+print_section " Objetivos del Proyecto"
 echo ""
 print_color "$WHITE" "  1. SPIDER: Crear un scraper automático que descargue imágenes de sitios web"
 print_color "$WHITE" "  2. SCORPION: Analizar metadatos EXIF de las imágenes descargadas"
 print_color "$WHITE" "  3. BONUS: Modificar/eliminar metadatos e interfaz gráfica"
 echo ""
 
-print_section "📋 Requisitos Técnicos"
+print_section " Requisitos Técnicos"
 echo ""
 print_color "$CYAN" "  Lenguaje: Python 3"
 print_color "$CYAN" "  Tipo: Scripts ejecutables (shebang #!/usr/bin/env python3)"
@@ -167,19 +167,21 @@ pause_menu
 #                         PART I: MANDATORY
 # ============================================================================
 
-print_header "🔴 PARTE OBLIGATORIA (MANDATORY)"
+print_header "[MANDATORY] PARTE OBLIGATORIA (MANDATORY)"
 
-print_test_title "TEST 1️⃣ : Validación de Archivos y Permisos"
+print_test_title "TEST 1 : Validación de Archivos y Permisos"
 print_explanation "Se verificará que spider.py y scorpion.py existan, sean ejecutables y tengan shebang"
 
 echo ""
 print_color "$DIM" "  Ejecutando validación...\n"
 
-cd "$OLDPWD" || exit 1
+# Obtener el directorio del script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR" || exit 1
 
 # Check files exist
 if [ -f "ex00/spider.py" ]; then
-    print_result "PASS" "spider.py encontrado"
+    print_result "PASS" "spider.py encontrado en ex00/"
     record_test "spider.py existe" "PASS"
 else
     print_result "FAIL" "spider.py NO encontrado"
@@ -187,7 +189,7 @@ else
 fi
 
 if [ -f "ex01/scorpion.py" ]; then
-    print_result "PASS" "scorpion.py encontrado"
+    print_result "PASS" "scorpion.py encontrado en ex01/"
     record_test "scorpion.py existe" "PASS"
 else
     print_result "FAIL" "scorpion.py NO encontrado"
@@ -196,7 +198,7 @@ fi
 
 # Check executability
 if [ -x "ex00/spider.py" ]; then
-    print_result "PASS" "spider.py es ejecutable"
+    print_result "PASS" "spider.py es ejecutable (permisos: -x habilitados)"
     record_test "spider.py ejecutable" "PASS"
 else
     print_result "FAIL" "spider.py NO es ejecutable"
@@ -204,7 +206,7 @@ else
 fi
 
 if [ -x "ex01/scorpion.py" ]; then
-    print_result "PASS" "scorpion.py es ejecutable"
+    print_result "PASS" "scorpion.py es ejecutable (permisos: -x habilitados)"
     record_test "scorpion.py ejecutable" "PASS"
 else
     print_result "FAIL" "scorpion.py NO es ejecutable"
@@ -228,11 +230,25 @@ else
     record_test "scorpion.py shebang" "FAIL"
 fi
 
+echo ""
+print_color "$CYAN" "    Concepto: Shebang (Hashbang)"
+print_color "$CYAN" "  ─────────────────────────────────────────────────────────────────────────────────"
+echo ""
+print_color "$WHITE" "  Un shebang es una línea especial al inicio de un script que especifica qué intérprete"
+print_color "$WHITE" "  debe ejecutarlo. Estructura: #!/usr/bin/env python3"
+echo ""
+print_color "$WHITE" "  • #!         → Indica que es un shebang"
+print_color "$WHITE" "  • /usr/bin/env → Busca el comando en el PATH del sistema"
+print_color "$WHITE" "  • python3     → El intérprete a utilizar"
+echo ""
+print_color "$YELLOW" "  Permite ejecutar: ./spider.py (sin especificar python3)"
+echo ""
+
 pause_menu
 
 # ============================================================================
 
-print_test_title "TEST 2️⃣ : Validación de Sintaxis Python"
+print_test_title "TEST 2 : Validación de Sintaxis Python"
 print_explanation "Se compilarán los scripts Python para verificar que no haya errores de sintaxis"
 
 echo ""
@@ -258,7 +274,7 @@ pause_menu
 
 # ============================================================================
 
-print_test_title "TEST 3️⃣ : Validación de Dependencias"
+print_test_title "TEST 3 : Validación de Dependencias"
 print_explanation "Se verificarán los módulos Python requeridos: beautifulsoup4, requests, Pillow, piexif"
 
 echo ""
@@ -290,7 +306,7 @@ pause_menu
 
 # ============================================================================
 
-print_test_title "TEST 4️⃣ : Interface de Línea de Comandos - Spider"
+print_test_title "TEST 4 : Interface de Línea de Comandos - Spider"
 print_explanation "Se validará que Spider acepte: -r, -l [N], -p [PATH] y que --help sea claro"
 
 echo ""
@@ -330,13 +346,15 @@ pause_menu
 
 # ============================================================================
 
-print_test_title "TEST 5️⃣ : Funcionalidad de Spider - Descarga Básica"
+print_test_title "TEST 5 : Funcionalidad de Spider - Descarga Básica"
 print_explanation "Se descargará un sitio web para validar que Spider crea carpetas, descarga imágenes y maneja errores"
 
 echo ""
+print_color "$BLUE" "   Sitio web a descargar: https://en.wikipedia.org/wiki/Dog (Wikipedia - Página sobre Perros)"
+echo ""
 print_color "$DIM" "  Descargando imágenes de prueba...\n"
 
-TEST_IMG_DIR="/tmp/arachnida_spider_test"
+TEST_IMG_DIR="$(pwd)/data"
 rm -rf "$TEST_IMG_DIR"
 
 # Create activation script path
@@ -376,7 +394,7 @@ pause_menu
 
 # ============================================================================
 
-print_test_title "TEST 6️⃣ : Funcionalidad de Spider - Opciones"
+print_test_title "TEST 6 : Funcionalidad de Spider - Opciones"
 print_explanation "Se validará que las opciones -l (level) y -p (path) funcionen correctamente"
 
 echo ""
@@ -409,7 +427,7 @@ pause_menu
 
 # ============================================================================
 
-print_test_title "TEST 7️⃣ : Soporte de Extensiones"
+print_test_title "TEST 7 : Soporte de Extensiones"
 print_explanation "Se validará que Spider descargue: .jpg, .jpeg, .png, .gif, .bmp (analizando código)"
 
 echo ""
@@ -417,10 +435,13 @@ print_color "$DIM" "  Analizando soporte de extensiones...\n"
 
 EXTENSIONS=("jpg" "jpeg" "png" "gif" "bmp")
 SPIDER_SOURCE=$(cat ex00/spider.py)
+SPIDER_PATH="$(pwd)/ex00/spider.py"
 
 for ext in "${EXTENSIONS[@]}"; do
     if echo "$SPIDER_SOURCE" | grep -qi "$ext"; then
-        print_result "PASS" "Extensión .$ext soportada"
+        # Buscar las líneas donde aparece la extensión
+        LINES=$(grep -in "$ext" "$SPIDER_PATH" | cut -d: -f1 | tr '\n' ',' | sed 's/,$//')
+        print_result "PASS" "Extensión .$ext soportada en spider.py líneas: $LINES"
         record_test "Soporte .$ext" "PASS"
     else
         print_result "FAIL" "Extensión .$ext NO soportada"
@@ -432,7 +453,7 @@ pause_menu
 
 # ============================================================================
 
-print_test_title "TEST 8️⃣ : Interface de Scorpion"
+print_test_title "TEST 8 : Interface de Scorpion"
 print_explanation "Se validará que Scorpion acepte archivos de imagen y muestre ayuda con --help"
 
 echo ""
@@ -457,7 +478,7 @@ pause_menu
 
 # ============================================================================
 
-print_test_title "TEST 9️⃣ : Análisis de Metadatos - Scorpion"
+print_test_title "TEST 9 : Análisis de Metadatos - Scorpion"
 print_explanation "Se analizarn imágenes para validar que Scorpion muestre dimensiones, fechas y EXIF"
 
 echo ""
@@ -535,7 +556,7 @@ pause_menu
 
 print_header "🟠 PARTE BONIFICACIÓN (BONUS)"
 
-print_test_title "TEST 1️⃣ : Archivo Scorpion Bonus"
+print_test_title "TEST 1 (BONUS) : Archivo Scorpion Bonus"
 print_explanation "Se verificará que scorpion_bonus.py tenga permisos, shebang correcto y sintaxis válida"
 
 echo ""
@@ -577,19 +598,21 @@ pause_menu
 
 # ============================================================================
 
-print_test_title "TEST 2️⃣ : Interface de Scorpion Bonus"
+print_test_title "TEST 2 (BONUS) : Interface de Scorpion Bonus"
 print_explanation "Se validarán todas las opciones bonus: --gui, --list-tags, --remove-all, --remove-tag, --set-tag, --no-backup"
 
 echo ""
 print_color "$DIM" "  Comprobando opciones de Scorpion Bonus...\n"
 
 BONUS_PATH="$(pwd)/ex01/scorpion_bonus.py"
-HELP_BONUS=$(source "$SCORPION_VENV" 2>/dev/null && "$BONUS_PATH" --help 2>&1)
+BONUS_VENV="$(pwd)/ex01/.venv/bin/activate"
+# Capturar salida del --help, activando el venv primero
+HELP_BONUS=$(bash -c "source '$BONUS_VENV' && '$BONUS_PATH' --help" 2>&1)
 
 OPTIONS=("--gui" "--list-tags" "--remove-all" "--remove-tag" "--set-tag" "--no-backup")
 
 for opt in "${OPTIONS[@]}"; do
-    if echo "$HELP_BONUS" | grep -q "$opt"; then
+    if echo "$HELP_BONUS" | grep -qF -- "$opt"; then
         print_result "PASS" "Opción '$opt' disponible"
         record_test "Bonus opción $opt" "PASS"
     else
@@ -606,14 +629,14 @@ pause_menu
 
 # ============================================================================
 
-print_test_title "TEST 3️⃣ : Funcionalidad --list-tags"
+print_test_title "TEST 3 (BONUS) : Funcionalidad --list-tags"
 print_explanation "Se probará que --list-tags lista etiquetas EXIF o reporta cuando no hay"
 
 echo ""
 print_color "$DIM" "  Probando --list-tags...\n"
 
 # Create a test image with metadata
-TEST_TAG_IMAGE="/tmp/arachnida_test_exif.jpg"
+TEST_TAG_IMAGE="$(pwd)/data/test_exif.jpg"
 if [ "$IMG_COUNT" -gt 0 ]; then
     cp "$(find "$TEST_IMG_DIR" -type f -iname "*.jpg" 2>/dev/null | head -1)" "$TEST_TAG_IMAGE" 2>/dev/null
 fi
@@ -642,14 +665,14 @@ pause_menu
 
 # ============================================================================
 
-print_test_title "TEST 4️⃣ : Funcionalidad --remove-all"
+print_test_title "TEST 4 (BONUS) : Funcionalidad --remove-all"
 print_explanation "Se validará que --remove-all elimine EXIF y cree backups (.bak) automáticamente"
 
 echo ""
 print_color "$DIM" "  Probando --remove-all...\n"
 
 # Create test file
-TEST_REMOVE_IMAGE="/tmp/arachnida_test_remove.jpg"
+TEST_REMOVE_IMAGE="$(pwd)/data/test_remove.jpg"
 if [ -f "$TEST_TAG_IMAGE" ]; then
     cp "$TEST_TAG_IMAGE" "$TEST_REMOVE_IMAGE" 2>/dev/null
 fi
@@ -677,7 +700,7 @@ pause_menu
 
 # ============================================================================
 
-print_test_title "TEST 5️⃣ : Interfaz Gráfica (GUI)"
+print_test_title "TEST 5 (BONUS) : Interfaz Gráfica (GUI)"
 print_explanation "Se validará que --gui acepte la opción y intente cargar tkinter"
 
 echo ""
@@ -717,7 +740,7 @@ pause_menu
 
 # ============================================================================
 
-print_test_title "TEST 6️⃣ : Integración Completa del Bonus"
+print_test_title "TEST 6 (BONUS) : Integración Completa del Bonus"
 print_explanation "Se realizará flujo completo: Spider -> Scorpion -> Scorpion Bonus"
 
 echo ""
@@ -770,7 +793,7 @@ print_color "$CYAN" "
 ████████████████████████████████████████████████████████████████████████████████
 "
 
-print_header "📋 RESUMEN DETALLADO DE PRUEBAS"
+print_header " RESUMEN DETALLADO DE PRUEBAS"
 
 echo ""
 print_section "Estadísticas Generales"
@@ -794,9 +817,9 @@ for i in $(seq 1 $TOTAL_TESTS); do
     NAME=${TEST_NAMES[$i]}
     
     if [ "$RESULT" = "PASS" ]; then
-        print_color "$GREEN" "  ✅ $NAME"
+        print_color "$GREEN" "   $NAME"
     else
-        print_color "$RED" "  ❌ $NAME"
+        print_color "$RED" "   $NAME"
     fi
 done
 
@@ -810,12 +833,12 @@ if [ "$FAILED_TESTS" -eq 0 ] && [ "$TOTAL_TESTS" -gt 20 ]; then
     GRADE="125%"
     GRADE_COLOR="$GREEN"
 elif [ "$FAILED_TESTS" -le 2 ] && [ "$TOTAL_TESTS" -gt 20 ]; then
-    print_color "$YELLOW" "  ⚠️  Proyecto casi completamente validado"
+    print_color "$YELLOW" "    Proyecto casi completamente validado"
     print_color "$YELLOW" "     Algunos tests menores no pasaron"
     GRADE="100-125%"
     GRADE_COLOR="$YELLOW"
 else
-    print_color "$YELLOW" "  ℹ️  Proyecto en desarrollo"
+    print_color "$YELLOW" "    Proyecto en desarrollo"
     print_color "$YELLOW" "     Se recomienda revisar los tests fallidos"
     GRADE="Variable"
     GRADE_COLOR="$YELLOW"
@@ -835,17 +858,17 @@ print_section "Recomendaciones"
 echo ""
 
 if [ "$FAILED_TESTS" -gt 0 ]; then
-    print_color "$YELLOW" "  ⚠️  Pruebas fallidas detectadas:"
+    print_color "$YELLOW" "    Pruebas fallidas detectadas:"
     for i in $(seq 1 $TOTAL_TESTS); do
         if [ "${TEST_RESULTS[$i]}" = "FAIL" ]; then
             print_color "$YELLOW" "     • ${TEST_NAMES[$i]}"
         fi
     done
     echo ""
-    print_color "$WHITE" "  📝 Se recomienda revisar estos puntos antes de la evaluación final"
+    print_color "$WHITE" "   Se recomienda revisar estos puntos antes de la evaluación final"
 else
-    print_color "$GREEN" "  ✅ No hay pruebas fallidas"
-    print_color "$GREEN" "  ✅ El proyecto está listo para evaluación"
+    print_color "$GREEN" "   No hay pruebas fallidas"
+    print_color "$GREEN" "   El proyecto está listo para evaluación"
 fi
 
 echo ""
@@ -869,7 +892,7 @@ echo ""
 echo ""
 print_color "$DIM" "  Limpiando directorios de prueba..."
 rm -rf /tmp/arachnida_test* 2>/dev/null
-print_color "$GREEN" "  ✅ Limpieza completada"
+print_color "$GREEN" "   Limpieza completada"
 
 echo ""
 

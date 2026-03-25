@@ -243,6 +243,8 @@ Nivel 3 (y así sucesivamente...)
 
 Scorpion analiza archivos de imagen y extrae toda la información de metadatos y datos **EXIF**, mostrándola de forma clara y legible.
 
+Los datos EXIF (Exchangeable Image File Format) son metadatos que se guardan automáticamente dentro de los archivos de imagen (como JPEG, GIF, BMP, PNG...) al tomar una fotografía con una cámara digital o un smartphone. 
+
 #### Características
 
 - ✅ Extracción completa de datos EXIF
@@ -253,6 +255,18 @@ Scorpion analiza archivos de imagen y extrae toda la información de metadatos y
 - ✅ Procesamiento de múltiples archivos
 - ✅ Mecanismo de fallback (PIL como alternativa)
 - ✅ Salida formateada y legible
+
+*En programación, un fallback es una "solución de respaldo" o un Plan B que se activa automáticamente cuando la opción principal falla o no está disponible.*
+
+*Cuando se menciona a PIL (Python Imaging Library, hoy continuada como Pillow) como alternativa de fallback, significa que el programa intentará usar primero una herramienta más avanzada o rápida (como OpenCV o una aceleración por hardware), pero si esta no se encuentra instalada o da error, "caerá" (fall back) en el uso de PIL para realizar la tarea.* 
+
+*¿Por qué se usa PIL como fallback?*
+
+*Compatibilidad Universal: PIL/Pillow es la biblioteca estándar de facto para imágenes en Python y está disponible en casi cualquier entorno.*
+
+*Garantía de Funcionamiento: Aunque otras librerías sean más rápidas para tareas específicas, PIL asegura que el programa no se detenga por completo (evita un "crash") y pueda procesar la imagen aunque sea de forma más básica.*
+
+*Degradación Graciosa: Es un principio de diseño donde el sistema sigue funcionando con capacidades limitadas en lugar de fallar catastróficamente.*
 
 #### Sintaxis
 
