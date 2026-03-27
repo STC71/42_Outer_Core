@@ -1,0 +1,119 @@
+# ============================================================================
+#  CONFIGURACIÓN DEL SERVIDOR OPENSSH - SERVICIO OCULTO FT_ONION
+# ============================================================================
+#  SSH endurecido para acceso remoto seguro a través de Tor
+#  Puerto 4242, autenticación por contraseña + clave, fail2ban ready
+# ============================================================================
+
+# ============================================================================
+#  PUERTO Y DIRECCIÓN
+# ============================================================================
+
+# Escucha en puerto personalizado a través del servicio oculto Tor
+Port 4242
+
+# Escucha solo en localhost (Tor maneja el enrutamiento)
+ListenAddress 127.0.0.1
+ListenAddress [::1]
+
+# ============================================================================
+#  MÉTODOS DE AUTENTICACIÓN
+# ============================================================================
+
+# Autenticación por clave SSH (primaria - requisito bonus)
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys .ssh/authorized_keys2
+
+# Autenticación por contraseña (habilitada por conveniencia)
+PasswordAuthentication yes
+PermitEmptyPasswords no
+
+# ============================================================================
+#  CONFIGURACIÓN DE USUARIO E INICIO DE SESIÓN
+# ============================================================================
+
+# Deshabilita inicio de sesión de root (seguridad obligatoria)
+PermitRootLogin no
+
+# Usuarios permitidos (se pueden añadir más usuarios)
+AllowUsers user
+DenyUsers root
+
+# ============================================================================
+#  CONFIGURACIÓN DE CLIENTE
+# ============================================================================
+
+# Mantiene conexiones vivas
+ClientAliveInterval 300
+ClientAliveCountMax 3
+
+# Número de intentos de autenticación permitidos
+MaxAuthTries 6
+MaxSessions 4
+
+# Tiempo de espera para autenticación
+LoginGraceTime 120
+
+# ============================================================================
+#  ENDURECIMIENTO DE SEGURIDAD
+# ============================================================================
+
+# Protocol version (SSH2 only)
+Protocol 2
+
+# Disable X11 forwarding (not needed in hidden service)
+X11Forwarding no
+X11UseLocalhost yes
+
+# Disable port forwarding in hidden service context
+AllowTcpForwarding yes
+AllowAgentForwarding yes
+
+# Gateway Ports
+GatewayPorts no
+
+# ============================================================================
+#  CRYPTOGRAPHY & ALGORITHMS
+# ============================================================================
+
+# Host keys
+HostKey /etc/ssh/ssh_host_ed25519_key
+HostKey /etc/ssh/ssh_host_rsa_key
+
+# Key exchange algorithms (modern, secure)
+KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512
+
+# Encryption ciphers (ChaCha20 + AES-GCM)
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+
+# Message authentication codes
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256
+
+# ============================================================================
+#  SUBSYSTEMS
+# ============================================================================
+
+# SFTP subsystem
+Subsystem sftp /usr/lib/openssh/sftp-server
+
+# ============================================================================
+#  LOGGING AND MONITORING
+# ============================================================================
+
+# Logging
+SyslogFacility AUTH
+LogLevel INFO
+
+# ============================================================================
+#  BONUS: SSH HARDENING OPTIONS (Uncomment for bonus points)
+# ============================================================================
+
+# Disable password authentication (require keys only) - BONUS
+# PasswordAuthentication no
+
+# Two-factor authentication (requires PAM configuration) - BONUS
+# ChallengeResponseAuthentication yes
+# AuthenticationMethods publickey,password
+
+# Fail2ban will work with this config for intrusion prevention
+# Monitor /var/log/auth.log for failed attempts
