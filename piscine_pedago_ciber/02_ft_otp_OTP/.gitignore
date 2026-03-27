@@ -11,5 +11,32 @@ __pycache__/
 *.pyc
 venv/
 
+# Images
+*.png
+.png
+
 # Logs
 *.log
+
+# Archivos temporales de testing
+test_*.hex
+test_*.txt
+test_*.py
+quicktest.hex
+quicktest.txt
+
+# Archivos de evaluación
+*.hex
+
+# Carpeta temporal del tutorial
+tmp/
+
+# IDE y editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema
+.DS_Store
+.env.local
