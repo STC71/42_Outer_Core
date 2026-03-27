@@ -9,17 +9,18 @@
 
 ## 📋 Tabla de Contenidos
 
-- [Descripción General](#descripción-general)
-- [¿Por Qué TOTP?](#por-qué-totp)
-- [Características Implementadas](#características-implementadas)
-- [Instalación y Uso](#instalación-y-uso)
+- [Descripción General](#descripcion-general)
+- [¿Por qué TOTP?](#por-que-totp)
+- [Características Implementadas](#caracteristicas-implementadas)
+- [Instalación y Uso](#instalacion-y-uso)
 - [Estructura del Proyecto](#estructura-del-proyecto)
-- [Especificaciones Técnicas](#especificaciones-técnicas)
-- [Validación y Pruebas](#validación-y-pruebas)
+- [Especificaciones Técnicas](#especificaciones-tecnicas)
+- [Validación y Pruebas](#validacion-y-pruebas)
 - [Preguntas Frecuentes](#preguntas-frecuentes)
 
 ---
 
+<a id="descripcion-general"></a>
 ## 🎯 Descripción General
 
 ft_otp es un generador completo de **Contraseñas de Un Solo Uso Basadas en Tiempo (TOTP)** implementado en Python3. Cumple totalmente con los estándares **RFC 6238 (TOTP)** y **RFC 4226 (HOTP)**, permitiendo:
@@ -32,6 +33,7 @@ ft_otp es un generador completo de **Contraseñas de Un Solo Uso Basadas en Tiem
 
 ---
 
+<a id="por-que-totp"></a>
 ## 🔑 ¿Por Qué TOTP?
 
 Las contraseñas tradicionales presentan graves problemas de seguridad:
@@ -52,6 +54,7 @@ Con TOTP:
 
 ---
 
+<a id="caracteristicas-implementadas"></a>
 ## ✅ Características Implementadas
 
 ### Parte Mandatory (100%) ✅
@@ -137,6 +140,7 @@ Aplicación Tkinter con:
 
 ---
 
+<a id="instalacion-y-uso"></a>
 ## 📦 Instalación y Uso
 
 ### Requisitos
@@ -273,6 +277,7 @@ make clean              # Elimina archivos generados (ft_otp.key, QR, __pycache_
 
 ---
 
+<a id="estructura-del-proyecto"></a>
 ## 🏗️ Estructura del Proyecto
 
 ```
@@ -294,6 +299,7 @@ make clean              # Elimina archivos generados (ft_otp.key, QR, __pycache_
 
 ---
 
+<a id="especificaciones-tecnicas"></a>
 ## 🔬 Especificaciones Técnicas
 
 ### Algoritmos Implementados
@@ -332,6 +338,7 @@ Configuración:
 
 ---
 
+<a id="validacion-y-pruebas"></a>
 ## 🧪 Validación y Pruebas
 
 ### Suite de Pruebas Básicas
@@ -425,6 +432,7 @@ oathtool --totp 3132333435363738393031323334353637383930313233343536373839303132
 
 ---
 
+<a id="preguntas-frecuentes"></a>
 ## ❓ Preguntas Frecuentes
 
 ### ¿Cómo sincronizar con Google Authenticator?
