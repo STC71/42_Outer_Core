@@ -10,19 +10,21 @@
 
 1. [Resumen Ejecutivo](#resumen-ejecutivo)
 2. [Objetivo del Proyecto](#objetivo-del-proyecto)  
-3. [Características Implementadas](#características-implementadas)
-4. [Inicio Rápido](#inicio-rápido)
-5. [Instalación Detallada](#instalación-detallada)
-6. [Configuración de Servicios](#configuración-de-servicios)
+3. [Características Implementadas](#caracteristicas-implementadas)
+4. [Inicio Rápido](#inicio-rapido)
+5. [Instalación Detallada](#instalacion-detallada)
+6. [Configuración de Servicios](#configuracion-de-servicios)
 7. [Modelo de Amenazas & Seguridad](#modelo-de-amenazas--seguridad)
 8. [Arquitectura del Sistema](#arquitectura-del-sistema)
-9. [Uso y Operación](#uso-y-operación)
-10. [Solución de Problemas](#solución-de-problemas)
-11. [Detalles Técnicos](#detalles-técnicos)
-12. [Cumplimiento Normativo](#cumplimiento-normativo)
+9. [Uso y Operación](#uso-y-operacion)
+10. [Guía de Evaluación](#guia-de-evaluacion)
+11. [Solución de Problemas](#solucion-de-problemas)
+12. [Detalles Técnicos](#detalles-tecnicos)
+13. [Cumplimiento Normativo](#cumplimiento-normativo)
 
 ---
 
+<a id="resumen-ejecutivo"></a>
 ## 🎯 Resumen Ejecutivo
 
 **ft_onion** es una implementación empresarial de un **servicio web oculto en Tor** que cumple 100% los requerimientos obligatorios e incluye múltiples características bonus.
@@ -54,6 +56,7 @@
 
 ---
 
+<a id="objetivo-del-proyecto"></a>
 ## 🎯 Objetivo del Proyecto
 
 Crear una **página web accesible través de la red Tor** proporcionando:
@@ -64,38 +67,39 @@ Crear una **página web accesible través de la red Tor** proporcionando:
 
 ### Conceptos Clave
 
-- **Tor Network**: Red de enrutamiento cebolla para anonimato
+- **Tor Network**: Red de enrutamiento para anonimato
 - **Hidden Service v3**: Servicio oculto con claves Ed25519 de 256-bit
 - **Dirección .onion**: Dirección criptográfica especial (56 caracteres)
 
 ---
 
+<a id="caracteristicas-implementadas"></a>
 ## ✨ Características Implementadas
 
 ### ✅ PARTE MANDATORY (100%)
 
 #### 1. Página Web Estática
-- **Archivo**: `src/index.html` (550+ líneas)
+- **Archivo**: `index.html` (550+ líneas)
 - **Diseño**: HTML5 responsive, dark mode profesional
 - **Contenido**: Info sobre Tor, terminal simulada interactiva
 - **Acceso**: `http://[dirección].onion/` vía Tor Browser
 
 #### 2. Servidor Nginx
-- **Archivo**: `src/nginx.conf` (200+ líneas)
+- **Archivo**: `nginx.conf` (200+ líneas)
 - **Config**: Escucha en 127.0.0.1:80
 - **Headers**: CSP, HSTS, X-Frame-Options, X-Content-Type-Options
 - **Logging**: JSON estructurado (sin datos sensibles)
 - **Features**: GZIP, proxy reverso, negación de ocultos
 
 #### 3. Acceso SSH
-- **Archivo**: `src/sshd_config` (100+ líneas)
+- **Archivo**: `sshd_config` (100+ líneas)
 - **Puerto**: 4242 (no estándar)
 - **Auth**: Password + key-based (Curve25519 Ed25519)
 - **Root**: Deshabilitado
 - **Credenciales**: user/password
 
 #### 4. Servicio Tor Hidden
-- **Archivo**: `src/torrc` (60+ líneas)
+- **Archivo**: `torrc` (60+ líneas)
 - **Tipo**: v3 (528-bit encryption)
 - **Puertos**: 80 → localhost:80 | 4242 → localhost:4242
 - **Privacidad**: No funciona como relay público
@@ -160,6 +164,7 @@ Crear una **página web accesible través de la red Tor** proporcionando:
 
 ---
 
+<a id="inicio-rapido"></a>
 ## 🚀 Inicio Rápido
 
 ### 3 Pasos
@@ -169,7 +174,7 @@ Crear una **página web accesible través de la red Tor** proporcionando:
 cd 03_ft_onion_Web && make build
 
 # 2. Levantar servicios (30 segundos)
-make up
+make up SSH_HOST_PORT=4243
 
 # 3. Obtener dirección .onion
 make onion-address
@@ -196,6 +201,7 @@ docker-compose down
 
 ---
 
+<a id="instalacion-detallada"></a>
 ## 💻 Instalación Detallada
 
 ### Prerequisitos
@@ -215,7 +221,7 @@ cd 03_ft_onion_Web
 make build
 
 # Subir servicios
-make up
+make up SSH_HOST_PORT=4243
 
 # Validar
 make validate
@@ -245,13 +251,13 @@ sudo apt-get update && sudo apt-get install -y \
   nginx tor openssh-server python3 python3-pip
 
 # Copiar configuraciones
-sudo cp src/nginx.conf /etc/nginx/sites-available/default
-sudo cp src/torrc /etc/tor/torrc
-sudo cp src/sshd_config /etc/ssh/sshd_config
+sudo cp nginx.conf /etc/nginx/sites-available/default
+sudo cp torrc /etc/tor/torrc
+sudo cp sshd_config /etc/ssh/sshd_config
 
 # Web
 sudo mkdir -p /var/www/html
-sudo cp src/index.html /var/www/html/
+sudo cp index.html /var/www/html/
 
 # Usuario SSH
 sudo useradd -m user && echo "user:password" | sudo chpasswd
@@ -265,9 +271,10 @@ sudo cat /var/lib/tor/hidden_service/hostname
 
 ---
 
+<a id="configuracion-de-servicios"></a>
 ## ⚙️ Configuración de Servicios
 
-### Nginx (`src/nginx.conf`)
+### Nginx (`nginx.conf`)
 
 ```nginx
 # Escucha local solo (no expuesto a red)
@@ -294,7 +301,7 @@ location / { try_files $uri $uri/ =404; }
 location /api/ { proxy_pass http://127.0.0.1:8000; }
 ```
 
-### Tor (`src/torrc`)
+### Tor (`torrc`)
 
 ```
 # Hidden Service v3 (máxima seguridad)
@@ -313,7 +320,7 @@ ExitPolicy reject *:*
 Log notice file /var/log/tor/notices.log
 ```
 
-### SSH (`src/sshd_config`)
+### SSH (`sshd_config`)
 
 ```bash
 # Puerto no estándar
@@ -333,6 +340,9 @@ LoginGraceTime 20
 # Autenticación
 PubkeyAuthentication yes
 PasswordAuthentication yes
+
+# Key-only (post-evaluación, opcional)
+# PasswordAuthentication no
 ```
 
 ### Docker (`Dockerfile`)
@@ -347,7 +357,7 @@ FROM base AS builder
 
 FROM base AS final
 # Copiar solo binarios
-COPY --from=builder /root/.local /root/.local
+COPY --from=builder /opt/venv /opt/venv
 
 # Usuarios no-root
 RUN useradd -m tor user
@@ -365,6 +375,7 @@ ENTRYPOINT ["/app/setup.sh"]
 
 ---
 
+<a id="modelo-de-amenazas--seguridad"></a>
 ## 🛡️ Modelo de Amenazas & Seguridad
 
 ### Amenazas Identificadas & Mitigaciones
@@ -432,6 +443,7 @@ make security-audit
 
 ---
 
+<a id="arquitectura-del-sistema"></a>
 ## 🏗️ Arquitectura del Sistema
 
 ### Diagrama de Flujo
@@ -508,6 +520,7 @@ CONTENEDOR DOCKER (172.25.0.0/16)
 
 ---
 
+<a id="uso-y-operacion"></a>
 ## 📖 Uso y Operación
 
 ### Comandos Make Más Comunes
@@ -521,6 +534,7 @@ make stats                 # Estadísticas código
 # Operaciones
 make build                 # Construir imagen
 make up                    # Levantar servicios
+make up SSH_HOST_PORT=4243 # Levantar con puerto host SSH alternativo
 make down                  # Detener servicios
 make re                    # Rebuild completo
 
@@ -536,6 +550,10 @@ make logs                 # Logs en tiempo real
 make onion-address        # Ver dirección .onion
 make docker-shell         # Terminal interactiva
 make docker-logs          # Logs del contenedor
+
+# Guía de evaluación
+make tutorial             # Modo guiado (paso a paso)
+make tutorial_auto        # Modo automático (./tutorial.sh --auto --ssh-port 4243)
 
 # APIs
 make docker-exec CMD='curl http://127.0.0.1:8000/api/status | jq'
@@ -565,6 +583,9 @@ ssh -o ProxyCommand="nc -X 5 -x 127.0.0.1:9050 %h %p" \
 # Credenciales
 Usuario: user
 Contraseña: password
+
+# Test local rápido (sin Tor, para validar mapeo host)
+ssh -p 4243 user@127.0.0.1
 ```
 
 #### APIs (FastAPI)
@@ -582,6 +603,58 @@ curl http://127.0.0.1:8000/api/logs/nginx | jq
 
 ---
 
+<a id="guia-de-evaluacion"></a>
+## 🧪 Guía de Evaluación
+
+### Flujo recomendado (estable y repetible)
+
+```bash
+make fclean
+make build
+make up SSH_HOST_PORT=4243
+make validate-nginx
+make validate-tor
+make validate-ssh
+make onion-address
+```
+
+### Estrategia SSH recomendada durante evaluación
+
+- Mantener `PubkeyAuthentication yes` y `PasswordAuthentication yes`
+- Motivo: reduce riesgo de bloqueo del evaluador durante la demo
+- Mantener `PermitRootLogin no` como control obligatorio
+
+### Key-only preparado (activar después de evaluar)
+
+```bash
+# 1) Editar sshd_config
+#    PasswordAuthentication no
+#    PubkeyAuthentication yes
+
+# 2) Validar sintaxis SSH dentro del contenedor
+docker exec ft_onion_container sshd -t
+
+# 3) Reiniciar SSH
+docker exec ft_onion_container service ssh restart
+
+# 4) Probar acceso solo con clave
+ssh -i /ruta/a/tu_clave -p 4243 user@127.0.0.1
+
+# 5) Rollback rápido si hace falta
+#    volver PasswordAuthentication yes, validar y reiniciar
+```
+
+### Tutorial integrado
+
+```bash
+make tutorial        # interactivo
+make tutorial_auto   # automático
+./tutorial.sh --help # opciones disponibles
+```
+
+---
+
+<a id="solucion-de-problemas"></a>
 ## 🐛 Solución de Problemas
 
 ### Servicio Oculto No Se Inicializa
@@ -661,6 +734,7 @@ docker-compose up -d               # Re-intentar
 
 ---
 
+<a id="detalles-tecnicos"></a>
 ## 🧬 Detalles Técnicos
 
 ### Stack de Tecnología
@@ -765,14 +839,15 @@ ft_onion_logs:
 
 ---
 
+<a id="cumplimiento-normativo"></a>
 ## ✅ Cumplimiento Normativo
 
 ### Requerimientos Mandatory ✅
 
-- [x] Página HTML estática (`src/index.html`)
-- [x] Servidor Nginx (`src/nginx.conf`)
-- [x] SSH en puerto 4242 (`src/sshd_config`)
-- [x] Servicio Tor oculto (`src/torrc`)
+- [x] Página HTML estática (`index.html`)
+- [x] Servidor Nginx (`nginx.conf`)
+- [x] SSH en puerto 4242 (`sshd_config`)
+- [x] Servicio Tor oculto (`torrc`)
 - [x] Deployment Docker (`Dockerfile`)
 - [x] Justificación completa (este README)
 

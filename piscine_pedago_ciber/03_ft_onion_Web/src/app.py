@@ -2,16 +2,32 @@
 # -*- coding: utf-8 -*-
 
 """
-    FT_ONION - APLICACIÓN WEB (BONUS: DASHBOARD)
-    
-    Aplicación FastAPI para monitoreo en tiempo real
-    APIs REST + WebSocket para actualización de estado
+FT_ONION - APLICACIÓN WEB FASTAPI (BONUS: DASHBOARD DE MONITORIZACIÓN EN TIEMPO REAL)
+
+Aplicación FastAPI orientada a supervisión operativa, que ofrece:
+- Monitoreo en tiempo real de servicios y recursos del sistema
+- Endpoints REST para estado, métricas y logs
+- Respuestas JSON estructuradas para integración con frontend
+- Arquitectura asíncrona para E/S no bloqueante
+
+Características principales:
+- Health checks de Tor, Nginx y SSH
+- Métricas de CPU, memoria, disco y procesos
+- Lectura de logs recientes por servicio
+- Consulta de dirección .onion del hidden service
+
+Stack técnico:
+- FastAPI: framework web asíncrono de alto rendimiento
+- uvicorn: servidor ASGI para ejecución eficiente
+- psutil: recopilación de métricas del sistema
+- asyncio: concurrencia basada en eventos
 """
 
-import asyncio
-import json
-import os
-import sys
+import asyncio                  # Concurrencia asíncrona para tareas no bloqueantes
+import json                     # Serialización JSON para respuestas de API
+import os                       # Operaciones de sistema y acceso a archivos
+import sys                      # Utilidades del sistema y control de ejecución
+
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -23,8 +39,8 @@ try:
     from fastapi.middleware.cors import CORSMiddleware
     import uvicorn
 except ImportError:
-    print("FastAPI not installed. Bonus dashboard unavailable.")
-    print("Install with: pip3 install fastapi uvicorn")
+    print("FastAPI no está instalado. El panel de control bonus no estará disponible.")
+    print("Instala dependencias con: pip3 install fastapi uvicorn")
     sys.exit(1)
 
 import subprocess
@@ -38,22 +54,24 @@ APP_VERSION = "1.0.0"
 APP_NAME = "ft_onion"
 
 app = FastAPI(
-    title=f"{APP_NAME} Dashboard",
-    description="Real-time monitoring and management dashboard for ft_onion",
+    title=f"{APP_NAME} Panel de control",
+    description="Panel de monitoreo y gestión en tiempo real para ft_onion",
     version=APP_VERSION
 )
 
 # ============================================================================
-#  MIDDLEWARE
+#  INTERMEDIARIO CORS - Procesamiento de peticiones/respuestas
 # ============================================================================
 
-# Middleware CORS para solicitudes de origen cruzado
+# Intermediario CORS: habilita solicitudes entre orígenes para la interfaz web.
+# Permite que la interfaz consulte la API desde distintos dominios.
+# En producción, restringir orígenes permitidos para reforzar seguridad.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=["*"],        # Permite todos los orígenes (modo desarrollo/demo)
+    allow_credentials=True,      # Permite cabeceras de autenticación
+    allow_methods=["*"],         # Permite todos los métodos HTTP
+    allow_headers=["*"],         # Permite todas las cabeceras
 )
 
 # ============================================================================
@@ -85,7 +103,7 @@ def check_service(service_name: str) -> Dict:
 
 
 def get_system_stats() -> Dict:
-    """Obtener uso de recursos del sistema"""
+    """Obtiene métricas actuales de uso de recursos del sistema."""
     try:
         return {
             'cpu': psutil.cpu_percent(interval=1),
@@ -102,7 +120,7 @@ def get_system_stats() -> Dict:
 
 
 def get_onion_address() -> Optional[str]:
-    """Obtener la dirección .onion"""
+    """Obtiene la dirección .onion del servicio oculto de Tor."""
     hostname_file = '/var/lib/tor/hidden_service/hostname'
     try:
         if os.path.exists(hostname_file):
@@ -114,7 +132,7 @@ def get_onion_address() -> Optional[str]:
 
 
 def read_log_file(filepath: str, lines: int = 50) -> List[str]:
-    """Leer últimas N líneas de un archivo de log"""
+    """Lee y devuelve las últimas N líneas de un archivo de log."""
     try:
         if not os.path.exists(filepath):
             return []
@@ -132,7 +150,7 @@ def read_log_file(filepath: str, lines: int = 50) -> List[str]:
 
 @app.get('/api/health')
 async def health_check() -> Dict:
-    """Endpoint de verificación de salud"""
+    """Ruta de verificación de salud para orquestación de contenedores."""
     return {
         'status': 'healthy',
         'version': APP_VERSION,
@@ -142,7 +160,7 @@ async def health_check() -> Dict:
 
 @app.get('/api/status')
 async def get_status() -> Dict:
-    """Obtener estado completo del sistema"""
+    """Obtiene estado agregado de servicios y métricas del sistema."""
     services = {
         'tor': check_service('tor'),
         'nginx': check_service('nginx'),
@@ -164,7 +182,7 @@ async def get_status() -> Dict:
 
 @app.get('/api/services')
 async def get_services() -> Dict:
-    """Obtener estado de todos los servicios"""
+    """Obtiene el estado de servicios críticos (Tor, Nginx, SSH)."""
     return {
         'services': {
             'tor': check_service('tor'),
@@ -177,7 +195,7 @@ async def get_services() -> Dict:
 
 @app.get('/api/system')
 async def get_system_info() -> Dict:
-    """Obtener información del sistema"""
+    """Obtiene métricas detalladas y metadatos del sistema."""
     return {
         'system': get_system_stats(),
         'machine': {
@@ -191,7 +209,7 @@ async def get_system_info() -> Dict:
 
 @app.get('/api/onion')
 async def get_onion_info() -> Dict:
-    """Obtener información del servicio oculto Tor"""
+    """Obtiene información del servicio oculto Tor y su dirección .onion."""
     address = get_onion_address()
     return {
         'address': address,
@@ -206,7 +224,7 @@ async def get_onion_info() -> Dict:
 
 @app.get('/api/logs/nginx')
 async def get_nginx_logs(lines: int = 50) -> Dict:
-    """Obtener logs de acceso de Nginx"""
+    """Obtiene logs recientes de acceso HTTP de Nginx."""
     logs = read_log_file('/var/log/nginx/ft_onion_access.log', lines)
     return {
         'service': 'nginx',
@@ -219,7 +237,7 @@ async def get_nginx_logs(lines: int = 50) -> Dict:
 
 @app.get('/api/logs/tor')
 async def get_tor_logs(lines: int = 50) -> Dict:
-    """Obtener logs del daemon Tor"""
+    """Obtiene logs de diagnóstico recientes del daemon Tor."""
     logs = read_log_file('/var/log/tor/notices.log', lines)
     return {
         'service': 'tor',
@@ -232,7 +250,7 @@ async def get_tor_logs(lines: int = 50) -> Dict:
 
 @app.get('/api/logs/ssh')
 async def get_ssh_logs(lines: int = 50) -> Dict:
-    """Obtener logs de SSH"""
+    """Obtiene logs de autenticación y sesiones SSH."""
     logs = read_log_file('/var/log/auth.log', lines)
     return {
         'service': 'ssh',
@@ -245,7 +263,7 @@ async def get_ssh_logs(lines: int = 50) -> Dict:
 
 @app.get('/api/config/summary')
 async def get_config_summary() -> Dict:
-    """Obtener resumen de configuración"""
+    """Resume metadatos de archivos de configuración (ruta, tamaño, existencia)."""
     config_files = {
         'nginx': '/etc/nginx/nginx.conf',
         'tor': '/etc/tor/torrc',
@@ -272,7 +290,7 @@ async def get_config_summary() -> Dict:
 
 @app.get('/api/metrics')
 async def get_metrics() -> Dict:
-    """Obtener métricas de rendimiento"""
+    """Obtiene métricas de rendimiento y diagnóstico para el panel de control."""
     stats = get_system_stats()
     
     return {
@@ -293,13 +311,13 @@ async def get_metrics() -> Dict:
 
 @app.get('/')
 async def serve_root() -> FileResponse:
-    """Servir página principal"""
+    """Sirve la página HTML principal para acceso al servicio .onion."""
     return FileResponse('/var/www/html/index.html')
 
 
 @app.get('/favicon.ico')
 async def favicon():
-    """Endpoint de favicon"""
+    """Ruta de favicon para evitar errores 404 en navegadores."""
     return JSONResponse({'status': 'ok'})
 
 
@@ -309,7 +327,7 @@ async def favicon():
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
-    """Manejar excepciones globales"""
+    """Manejador global de excepciones con respuesta controlada."""
     return JSONResponse(
         status_code=500,
         content={
@@ -326,16 +344,16 @@ async def global_exception_handler(request, exc):
 
 @app.on_event("startup")
 async def startup_event():
-    """Evento de inicio"""
-    print(f"🧅 {APP_NAME} v{APP_VERSION} iniciado exitosamente")
-    print(f"📊 Dashboard disponible en http://localhost:8000/api")
-    print(f"🏥 Verificación de salud en http://localhost:8000/api/health")
+    """Evento de inicio: inicializa servicios y verifica precondiciones."""
+    print(f"🧅 {APP_NAME} v{APP_VERSION} iniciado correctamente")
+    print(f"📊 Panel de control disponible en http://localhost:8000/api")
+    print(f"🏥 Verificación de salud disponible en http://localhost:8000/api/health")
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    """Evento de apagado"""
-    print(f"🧅 {APP_NAME} apagando...")
+    """Evento de apagado: libera recursos y finaliza de forma limpia."""
+    print(f"🧅 {APP_NAME} apagándose...")
 
 
 # ============================================================================

@@ -2,10 +2,13 @@
 # -*- coding: utf-8 -*-
 
 """
-    FT_ONION - MÓDULO DE VALIDACIÓN
-    
-    Validación y verificación de servicios, configuraciones y estados
-    Módulo principal de diagnostics del proyecto
+    FT_ONION - MÓDULO DE VALIDACIÓN Y DIAGNÓSTICO DEL SISTEMA
+
+    Ejecuta verificaciones automáticas de salud, estado de servicios,
+    archivos de configuración y servicio oculto Tor.
+
+    Produce salida coloreada para interpretación rápida en terminal,
+    y permite exportar estado completo en formato JSON.
 """
 
 import subprocess
@@ -21,7 +24,7 @@ from typing import Dict, List, Tuple
 # ============================================================================
 
 class Colors:
-    """Códigos de color ANSI para salida de terminal"""
+    """Códigos de color ANSI para formato y legibilidad en terminal."""
     RED = '\033[0;31m'
     GREEN = '\033[0;32m'
     YELLOW = '\033[1;33m'
@@ -33,31 +36,31 @@ class Colors:
 
 
 class Logger:
-    """Sistema de logging unificado"""
+    """Sistema de logging unificado con niveles de salida coloreados."""
     
     @staticmethod
     def info(message: str) -> None:
-        """Registrar mensaje de información"""
+        """Registra un mensaje informativo."""
         print(f"{Colors.CYAN}[INFO]{Colors.RESET} {message}")
     
     @staticmethod
     def success(message: str) -> None:
-        """Registrar mensaje de éxito"""
+        """Registra un mensaje de éxito."""
         print(f"{Colors.GREEN}[✓]{Colors.RESET} {message}")
     
     @staticmethod
     def warning(message: str) -> None:
-        """Registrar mensaje de advertencia"""
+        """Registra un mensaje de advertencia."""
         print(f"{Colors.YELLOW}[!]{Colors.RESET} {message}")
     
     @staticmethod
     def error(message: str) -> None:
-        """Registrar mensaje de error"""
+        """Registra un mensaje de error."""
         print(f"{Colors.RED}[✗]{Colors.RESET} {message}")
     
     @staticmethod
     def separator() -> None:
-        """Imprimir línea separadora"""
+        """Imprime una línea separadora visual."""
         print(f"{Colors.CYAN}{'━' * 60}{Colors.RESET}")
 
 
@@ -66,11 +69,11 @@ class Logger:
 # ============================================================================
 
 class ServiceValidator:
-    """Validar servicios del sistema"""
+    """Validación de estado de servicios y comprobaciones de salud."""
     
     @staticmethod
     def check_service_running(service_name: str) -> bool:
-        """Verificar si un servicio se ejecuta"""
+        """Comprueba si un servicio systemd está en ejecución."""
         try:
             result = subprocess.run(
                 ['systemctl', 'is-active', service_name],
@@ -85,7 +88,7 @@ class ServiceValidator:
     
     @staticmethod
     def check_port_listening(port: int) -> bool:
-        """Verificar si un puerto está escuchando"""
+        """Comprueba si un puerto de red está escuchando conexiones."""
         try:
             result = subprocess.run(
                 ['netstat', '-tuln'],
@@ -100,7 +103,7 @@ class ServiceValidator:
     
     @staticmethod
     def get_service_status(service_name: str) -> Dict[str, any]:
-        """Obtener estado detallado del servicio"""
+        """Obtiene estado detallado de un servicio con marca temporal."""
         status = {
             'name': service_name,
             'running': ServiceValidator.check_service_running(service_name),
@@ -110,7 +113,7 @@ class ServiceValidator:
 
 
 class ConfigValidator:
-    """Validar archivos de configuración"""
+    """Validación de archivos de configuración y sintaxis."""
     
     REQUIRED_FILES = {
         '/etc/nginx/nginx.conf': 'Configuración de Nginx',
@@ -121,7 +124,7 @@ class ConfigValidator:
     
     @staticmethod
     def validate_file_exists(filepath: str) -> Tuple[bool, str]:
-        """Verificar si un archivo existe y es legible"""
+        """Verifica existencia, tipo y legibilidad de un archivo."""
         path = Path(filepath)
         if not path.exists():
             return False, f"Archivo no encontrado: {filepath}"
@@ -133,7 +136,7 @@ class ConfigValidator:
     
     @staticmethod
     def validate_nginx_config() -> Tuple[bool, str]:
-        """Validar sintaxis de configuración de Nginx"""
+        """Valida sintaxis de configuración de Nginx usando nginx -t."""
         try:
             result = subprocess.run(
                 ['nginx', '-t'],
@@ -151,11 +154,11 @@ class ConfigValidator:
     @staticmethod
     def validate_tor_config() -> Tuple[bool, str]:
 
-        """Verificar sintaxis del archivo de configuración de Tor"""
+        """Valida configuración básica obligatoria del archivo torrc."""
         valid, msg = ConfigValidator.validate_file_exists('/etc/tor/torrc')
         if valid:
             try:
-                # Check for basic required settings
+                # Comprobar directivas básicas requeridas
                 with open('/etc/tor/torrc', 'r') as f:
                     content = f.read()
                     if 'HiddenServiceDir' in content and 'HiddenServicePort' in content:
@@ -168,7 +171,7 @@ class ConfigValidator:
     
     @staticmethod
     def validate_ssh_config() -> Tuple[bool, str]:
-        """Verificar configuración de SSH"""
+        """Valida configuración del daemon SSH y puerto obligatorio."""
         valid, msg = ConfigValidator.validate_file_exists('/etc/ssh/sshd_config')
         if valid:
             try:
@@ -184,11 +187,11 @@ class ConfigValidator:
 
 
 class HiddenServiceValidator:
-    """Validar servicio oculto Tor"""
+    """Valida inicialización y estado del servicio oculto Tor."""
     
     @staticmethod
     def get_onion_address() -> str:
-        """Recuperar dirección .onion"""
+        """Lee la dirección .onion desde hidden_service/hostname."""
         hostname_file = '/var/lib/tor/hidden_service/hostname'
         try:
             if os.path.exists(hostname_file):
@@ -200,7 +203,7 @@ class HiddenServiceValidator:
     
     @staticmethod
     def validate_hidden_service() -> Dict[str, any]:
-        """Validar configuración del servicio oculto"""
+        """Comprueba que el servicio oculto esté configurado y accesible."""
         result = {
             'status': 'checking',
             'onion_address': None,
@@ -210,12 +213,12 @@ class HiddenServiceValidator:
             'hostname_file_exists': False,
         }
         
-        # Check directory
+        # Comprobar directorio del servicio oculto
         service_dir = '/var/lib/tor/hidden_service'
         result['directory_exists'] = os.path.isdir(service_dir)
         
         if result['directory_exists']:
-            # Check keys
+            # Comprobar archivos de clave y hostname
             private_key = os.path.join(service_dir, 'hs_ed25519_secret_key')
             public_key = os.path.join(service_dir, 'hs_ed25519_public_key')
             hostname = os.path.join(service_dir, 'hostname')
@@ -236,15 +239,15 @@ class HiddenServiceValidator:
 
 
 # ============================================================================
-#  SYSTEM DIAGNOSTICS
+#  DIAGNÓSTICO DEL SISTEMA
 # ============================================================================
 
 class SystemDiagnostics:
-    """Diagnóstico completo del sistema"""
+    """Diagnóstico integral del sistema, servicios y configuración."""
     
     @staticmethod
     def get_full_status() -> Dict[str, any]:
-        """Obtener estado completo del sistema"""
+        """Agrega estado de servicios, puertos, ficheros y configuración."""
         status = {
             'timestamp': datetime.now().isoformat(),
             'services': {
@@ -278,7 +281,7 @@ class SystemDiagnostics:
 # ============================================================================
 
 def print_status_report(status: Dict) -> None:
-    """Imprimir reporte de estado formateado"""
+    """Imprime un reporte de estado formateado y coloreado."""
     Logger.separator()
     print(f"{Colors.BOLD}{Colors.MAGENTA}🧅 FT_ONION - REPORTE DE ESTADO DEL SISTEMA{Colors.RESET}")
     Logger.separator()
@@ -322,11 +325,11 @@ def print_status_report(status: Dict) -> None:
 # ============================================================================
 
 def main() -> int:
-    """Punto de entrada principal"""
+    """Punto de entrada principal del validador."""
     import argparse
     
     parser = argparse.ArgumentParser(
-        description='Validador del Sistema FT_ONION',
+        description='Validador del sistema FT_ONION',
         epilog='Para más información, consulta la documentación del proyecto.'
     )
     
@@ -339,13 +342,13 @@ def main() -> int:
     parser.add_argument(
         '-j', '--json',
         action='store_true',
-        help='Salida en JSON'
+        help='Muestra salida en formato JSON'
     )
     
     parser.add_argument(
         '-v', '--verbose',
         action='store_true',
-        help='Salida verbose'
+        help='Muestra salida detallada'
     )
     
     args = parser.parse_args()

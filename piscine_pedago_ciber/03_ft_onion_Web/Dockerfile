@@ -1,11 +1,11 @@
 # ============================================================================
-#  FT_ONION - DOCKERFILE MULTI-STAGE (Orquestado con Python3)
+#  FT_ONION - DOCKERFILE MULTIETAPA (Orquestado con Python3)
 # ============================================================================
-#  Servicio Oculto Tor con Python3 como orquestador
-#  Build optimizado con Debian:bookworm
+#  Servicio oculto Tor con Python3 como orquestador de procesos
+#  Compilación optimizada sobre Debian:bookworm
 # ============================================================================
 
-# Etapa 1: Base con todas las dependencias
+# Etapa 1: imagen base con todas las dependencias del sistema
 FROM debian:bookworm-slim AS base
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -30,56 +30,57 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg \
     && rm -rf /var/lib/apt/lists/*
 
-# Crear directorio de trabajo
+# Crear directorio de trabajo de la aplicación
 WORKDIR /app
 
-# Etapa 2: Build de dependencias Python
+# Etapa 2: compilación de dependencias de Python
 FROM base AS builder
 
 COPY src/requirements.txt .
-RUN pip3 install --no-cache-dir --user --upgrade pip && \
-    pip3 install --no-cache-dir --user -r requirements.txt 2>/dev/null || true
+RUN python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --no-cache-dir --upgrade pip && \
+    /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
 
-# Etapa 3: Final
+# Etapa 3: imagen final de ejecución
 FROM base AS final
 
 LABEL maintainer="42 Student" \
       description="ft_onion - Tor Hidden Service" \
       version="1.0.0"
 
-# Copiar dependencias Python compiladas
-COPY --from=builder /root/.local /root/.local
-ENV PATH=/root/.local/bin:$PATH
+# Copiar entorno virtual de Python compilado desde la etapa de compilación
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH=/opt/venv/bin:$PATH
 
-# Crear usuario no-root para Tor
+# Crear usuario sin privilegios para Tor y la aplicación
 RUN useradd -m -s /bin/bash -d /var/lib/tor tor 2>/dev/null || true && \
     useradd -m -s /bin/bash user 2>/dev/null || true && \
     echo "user:password" | chpasswd && \
     usermod -aG sudo user 2>/dev/null || true
 
-# Crear directorios necesarios
+# Crear directorios requeridos con permisos adecuados
 RUN mkdir -p /var/run/sshd \
     /var/lib/tor/hidden_service \
     /var/www/html \
     /app/logs \
     /app/config
 
-# Copiar archivos de configuración
-COPY src/nginx.conf /etc/nginx/nginx.conf
-COPY src/torrc /etc/tor/torrc
-COPY src/sshd_config /etc/ssh/sshd_config
-COPY src/index.html /var/www/html/index.html
+# Copiar archivos mandatory desde la raíz del repositorio
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY torrc /etc/tor/torrc
+COPY sshd_config /etc/ssh/sshd_config
+COPY index.html /var/www/html/index.html
 
-# Copiar aplicación Python
+# Copiar código de la aplicación FastAPI
 COPY src/app /app/app
 COPY src/*.py /app/
 
-# Script de inicialización
+# Script de entrada para orquestación de servicios
 COPY src/setup.sh /app/setup.sh
 RUN chmod +x /app/setup.sh
 
-# Permisos correctos
-RUN chown -R tor:tor /var/lib/tor/hidden_service \
+# Establecer permisos y propietarios correctos
+RUN chown -R debian-tor:debian-tor /var/lib/tor \
     /etc/tor/torrc && \
     chmod 700 /var/lib/tor/hidden_service && \
     chmod 600 /etc/tor/torrc && \
@@ -87,16 +88,16 @@ RUN chown -R tor:tor /var/lib/tor/hidden_service \
     chmod 755 /app && \
     chmod 644 /var/www/html/index.html
 
-# Puerto SSH
+# Puerto SSH para administración remota
 EXPOSE 4242
 
 # Puertos internos (no expuestos externamente)
 EXPOSE 80 9000
 
-# Verificación de salud
+# Verificación de salud del contenedor
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost/health || exit 1
 
-# Entrypoint: Orquestador Python
+# Punto de entrada: orquestador de procesos en Python
 ENTRYPOINT ["/bin/bash"]
 CMD ["/app/setup.sh"]

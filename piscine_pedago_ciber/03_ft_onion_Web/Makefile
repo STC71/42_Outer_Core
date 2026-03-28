@@ -22,6 +22,7 @@ DOCKER_IMG  := $(PROYECTO):latest
 DOCKER_CONT := $(PROYECTO)_container
 VERSION     := 1.0.0
 PYTHON      := python3
+SSH_HOST_PORT ?= 4242
 
 # DIRECTORIOS
 DIR_SRC     := src
@@ -35,7 +36,7 @@ DIR_LOGS    := logs
 .PHONY: help build up down logs clean fclean re validate test socket \
         docker-build docker-run docker-stop docker-clean docker-logs \
         docker-exec docker-shell validate-nginx validate-tor validate-ssh \
-        onion-address stats info security-audit bench all bonus _setup-perms
+	onion-address stats info security-audit bench all bonus tutorial tutorial_auto _setup-perms
 
 # ============================================================================
 #  TARGET INTERNO: _setup-perms - Asegura permisos de ejecución (oculto)
@@ -59,6 +60,7 @@ help: _setup-perms
 	@echo ""
 	@echo "  $(VERDE)make up$(RESET)              Levanta contenedor del servicio"
 	@echo "                      └─ Inicia Tor, Nginx, SSH, Python"
+	@echo "                      └─ Puerto host SSH configurable: SSH_HOST_PORT=4242"
 	@echo ""
 	@echo "  $(AMARILLO)make down$(RESET)           Detiene todos los servicios"
 	@echo "                      └─ Limpieza ordenada de procesos"
@@ -130,8 +132,20 @@ help: _setup-perms
 	@echo "  $(AMARILLO)make docker-stop$(RESET)   Detiene sin eliminar"
 	@echo "                      └─ Pausa el contenedor"
 	@echo ""
+	@echo "  $(AMARILLO)make tutorial$(RESET)      Tutorial guiado de evaluación"
+	@echo "                      └─ Flujo completo mandatory + defensa"
+	@echo ""
+	@echo "  $(AMARILLO)make tutorial_auto$(RESET) Modo automático del tutorial"
+	@echo "                      └─ Ejecuta: ./tutorial.sh --auto --ssh-port 4243"
+	@echo ""
 	@echo "$(NEGRITA)$(CIAN)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
 	@echo ""
+
+tutorial:
+	@bash ./tutorial.sh
+
+tutorial_auto:
+	@bash ./tutorial.sh --auto --ssh-port 4243
 
 # ============================================================================
 #  OBJECTIVOS PRINCIPALES - DOCKER
@@ -153,7 +167,7 @@ up: build
 	fi
 	docker run -d \
 		--name $(DOCKER_CONT) \
-		-p 4242:4242 \
+		-p $(SSH_HOST_PORT):4242 \
 		-v tor_data:/var/lib/tor \
 		-v $(DOCKER_CONT)_logs:/app/logs \
 		$(DOCKER_IMG)
@@ -175,6 +189,9 @@ down:
 clean: down
 	@echo "$(NEGRITA)$(ROJO)[clean]$(RESET) Eliminando contenedor..."
 	@docker rm -f $(DOCKER_CONT) 2>/dev/null || true
+	@echo "$(NEGRITA)$(ROJO)[clean]$(RESET) Limpiando artefactos Python..."
+	@find . -type d -name '__pycache__' -prune -exec rm -rf {} + 2>/dev/null || true
+	@find . -type f \( -name '*.pyc' -o -name '*.pyo' \) -delete 2>/dev/null || true
 	@echo "$(NEGRITA)$(ROJO)[clean]$(RESET) ✓ Contenedor eliminado"
 	@echo ""
 
@@ -286,9 +303,10 @@ stats:
 	@echo ""
 	@echo "  $(NEGRITA)Archivos principales:$(RESET)"
 	@ls -lh Dockerfile 2>/dev/null | awk '{print "    Dockerfile: " $$5}'
-	@ls -lh src/nginx.conf 2>/dev/null | awk '{print "    Nginx config: " $$5}' || echo "    Nginx config: not found"
-	@ls -lh src/torrc 2>/dev/null | awk '{print "    Tor config: " $$5}' || echo "    Tor config: not found"
-	@ls -lh src/index.html 2>/dev/null | awk '{print "    index.html: " $$5}' || echo "    index.html: not found"
+	@ls -lh nginx.conf 2>/dev/null | awk '{print "    Nginx config: " $$5}' || echo "    Nginx config: not found"
+	@ls -lh torrc 2>/dev/null | awk '{print "    Tor config: " $$5}' || echo "    Tor config: not found"
+	@ls -lh sshd_config 2>/dev/null | awk '{print "    SSH config: " $$5}' || echo "    SSH config: not found"
+	@ls -lh index.html 2>/dev/null | awk '{print "    index.html: " $$5}' || echo "    index.html: not found"
 	@echo ""
 
 info:

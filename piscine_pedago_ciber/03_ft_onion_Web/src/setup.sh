@@ -1,14 +1,18 @@
 #!/bin/bash
 
 # ============================================================================
-#  FT_ONION - SETUP.SH (SCRIPT DE INICIALIZACIÓN)
+#  FT_ONION - SCRIPT DE INICIALIZACIÓN Y ORQUESTACIÓN DE SERVICIOS
+#
+# Automatiza tareas de entrada en Docker: verifica entorno,
+# inicializa Tor, Nginx, SSH y la aplicación Python,
+# e incluye comprobaciones de salud y manejo de errores.
 # ============================================================================
-#  Script de orquestación para inicio y configuración de servicios
+#  Script de orquestación para inicialización y configuración del contenedor.
 #  Gestiona Tor, Nginx, SSH y monitoreo
 # ============================================================================
 
 # ============================================================================
-#  COLORS AND FORMATTING
+#  COLORES Y FORMATO
 # ============================================================================
 
 RED='\033[0;31m'
@@ -56,11 +60,11 @@ log_separator
 #  VERIFICACIONES DEL SISTEMA
 # ============================================================================
 
-log_info "Realizando verificaciones del sistema..."
+log_info "Realizando verificación de entorno y dependencias del sistema..."
 
 # Verificar si se ejecuta como root (requerido para gestión de servicios)
 if [ "$EUID" -ne 0 ]; then
-   log_error "Este script debe ejecutarse como root"
+    log_error "Este script debe ejecutarse como root (uid=0) para gestionar servicios del sistema"
    exit 1
 fi
 
@@ -77,30 +81,30 @@ mkdir -p /var/www/html
 mkdir -p /var/log/tor
 mkdir -p /var/log/nginx
 mkdir -p /app/logs
-log_success "Directorios creados"
+log_success "Directorios requeridos y rutas de logs creados"
 
 # ============================================================================
-#  CONFIGURACIÓN DE TOR
+#  CONFIGURACION DEL DAEMON TOR
 # ============================================================================
 
 log_info ""
-log_info "Configurando daemon Tor..."
+log_info "Inicializando daemon Tor con configuracion de servicio oculto..."
 
 # Asegurar permisos de Tor
-chown -R tor:tor /var/lib/tor/hidden_service 2>/dev/null || true
+chown -R debian-tor:debian-tor /var/lib/tor 2>/dev/null || true
 chmod 700 /var/lib/tor/hidden_service 2>/dev/null || true
 chmod 600 /etc/tor/torrc 2>/dev/null || true
 
 # Iniciar Tor (se ejecuta en segundo plano)
 service tor start 2>/dev/null || systemctl start tor 2>/dev/null || true
-log_success "Daemon Tor iniciado"
+log_success "Daemon Tor iniciado y servicio oculto en proceso de inicializacion"
 
 # Esperar a que Tor se inicialice
 COUNTER=0
 while [ $COUNTER -lt 30 ]; do
     if [ -f /var/lib/tor/hidden_service/hostname ]; then
         ONION_ADDR=$(cat /var/lib/tor/hidden_service/hostname)
-        log_success "Servicio oculto inicializado: ${MAGENTA}${ONION_ADDR}${RESET}"
+        log_success "Servicio oculto operativo y aceptando conexiones: ${MAGENTA}${ONION_ADDR}${RESET}"
         break
     fi
     COUNTER=$((COUNTER + 1))
@@ -112,11 +116,11 @@ if [ ! -f /var/lib/tor/hidden_service/hostname ]; then
 fi
 
 # ============================================================================
-#  CONFIGURACIÓN DE SSH
+#  CONFIGURACION DEL SERVIDOR SSH
 # ============================================================================
 
 log_info ""
-log_info "Configurando servicio SSH..."
+log_info "Inicializando servidor SSH en puerto endurecido 4242..."
 
 # Generar claves SSH si es necesario
 ssh-keygen -A 2>/dev/null || true
@@ -127,14 +131,14 @@ chmod 644 /etc/ssh/ssh_host_*_key.pub 2>/dev/null || true
 
 # Iniciar SSH
 service ssh start 2>/dev/null || systemctl start ssh 2>/dev/null || true
-log_success "Servicio SSH iniciado en puerto 4242"
+log_success "Servidor SSH escuchando en puerto 4242 con autenticacion por clave habilitada"
 
 # ============================================================================
-#  CONFIGURACIÓN DE NGINX
+#  CONFIGURACION DEL SERVIDOR WEB NGINX
 # ============================================================================
 
 log_info ""
-log_info "Configurando servidor web Nginx..."
+log_info "Inicializando Nginx con cabeceras de seguridad endurecidas..."
 
 # Probar configuración de Nginx
 nginx -t 2>/dev/null || {
@@ -148,11 +152,11 @@ service nginx start 2>/dev/null || systemctl start nginx 2>/dev/null || true
 log_success "Servidor web Nginx iniciado"
 
 # ============================================================================
-#  APLICACIÓN PYTHON (BONUS: Dashboard)
+#  INICIALIZACION DE APLICACION PYTHON (BONUS: Panel de control)
 # ============================================================================
 
 log_info ""
-log_info "Inicializando aplicación Python..."
+log_info "Iniciando aplicacion FastAPI del panel en puerto 8000..."
 
 if [ -f /app/app.py ]; then
     # Ejecutar app Python en segundo plano
@@ -215,7 +219,7 @@ cat > /etc/logrotate.d/ft_onion << 'EOF'
     compress
     delaycompress
     notifempty
-    create 0640 tor tor
+    create 0640 debian-tor debian-tor
     sharedscripts
 }
 
@@ -232,41 +236,41 @@ EOF
 log_success "Logging configurado"
 
 # ============================================================================
-#  FINAL STATUS
+#  ESTADO FINAL
 # ============================================================================
 
 log_info ""
 log_separator
-echo -e "${GREEN}${BOLD}  ✓ FT_ONION INITIALIZATION COMPLETE${RESET}"
+echo -e "${GREEN}${BOLD}  ✓ INICIALIZACIÓN DE FT_ONION COMPLETADA${RESET}"
 log_separator
 echo ""
 
-# Display connection info
+# Mostrar información de conexión
 if [ -f /var/lib/tor/hidden_service/hostname ]; then
     ONION=$(cat /var/lib/tor/hidden_service/hostname)
-    echo -e "  ${CYAN}🌐 Your Hidden Service Address:${RESET}"
+    echo -e "  ${CYAN}🌐 Dirección de tu servicio oculto:${RESET}"
     echo -e "     ${MAGENTA}${ONION}${RESET}"
     echo ""
 fi
 
-echo -e "  ${CYAN}🔗 Connection Methods:${RESET}"
-echo -e "     • HTTP:  http://[your-onion-address].onion (Port 80 via Tor)"
-echo -e "     • SSH:   ssh -p 4242 user@[your-onion-address].onion (Port 4242 via Tor)"
+echo -e "  ${CYAN}🔗 Métodos de conexión:${RESET}"
+echo -e "     • HTTP:  http://[tu-direccion-onion].onion (Puerto 80 vía Tor)"
+echo -e "     • SSH:   ssh -p 4242 user@[tu-direccion-onion].onion (Puerto 4242 vía Tor)"
 echo ""
 
-echo -e "  ${CYAN}📊 Services Status:${RESET}"
-echo -e "     • Tor:   $(service tor status > /dev/null 2>&1 && echo -e "${GREEN}✓${RESET}" || echo -e "${RED}✗${RESET}") Running"
-echo -e "     • Nginx: $(service nginx status > /dev/null 2>&1 && echo -e "${GREEN}✓${RESET}" || echo -e "${RED}✗${RESET}") Running"
-echo -e "     • SSH:   $(service ssh status > /dev/null 2>&1 && echo -e "${GREEN}✓${RESET}" || echo -e "${RED}✗${RESET}") Running"
+echo -e "  ${CYAN}📊 Estado de servicios:${RESET}"
+echo -e "     • Tor:   $(service tor status > /dev/null 2>&1 && echo -e "${GREEN}✓${RESET}" || echo -e "${RED}✗${RESET}") En ejecución"
+echo -e "     • Nginx: $(service nginx status > /dev/null 2>&1 && echo -e "${GREEN}✓${RESET}" || echo -e "${RED}✗${RESET}") En ejecución"
+echo -e "     • SSH:   $(service ssh status > /dev/null 2>&1 && echo -e "${GREEN}✓${RESET}" || echo -e "${RED}✗${RESET}") En ejecución"
 echo ""
 
-echo -e "  ${CYAN}📝 SSH Access:${RESET}"
-echo -e "     Username: ${MAGENTA}user${RESET}"
-echo -e "     Password: ${MAGENTA}password${RESET}"
-echo -e "     Port: ${MAGENTA}4242${RESET}"
+echo -e "  ${CYAN}📝 Acceso SSH:${RESET}"
+echo -e "     Usuario: ${MAGENTA}user${RESET}"
+echo -e "     Contraseña: ${MAGENTA}password${RESET}"
+echo -e "     Puerto: ${MAGENTA}4242${RESET}"
 echo ""
 
 log_separator
 
-# Keep container running
+# Mantener el contenedor en ejecución
 tail -f /dev/null

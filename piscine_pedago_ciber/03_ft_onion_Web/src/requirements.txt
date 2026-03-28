@@ -15,7 +15,7 @@ aiofiles==23.2.1
 
 # Monitoring & Health Checks
 psutil==5.9.6
-py-healthcheck==3.23.0
+py-healthcheck==1.10.1
 
 # Database (Optional but recommended)
 sqlalchemy==2.0.23
