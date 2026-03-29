@@ -42,6 +42,10 @@
 - 🎁 **Automatización Makefile** (60+ targets)
 - 🎁 **Módulo de validación** (diagnostics automático)
 
+### 🆕 Documentación extendida
+- Para facilitar la evaluación del proyecto: `00_SRC.md`, `01_WEB.md`, `02_TOR.md`, `03_SSH.md`, `04_SSH_Hardening.md`, `05_Frontend_master.md`.
+- Nota sobre duplicados: hay copias de `index.html`, `nginx.conf`, `sshd_config` y `torrc` tanto en la raíz de `03_ft_onion_Web` como en `src/`. Actualmente el `Dockerfile` copia desde la raíz durante el build; ha sido recomendable mantener `src/` como fuente de desarrollo y sincronizar o actualizar el `Dockerfile` si quieres que `src/` sea la fuente canónica.
+
 ### Estadísticas
 
 ```
