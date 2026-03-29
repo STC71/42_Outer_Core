@@ -72,7 +72,7 @@ COPY sshd_config /etc/ssh/sshd_config
 COPY index.html /var/www/html/index.html
 
 # Copiar código de la aplicación FastAPI
-COPY src/app /app/app
+# COPY src/app /app/app
 COPY src/*.py /app/
 
 # Script de entrada para orquestación de servicios

@@ -49,11 +49,13 @@ ClientAliveInterval 300
 ClientAliveCountMax 3
 
 # Número de intentos de autenticación permitidos
-MaxAuthTries 6
+MaxAuthTries 3
 MaxSessions 4
 
 # Tiempo de espera para autenticación
-LoginGraceTime 120
+LoginGraceTime 20
+# Validación de permisos estricta (bonus)
+StrictModes yes
 
 # ============================================================================
 #  ENDURECIMIENTO DE SEGURIDAD
