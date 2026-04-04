@@ -1,0 +1,166 @@
+3/28/26, 5:15 PM
+
+
+
+Intra Projects Cybersecurity - Inquisitor - Network Edit
+
+ (https://profile.intra.42.fr/searches)
+
+sternero
+
+(https://profile.intra.42.fr)
+
+SCALE FOR PROJECT CYBERSECURITY
+INQUISITOR - NETWORK
+(/PROJECTS/CYBERSECURITY-INQUISITO
+NETWORK)
+You should evaluate 1 student in this team
+
+
+Git repository
+
+git@vogsphere.42urduliz.com:vogsphere/intra-uuid-3bc33ed5-fa5c-
+
+Introduction
+Please respect the following indications:
+- Be polite, courteous, respectful and constructive during the process
+evaluation. The well-being of the community depends on it.
+- Identifies with the person or group evaluated the possible failures of the work presented. Take the
+and debate
+the problems you have identified.
+- You must understand that not everyone understands the statements of the same
+way, which means that your vision of the project or what it
+requests may vary. Always keep an open mind and evaluate the way
+as sincere as possible. The proper functioning of pedagogy is based on
+a correct evaluation.
+
+Guidelines
+- Do not evaluate more than what is listed in the cloned git repository of the
+student or group.
+- Make sure that the git repository belongs to the right project,
+and that it has run
+"git clone" on an empty repository.
+- Make sure that no aliases allow any form of cheating and that will correct
+he official delivery.
+- In order to avoid surprises, verify with the evaluated the
+any scripts used to facilitate the evaluation.
+- If, as an evaluator, you have not carried out the project you are going to evaluate,
+you must read the statement completely before you begin to evaluate.
+- Use the available flags to indicate an empty delivery, a
+program that does not work, a cheating problem...
+In these situations, the evaluation will be considered finished and the mark will be
+0, or -42 if you suspect of cheating. However, except in cases of cheating,
+we encourage you to continue exchanging opinions about the work
+delivered, even not finished, to identify the problems that have
+led to failure and avoid repeating them in the future.
+- Throughout the entire evaluation, no segfault or
+no program stop (unexpected, premature or uncontrolled)
+In those cases, the final grade will be 0. Use the corresponding flag.
+You should never have to edit any files except the
+configuration, if any. In case you want to modify
+a file, you must explicitly explain why you need to edit it and
+agree with the evaluated student before touching any
+thing.
+
+Attachments
+ subject.pdf (https://cdn.intra.42.fr/pdf/pdf/159621/en.subject.pdf)
+Mandatory part
+https://projects.intra.42.fr/scale_teams/9262695/edit
+
+1/3
+
+3/28/26, 5:15 PM
+
+Intra Projects Cybersecurity - Inquisitor - Network Edit
+ARP Poisoning
+With the help of the person evaluating you should check that the program
+is working properly. You must check that:
+It performs the poisoning in both directions (full duplex).
+Traffic redirection is enabled.
+When stopping the attack, it restores the ARP tables.
+All exceptions are controlled.
+To help you, the evaluator has set up tests that simplify this step.
+You can use anything you like to check the program.
+Attention it is asked only to manage an IPv4.
+If there is an error, you must stop the evaluation.
+
+ Yes
+
+ No
+
+Content sniffing
+With the help of the evaluator you have to check that the program allows to sniff the traffic on port 2
+It detects the traffic on port 21.
+It detects the files that are being uploaded or downloaded from FTP..
+All the exceptions are controlled. To help you, the evaluator has set up tests that simplify this
+you use a basic FTP server. We do not require certificate management and all encrypted traf
+If there is an error, you must stop the evaluation.
+
+ Yes
+
+ No
+
+Bonus part
+Evaluate the bonus part if, and only if, the mandatory part has been entirely and perfectly done, and
+management handles unexpected or bad usage. In case all the mandatory points were not passed
+defense, bonus points must be totally ignored.
+Verbose
+Check that the verbose (-v) option exists and works correctly in this program.
+With the help of the person being evaluated you should verify that the program
+is retrieving FTP traffic in real time.
+You should see the connection to the server as well as the login and password in clear text.
+You should also see the commands used by the client on the server to navigate in the folders.
+Make sure you use a basic FTP server. We do not require certificate
+management and all encrypted traffic management.
+
+ Yes
+
+ No
+
+Ratings
+Don’t forget to check the flag corresponding to the defense
+
+ Ok
+Empty work
+
+W Invalid compilation
+
+ Cheat
+
+d Crash
+
+ Incom
+
+ Concerning situation
+
+Conclusion
+Leave a comment on this evaluation ( 2048 chars max )
+
+Finish evaluation
+
+https://projects.intra.42.fr/scale_teams/9262695/edit
+
+2/3
+
+3/28/26, 5:15 PM
+API General Terms of Use
+(https://profile.intra.42.fr/legal/terms/33)
+
+Intra Projects Cybersecurity - Inquisitor - Network Edit
+Declaration on the use of cookies
+(https://profile.intra.42.fr/legal/terms/2)
+
+https://projects.intra.42.fr/scale_teams/9262695/edit
+
+Privacy policy
+(https://profile.intra.42.fr/legal/terms/5)
+
+General term of use of the site
+(https://profile.intra.42.fr/legal/terms/6)
+
+Rules of pro
+(https://profile.intra.42
+
+3/3
+
+
