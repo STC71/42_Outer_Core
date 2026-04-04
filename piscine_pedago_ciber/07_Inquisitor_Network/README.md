@@ -5,23 +5,23 @@
 **Protocolo Objetivo**: Interceptación de Tráfico FTP
 
 ## 📋 Tabla de Contenidos
-- [Descripción General](#descripción-general)
-- [¿Qué es el Envenenamiento ARP?](#qué-es-el-envenenamiento-arp)
 - [Objetivo](#objetivo)
-- [Requisitos Técnicos](#requisitos-técnicos)
-- [Especificaciones del Programa](#especificaciones-del-programa)
-- [Guía de Implementación](#guía-de-implementación)
-- [Pruebas](#pruebas)
-- [Funcionalidades Bonus](#funcionalidades-bonus)
-- [Consideraciones Legales y Éticas](#consideraciones-legales-y-éticas)
+- [¿Qué es el Envenenamiento ARP?](#arp)
+- [Especificaciones del Programa](#especificaciones)
+- [Requisitos Técnicos](#requisitos)
+- [Funcionalidades Obligatorias](#funcionalidades)
+- [Configuración del Entorno y Uso](#configuracion)
+- [Novedades: Tutorial e Interfaz](#novedades)
 
 ---
 
+<a name="objetivo"></a>
 ## 🎯 Objetivo
 
 Implementar un programa que realice **Envenenamiento ARP** (también conocido como ARP Spoofing) para interceptar y analizar tráfico de red, específicamente conexiones FTP, demostrando vulnerabilidades a nivel de red en el modelo OSI.
 
 ---
+<a name="arp"></a>
 
 ## 📖 ¿Qué es el Envenenamiento ARP?
 
@@ -56,6 +56,7 @@ Capa 1: Física
 ```
 
 ---
+<a name="especificaciones"></a>
 
 ## 💻 Especificaciones del Programa
 
@@ -84,6 +85,7 @@ Cualquier lenguaje que implemente **libpcap**:
 
 ---
 
+<a name="requisitos"></a>
 ## ⚙️ Requisitos Técnicos
 
 ### Parámetros de Línea de Comandos
@@ -100,10 +102,11 @@ Cualquier lenguaje que implemente **libpcap**:
 | `IP-target` | Dirección IP objetivo | `192.168.1.100` |
 | `MAC-target` | Dirección MAC objetivo | `11:22:33:44:55:66` |
 
-**Parámetro opcional adicional (bonus):**
+**Parámetro opcional adicional (bonus cumplido):**
 ```bash
 ./inquisitor <IP-src> <MAC-src> <IP-target> <MAC-target> -v
 ```
+El modo verboso intercepta e imprime **toda la capa de comandos** subyacentes del protocolo FTP, incluidas las sentencias `USER` y `PASS` en texto plano exponiendo así las contraseñas utilizadas por el cliente víctima.
 
 ### Requisitos de Protocolo
 - ✅ **Solo IPv4** (no se requiere soporte IPv6)
@@ -118,6 +121,7 @@ Cualquier lenguaje que implemente **libpcap**:
 
 ---
 
+<a name="funcionalidades"></a>
 ## 🛠️ Funcionalidades Obligatorias
 
 ### 1. Envenenamiento ARP Bidireccional (Full Duplex)
@@ -171,69 +175,49 @@ Monitorizar y mostrar comunicación FTP en tiempo real:
 - Manejo elegante de interrupciones de red
 
 ---
+<a name="configuracion"></a>
 
-## 🐳 Configuración del Entorno
+## 🐳 Configuración del Entorno y Uso
 
 ### Despliegue Basado en Contenedor
 
-Si usas contenedores, incluye:
+Se han creado archivos de entorno completamente aislados en forma de simulación mediante Docker Compose:
 
-#### Dockerfile
-```dockerfile
-FROM python:3.9-slim
+*   **`attacker`**: Contenedor equipado con dependencias de red, iptables, e iproute instaladas, usado para ejecutar `inquisitor` gracias al parámetro `NET_ADMIN`.
+*   **`ftp_server`**: Un contenedor servidor FTP clásico para pruebas (`fauria/vsftpd`). 
+*   **`ftp_client`**: Un cliente Linux Debian (versión `bullseye-slim`) más robusto para enviar peticiones usando herramientas nativas que el atacante (tú) vas interceptar.
 
-RUN apt-get update && apt-get install -y \
-    libpcap-dev \
-    tcpdump \
-    net-tools \
-    iputils-ping
+### Pruebas (Cómo Empezar)
 
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+1. En el directorio principal, ejecuta `make` o `make up` para construir la red virtual y levantar el servidor y cliente de golpe.
+2. Inicia un shell interactivo dentro del contenedor atacante:  
+   `docker exec -it inquisitor_attacker bash`
+3. Ejecuta el script dentro del contenedor contra las IP generadas en tu docker network:  
+   `./inquisitor 10.0.0.30 <client_mac> 10.0.0.20 <server_mac> -v`  
+   *(puedes obtener la MAC de tu cliente y servidor con el comando `arp -a` tras hacerles un ping)*.
+4. En otra terminal, accede como cliente FTP y realiza peticiones; verás en la terminal atacante las trazas interceptadas limpiamente.
 
-COPY inquisitor.py .
-CMD ["python3", "inquisitor.py"]
-```
-
-#### docker-compose.yml
-```yaml
-version: '3'
-services:
-  inquisitor:
-    build: .
-    network_mode: host
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
-    privileged: true
-    volumes:
-      - ./:/app
-```
-
-#### Makefile (Requerido)
-```makefile
-all: build run
-
-build:
-	docker-compose build
-
-run:
-	docker-compose up
-
-clean:
-	docker-compose down
-
-test:
-	@echo "Ejecutando suite de pruebas FTP..."
-	./test_ftp.sh
-
-.PHONY: all build run clean test
-```
-
-**Requisito:** El Makefile debe iniciar el entorno completo **sin intervención del usuario**.
+Para la limpieza de contenedores remanentes:
+`make fclean` o `make down`
 
 ---
+
+<a name="novedades"></a>
+## ✨ Novedades: Tutorial Interactivo y Documentación Accesible
+
+En nuestras últimas implementaciones, hemos dotado al proyecto de un gran salto en accesibilidad y facilidad de corrección:
+
+1. **📜 Código Totalmente Comentado (en Español)**:
+   Todos los ficheros fuente (`inquisitor.py`, `Dockerfile`, `docker-compose.yml`, `Makefile`, etc.) han sido minuciosamente comentados línea a línea o por bloques lógicos. Explicando en profundidad conceptos como el _IP Forwarding_, por qué es necesario enviar paquetes falsos en bucle, y el uso de filtros pasivos en el puerto 21 para atrapar credenciales FTP. Ideal para que cualquier persona, independientemente de sus conocimientos previos en redes, logre comprender la topología del ataque y el protocolo subyacente.
+
+2. **🎓 Tutorial Interactivo Automatizado**:
+   Se ha añadido el script `tutorial.sh` al proyecto. Este script sirve como guía interactiva paso a paso y evalúa el proyecto frente a todos los mandatories de forma automática:
+   - Extrae fragmentos de tu código dinámicamente (`grep`) justificando explícitamente en qué líneas cumples los requerimientos de validación de la norma del subject.
+   - Te guía con colores y directrices para dividirte en terminales y orquestar a la víctima y al atacante simultáneamente.
+   - Demuestra de forma innegable el cumplimiento tanto de la parte **Mandatory** (intercepción transparente e imprimir archivos subidos o bajados) como de la parte **Bonus** (impresión del tráfico crudo y contraseñas mediante el flag `-v`).
+   
+   > **Para iniciarlo simplemente ejecuta:**  
+   > `./tutorial.sh` en tu terminal base.
 
 ## 📝 Guía de Implementación
 
