@@ -110,6 +110,50 @@ Implementar ataque de envenenamiento ARP para interceptar y analizar tráfico de
 
 ---
 
+### 🛡️ [06 - Iron Dome (Detector de Ransomware)](./06_Iron_Dome_Malware_Optional/)
+
+**Tipo**: Ciberseguridad de Sistemas y Malware (Opcional/Bonus)  
+**Dificultad**: ⭐⭐⭐⭐  
+**Habilidades**: Python, Monitorización de OS, Heurística de Entropía, Hilos
+
+Desarrollar un daemon que proteja el sistema contra comportamiento tipo Ransomware:
+- Monitoreo en background de abusos en I/O de disco
+- Medición de Entropía de Shannon para detectar cifrados en caliente
+- Reconocimiento de extensiones mágicas (`.wncry`, etc.)
+- Control exhaustivo de memoria (Bonus RAM < 100MB)
+
+**Aprendizaje Clave**:
+- Creación de demonios (`daemons`)
+- Interceptación y gestión de señales UNIX
+- Análisis Heurístico estadístico
+- Control de recursos del sistema
+
+[📖 Documentación Completa](./06_Iron_Dome_Malware_Optional/README.md)
+
+---
+
+### 💉 [08 - Vaccine (Escáner SQLi)](./08_Vaccine_Web/)
+
+**Tipo**: Seguridad Web Ofensiva (Pentesting)  
+**Dificultad**: ⭐⭐⭐⭐  
+**Habilidades**: Python, HTTP, SQL Injection, Data Dump
+
+Desarrollar una herramienta de auditoría automatizada que detecte y explote inyecciones SQL:
+- Múltiples técnicas (Error-Based, Boolean, Union, Time-Based)
+- Extracción de información (`schemas`, `tables`, `columns`)
+- Evasión mediante alteración de User-Agent
+- Generación de informes históricos
+
+**Aprendizaje Clave**:
+- Vectores de ataque SQLi
+- Motores de bases de datos variados (SQLite, MySQL, Postgres, Oracle)
+- Automatización de scraping de formularios
+- Explotación y mitigación en aplicaciones reales
+
+[📖 Documentación Completa](./08_Vaccine_Web/README.md)
+
+---
+
 ## 🛠️ Habilidades Desarrolladas
 
 ### Habilidades Técnicas
