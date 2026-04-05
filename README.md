@@ -227,11 +227,21 @@ Colección de 4 proyectos de la Piscina de Ciberseguridad de 42 School, cubriend
 - Interceptación de tráfico FTP
 - **Skills**: Network security, libpcap, Packet sniffing
 
+#### 🛡️ **06 - Iron Dome** (Ransomware Detector)
+- Daemon multi-hilo en background (>125%)
+- Detección de abuso I/O y Entropía de Shannon
+- **Skills**: OS Monitoring, System Signals, Heuristics
+
+#### 💉 **08 - Vaccine** (SQLi Scanner)
+- Web Scanner y Data Dumper con múltiples exploits (>125%)
+- Extracción dinámica Error-based, Union, Time-based
+- **Skills**: Web pentesting, SQL Injection vulnerabilities
+
 **Stack Tecnológico:** Python, C/C++, Shell, Tor, Nginx, Docker, libpcap
 
 **Documentación:** 📚 Cada proyecto con README detallado + [README General](./piscine_pedago_ciber/README.md)
 
-**Estado:** 🚧 En Desarrollo
+**Estado:** ✅ Completado (Todos los proyectos con sus Bonus integrados)
 
 [📂 Ver Proyectos](./piscine_pedago_ciber/)
 
