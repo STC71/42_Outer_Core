@@ -13,3 +13,6 @@
 [submodule "artificial_intelligence"]
 	path = artificial_intelligence
 	url = git@github.com:STC71/42_artificial_intelligence.git
+[submodule "unix_kernel"]
+	path = unix_kernel
+	url = git@github.com:STC71/42_unix_kernel.git
