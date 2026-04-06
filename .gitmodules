@@ -1,15 +1,15 @@
 [submodule "piscine_pedago_ciber"]
 	path = piscine_pedago_ciber
-	url = git@github.com:STC71/42_piscine_pedago_ciber.git
+	url = https://github.com/STC71/42_piscine_pedago_ciber.git
 [submodule "artificial_intelligence"]
 	path = artificial_intelligence
-	url = git@github.com:STC71/42_artificial_intelligence.git
+	url = https://github.com/STC71/42_artificial_intelligence.git
 [submodule "unix_kernel"]
 	path = unix_kernel
-	url = git@github.com:STC71/42_unix_kernel.git
+	url = https://github.com/STC71/42_unix_kernel.git
 [submodule "virus"]
 	path = virus
-	url = git@github.com:STC71/42_virus.git
+	url = https://github.com/STC71/42_virus.git
 [submodule "web_database"]
 	path = web_database
-	url = git@github.com:STC71/42_web_database.git
+	url = https://github.com/STC71/42_web_database.git
