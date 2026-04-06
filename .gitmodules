@@ -13,3 +13,6 @@
 [submodule "piscine_pedago_ciber"]
 	path = piscine_pedago_ciber
 	url = git@github.com:STC71/42_piscine_pedago_ciber.git
+[submodule "artificial_intelligence"]
+	path = artificial_intelligence
+	url = git@github.com:STC71/42_artificial_intelligence.git
