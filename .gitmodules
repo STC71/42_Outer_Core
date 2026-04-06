@@ -1,9 +1,3 @@
-[submodule "web_database/camagru"]
-	path = web_database/camagru
-	url = git@github.com:STC71/42_camagru.git
-[submodule "web_database/darkly"]
-	path = web_database/darkly
-	url = git@github.com:STC71/42_darkly.git
 [submodule "piscine_pedago_ciber"]
 	path = piscine_pedago_ciber
 	url = git@github.com:STC71/42_piscine_pedago_ciber.git
