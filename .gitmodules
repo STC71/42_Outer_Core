@@ -10,3 +10,6 @@
 [submodule "virus"]
 	path = virus
 	url = git@github.com:STC71/42_virus.git
+[submodule "web_database"]
+	path = web_database
+	url = git@github.com:STC71/42_web_database.git
