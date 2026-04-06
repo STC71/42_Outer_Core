@@ -13,3 +13,6 @@
 [submodule "unix_kernel"]
 	path = unix_kernel
 	url = git@github.com:STC71/42_unix_kernel.git
+[submodule "virus"]
+	path = virus
+	url = git@github.com:STC71/42_virus.git
