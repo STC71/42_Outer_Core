@@ -272,6 +272,29 @@ Proyecto introductorio al teorema de recursión de Kleene mediante la implementa
 
 </details>
 
+<details open>
+<summary><b>Woody Woodpacker</b> - Inyección de Memoria y Criptografía</summary>
+
+Desarrollo de un packer/crypter polimórfico que inyecta cargas asíncronas en formato ELF 64-bits utilizando rutinas en lenguaje ensamblador bajo cifrado estático RC4.
+
+**Características:**
+- 💉 **Payloads ASM** - Inyección in-memory de virus benignos.
+- 🔐 **RC4 Simétrico** - Criptografía profunda desde cero (KSA + PRGA).
+- 🧩 **Parser ELF** - Deconstrucción estática de las tripas de un binario en Linux.
+- 🧪 **Eval Engine** - Framework exhaustivo de control de límites con 20+ tests en sed/awk.
+- 🧠 Documentación teórica absoluta en español de los módulos.
+
+**Stack Tecnológico:** C, Assembly x86-64, Bash
+
+**Conceptos clave:** Packer, Crypter, Code Caves, Syscalls, mmap, PIE obfuscation.
+
+**Estado:** ✅ Completado
+
+[📂 Ver Proyecto](./virus/woody-woodpacker/)
+
+</details>
+
+
 <div align="right">
 
 [⬆️ Volver arriba](#-42-outer-core)
@@ -462,6 +485,7 @@ cd [categoría]/[nombre_proyecto]
 | Unix | libasm | Assembly/C | ✅ Completado | 100% |
 | Web | Camagru | PHP/JS/SQL | ✅ Completado | 100% |
 | Virus | Dr. Quine | C/ASM/Python | ✅ Completado | 100% |
+| Virus | Woody Woodpacker | C/Assembly | ✅ Completado | 100% |
 
 <div align="right">
 
