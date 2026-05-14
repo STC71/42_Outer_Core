@@ -13,3 +13,6 @@
 [submodule "web_database"]
 	path = web_database
 	url = https://github.com/STC71/42_web_database.git
+[submodule "cyber_security"]
+	path = cyber_security
+	url = https://github.com/STC71/42_cyber_security.git
