@@ -200,7 +200,27 @@ Proyecto de introducción a ciberseguridad web y OWASP. Audita un sitio web vuln
 
 </details>
 
-### 🔐 Piscine Cybersecurity
+### 🔐 Ciberseguridad
+
+<details open>
+<summary><b>Snow Crash</b> - Introducción a Ciberseguridad</summary>
+
+Proyecto estilo Capture The Flag (CTF) para descubrir debilidades comunes del sistema desde la base, desarrollando pensamiento lógico para explotar vulnerabilidades sin margen de error.
+
+**Características:**
+- 🛡️ **15 niveles incrementales** - Desde level00 hasta level14
+- 🔑 **Escalada de privilegios** - Técnicas de exploiting en entornos Linux locales
+- 💉 **Command Injection** - Explotación de binarios y scripts vulnerables
+- 🧠 **Pensamiento analítico** - Trabajo de recolección de *flags*
+- 🔐 **Permisos de Archivos** - Trabajo con ejecutables aislados y comprensión de roles de usuario
+
+**Stack Tecnológico:** Linux, Bash, C, Exploiting (Entorno: Máquina Virtual Linux ISO)
+
+**Estado:** ✅ Completado
+
+[📂 Ver Proyecto](./cyber_security/snow-crash/)
+
+</details>
 
 <details open>
 <summary><b>Piscine Pedagógico Ciber</b> - Colección de Proyectos de Ciberseguridad</summary>
