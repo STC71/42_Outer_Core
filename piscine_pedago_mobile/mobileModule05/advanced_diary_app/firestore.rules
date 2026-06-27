@@ -1,0 +1,17 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Reglas para la colección 'diaries'
+    match /diaries/{diaryId} {
+      // Un usuario solo puede leer sus propias entradas
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+
+      // Un usuario solo puede crear entradas para sí mismo
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+
+      // Un usuario solo puede actualizar o borrar sus propias entradas
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+  }
+}

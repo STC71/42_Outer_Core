@@ -4,7 +4,7 @@
 
 ![42 School](https://img.shields.io/badge/42-School-000000?style=for-the-badge&logo=42&logoColor=white)
 ![Status](https://img.shields.io/badge/Estado-Completado-green?style=for-the-badge)
-![Projects](https://img.shields.io/badge/Proyectos-11-blue?style=for-the-badge)
+![Projects](https://img.shields.io/badge/Proyectos-12-blue?style=for-the-badge)
 
 **Colección de proyectos avanzados del currículo Outer Core de 42 School**
 
@@ -21,6 +21,7 @@ Bienvenido a **42 Outer Core**, una colección curada de proyectos avanzados des
 - 🤖 **Inteligencia Artificial**: Machine Learning, Deep Learning, Data Science
 - 🐧 **Unix Kernel**: Assembly, sistemas de bajo nivel
 - 🌐 **Web & Database**: Full-stack development, arquitectura web
+- 📱 **Mobile Development**: Cross-platform apps, Flutter, Dart, Firebase
 - 🔐 **Cybersecurity**: Web security, network security, cryptography, anonymity
 - 🦠 **Virus & Security**: Auto-replicación, metaprogramación
 
@@ -200,6 +201,30 @@ Proyecto de introducción a ciberseguridad web y OWASP. Audita un sitio web vuln
 
 </details>
 
+### 📱 Desarrollo Móvil
+
+<details open>
+<summary><b>Piscine Pedago Mobile</b> - Desarrollo Cross-platform con Flutter</summary>
+
+Un viaje intensivo de aprendizaje desde los cimientos de la programación móvil hasta la creación de aplicaciones robustas, conectadas y profesionales utilizando el ecosistema de Flutter y Dart.
+
+**Características:**
+- 🧱 **Módulo 00-01**: Cimientos, árboles de widgets y navegación avanzada.
+- 📡 **Módulo 02-03**: Conectividad API (Open-Meteo), geolocalización real y visualización de datos con gráficos dinámicos.
+- ☁️ **Módulo 04-05**: Ecosistema Firebase (Auth & Firestore), persistencia en la nube y UX/UI avanzada con calendarios interactivos.
+- 📱 **Apps Desarrolladas**: Calculadora, Weather App y Advanced Diary App.
+- ⚡ **Cross-platform**: Desarrollo único para Android e iOS.
+
+**Stack Tecnológico:** Flutter, Dart, Firebase (Auth, Firestore, Storage), Google Sign-In
+
+**Documentación:** 📚 [README General](./piscine_pedago_mobile/README.md) + [FLUTTER.md](./piscine_pedago_mobile/FLUTTER.md) con teoría completa y [CONFIG.md](./piscine_pedago_mobile/CONFIG.md) para entorno.
+
+**Estado:** ✅ Completado
+
+[📂 Ver Proyecto](./piscine_pedago_mobile/)
+
+</details>
+
 ### 🔐 Ciberseguridad
 
 <details open>
@@ -331,6 +356,7 @@ Desarrollo de un packer/crypter polimórfico que inyecta cargas asíncronas en f
 ![C](https://img.shields.io/badge/C-A8B9CC?style=for-the-badge&logo=c&logoColor=black)
 ![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
 
 ### Herramientas & Frameworks
 ![NumPy](https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=numpy&logoColor=white)
@@ -340,6 +366,8 @@ Desarrollo de un packer/crypter polimórfico que inyecta cargas asíncronas en f
 ![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![Make](https://img.shields.io/badge/Make-6D00CC?style=for-the-badge)
+![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
 
 ### Security & Network
 ![OWASP](https://img.shields.io/badge/OWASP-000000?style=for-the-badge&logo=owasp&logoColor=white)
@@ -425,6 +453,7 @@ git clone https://github.com/STC71/42_dslr.git
 git clone https://github.com/STC71/42_multilayer-perceptron.git
 git clone https://github.com/STC71/42_libasm.git
 git clone https://github.com/STC71/42_camagru.git
+git clone https://github.com/STC71/42_piscine_pedago_mobile.git
 git clone https://github.com/STC71/42_dr-quine.git
 ```
 
@@ -480,6 +509,9 @@ cd [categoría]/[nombre_proyecto]
 - [Configuración Camagru (Docker + Manual)](./web_database/camagru/QUICKSTART.md)
 - [Configuración Darkly (VM + ISO)](./web_database/darkly/README.md)
 
+**Desarrollo Móvil:**
+- [Configuración Piscine Mobile (Flutter/Firebase)](./piscine_pedago_mobile/CONFIG.md)
+
 **Cybersecurity Piscine:**
 - [Arachnida (Web Scraping)](./piscine_pedago_ciber/01_arachnida_Web/README.md)
 - [ft_onion (Tor)](./piscine_pedago_ciber/02_ft_onion_Web/README.md)
@@ -504,6 +536,7 @@ cd [categoría]/[nombre_proyecto]
 | IA | multilayer-perceptron | Python | 🚧 En Desarrollo | 40% |
 | Unix | libasm | Assembly/C | ✅ Completado | 100% |
 | Web | Camagru | PHP/JS/SQL | ✅ Completado | 100% |
+| Móvil | Piscine Mobile | Flutter/Dart | ✅ Completado | 100% |
 | Virus | Dr. Quine | C/ASM/Python | ✅ Completado | 100% |
 | Virus | Woody Woodpacker | C/Assembly | ✅ Completado | 100% |
 
@@ -563,6 +596,12 @@ Cada proyecto incluye documentación exhaustiva:
 - ✅ Documentación de arquitectura MVC, seguridad y buenas prácticas
 - ✅ Ejemplos prácticos sin sobrecarga de código
 
+### Piscine Pedago Mobile
+- ✅ **README general** con el mapa de los 6 módulos
+- ✅ **FLUTTER.md** - Compendio educativo de Flutter y Dart
+- ✅ **CONFIG.md** - Guía de configuración de entorno y Firebase
+- ✅ Documentación específica para cada uno de los 6 módulos
+
 <div align="right">
 
 [⬆️ Volver arriba](#-42-outer-core)
@@ -607,6 +646,6 @@ Este proyecto es parte del currículo de 42 Málaga. Por favor, respeta las pol�
 
 **Hecho con ❤️ en 42 Málaga**
 
-*Última Actualización: Marzo 2026*
+*Última Actualización: Junio 2026*
 
 </div>
