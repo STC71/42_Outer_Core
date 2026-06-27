@@ -16,3 +16,6 @@
 [submodule "cyber_security"]
 	path = cyber_security
 	url = https://github.com/STC71/42_cyber_security.git
+[submodule "piscine_pedago_mobile"]
+	path = piscine_pedago_mobile
+	url = https://github.com/STC71/42_piscine_pedago_mobile.git
