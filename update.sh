@@ -37,6 +37,52 @@ print_banner() {
     printf '%sPublica cada submódulo seleccionado y sus repositorios padre.%s\n' "$DIM" "$RESET"
 }
 
+print_progress() {
+    local current=$1
+    local total=$2
+    local label=$3
+    local width=28
+    local filled=$((current * width / total))
+    local empty=$((width - filled))
+    local bar
+
+    printf -v bar '%*s' "$filled" ''
+    bar=${bar// /#}
+    printf -v empty_bar '%*s' "$empty" ''
+    empty_bar=${empty_bar// /-}
+    printf '%s%sProgreso%s [%s%s%s%s%s] %s/%s · %s\n' \
+        "$BOLD" "$CYAN" "$RESET" "$GREEN" "$bar" "$DIM" "$empty_bar" "$RESET" "$current" "$total" "$label"
+}
+
+run_with_progress() {
+    local label=$1
+    shift
+    local log_file
+    local command_pid
+    local result
+    local spinner='|/-\\'
+    local frame=0
+
+    log_file=$(mktemp) || return 1
+    "$@" >"$log_file" 2>&1 &
+    command_pid=$!
+    while kill -0 "$command_pid" 2>/dev/null; do
+        printf '\r%s%s%s %s%s%s' "$CYAN" "${spinner:frame % 4:1}" "$RESET" "$DIM" "$label" "$RESET"
+        frame=$((frame + 1))
+        sleep 0.1
+    done
+    wait "$command_pid"
+    result=$?
+    if (( result != 0 )); then
+        printf '\r%s❌%s %s\n' "$RED" "$RESET" "$label"
+        cat "$log_file" >&2
+        rm -f "$log_file"
+        return "$result"
+    fi
+    printf '\r%s✅%s %s\n' "$GREEN" "$RESET" "$label"
+    rm -f "$log_file"
+}
+
 usage() {
     printf 'Uso: %s [--dry-run]\n' "$(basename "$0")"
     printf '\n'
@@ -168,6 +214,7 @@ for repo in "${repos[@]}"; do
 done
 print_rule
 TOTAL_REPOS=${#repos[@]}
+print_progress 0 "$TOTAL_REPOS" 'Listo para comenzar'
 
 if (( DRY_RUN )); then
     printf '\n%s%s🧪 Modo simulación%s: no se ejecutarán add, commit ni push.\n' "$YELLOW" "$BOLD" "$RESET"
@@ -193,18 +240,25 @@ for repo_index in "${!repos[@]}"; do
     if (( repo_index > 0 )); then
         child_path=${repos[$((repo_index - 1))]#"$repo"/}
     fi
-    stage_repository "$repo" "$child_path" || fail "no se pudieron preparar los cambios de $repo_name"
+    run_with_progress "Preparando el índice de $repo_name" \
+        stage_repository "$repo" "$child_path" \
+        || fail "no se pudieron preparar los cambios de $repo_name"
 
     if git -C "$repo" diff --cached --quiet; then
         printf '%s│%s %sℹ Sin cambios nuevos; se comprueba el remoto.%s\n' "$BLUE" "$RESET" "$DIM" "$RESET"
     else
         commit_message="Update $repo_name"
-        git -C "$repo" commit -m "$commit_message" || fail "no se pudo crear el commit de $repo_name"
+        run_with_progress "Creando el commit de $repo_name" \
+            git -C "$repo" commit -m "$commit_message" \
+            || fail "no se pudo crear el commit de $repo_name"
     fi
 
     printf '%s│%s %s☁ Publicando en GitHub...%s\n' "$BLUE" "$RESET" "$CYAN" "$RESET"
-    git -C "$repo" push || fail "no se pudo subir $repo_name"
+    run_with_progress "Sincronizando $repo_name con GitHub" \
+        git -C "$repo" push \
+        || fail "no se pudo subir $repo_name"
     printf '%s└─%s %s✅ Publicación completada%s\n' "$BLUE" "$RESET" "$GREEN" "$RESET"
+    print_progress "$repo_number" "$TOTAL_REPOS" "$repo_name completado"
 done
 
 print_rule
