@@ -162,11 +162,12 @@ done
 
 print_banner
 print_rule
-printf '%s%s📦 Cadena de publicación%s %s(se procesará de dentro hacia fuera)%s\n' "$BOLD" "$CYAN" "$RESET" "$DIM" "$RESET"
+printf '%s%s📦 Cadena de publicación%s %s(de dentro hacia fuera)%s\n' "$BOLD" "$CYAN" "$RESET" "$DIM" "$RESET"
 for repo in "${repos[@]}"; do
     printf '  %s▸%s %s%s%s\n' "$GREEN" "$RESET" "$BOLD" "$(basename "$repo")" "$RESET"
 done
 print_rule
+TOTAL_REPOS=${#repos[@]}
 
 if (( DRY_RUN )); then
     printf '\n%s%s🧪 Modo simulación%s: no se ejecutarán add, commit ni push.\n' "$YELLOW" "$BOLD" "$RESET"
@@ -177,16 +178,17 @@ for repo_index in "${!repos[@]}"; do
     repo=${repos[$repo_index]}
     repo_name=$(basename "$repo")
     branch=$(git -C "$repo" symbolic-ref --quiet --short HEAD || true)
+    repo_number=$((repo_index + 1))
 
     [[ -n "$branch" ]] || fail "$repo_name esta en detached HEAD; cambia a una rama antes de continuar"
 
-    if ! confirm "A continuacion se actualizaran, confirmaran y subiran los cambios de '$repo_name' en la rama '$branch'. Continuar?"; then
+    if ! confirm "Publicar '$repo_name' en '$branch'?"; then
         printf '%s⏹ Proceso detenido antes de actualizar %s.%s\n' "$YELLOW" "$repo_name" "$RESET"
         exit 0
     fi
 
-    printf '\n%s%s┌─ %s · rama %s%s\n' "$BLUE" "$BOLD" "$repo_name" "$branch" "$RESET"
-    printf '%s│%s %s🔍 Preparando cambios...%s\n' "$BLUE" "$RESET" "$CYAN" "$RESET"
+    printf '\n%s%s┌─ [%s/%s] %s · %s%s%s%s\n' "$BLUE" "$BOLD" "$repo_number" "$TOTAL_REPOS" "$repo_name" "$BOLD" "$branch" "$RESET" "$BLUE"
+    printf '%s│%s %s🔍 Preparando cambios%s\n' "$BLUE" "$RESET" "$CYAN" "$RESET"
     child_path=''
     if (( repo_index > 0 )); then
         child_path=${repos[$((repo_index - 1))]#"$repo"/}
@@ -194,15 +196,16 @@ for repo_index in "${!repos[@]}"; do
     stage_repository "$repo" "$child_path" || fail "no se pudieron preparar los cambios de $repo_name"
 
     if git -C "$repo" diff --cached --quiet; then
-        printf '%s│%s %sℹ No hay cambios nuevos; se subirá la rama igualmente.%s\n' "$BLUE" "$RESET" "$DIM" "$RESET"
+        printf '%s│%s %sℹ Sin cambios nuevos; se comprueba el remoto.%s\n' "$BLUE" "$RESET" "$DIM" "$RESET"
     else
         commit_message="Update $repo_name"
         git -C "$repo" commit -m "$commit_message" || fail "no se pudo crear el commit de $repo_name"
     fi
 
+    printf '%s│%s %s☁ Publicando en GitHub...%s\n' "$BLUE" "$RESET" "$CYAN" "$RESET"
     git -C "$repo" push || fail "no se pudo subir $repo_name"
-    printf '%s└─%s %s✅ Actualización completada%s\n' "$BLUE" "$RESET" "$GREEN" "$RESET"
+    printf '%s└─%s %s✅ Publicación completada%s\n' "$BLUE" "$RESET" "$GREEN" "$RESET"
 done
 
 print_rule
-printf '%s%s🎉 Todos los repositorios fueron procesados correctamente.%s\n\n' "$GREEN" "$BOLD" "$RESET"
+printf '%s%s🎉 Publicación completada: %s/%s repositorios.%s\n\n' "$GREEN" "$BOLD" "$TOTAL_REPOS" "$TOTAL_REPOS" "$RESET"
