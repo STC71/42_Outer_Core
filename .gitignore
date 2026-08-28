@@ -64,3 +64,10 @@ node_modules/
 bin/
 obj/
 build/
+
+# Datasets over GitHub's per-file limit
+piscine_pedago_data_science/data_science_0_creation_db/subject/customer/data_2022_dec.csv
+piscine_pedago_data_science/data_science_0_creation_db/subject/customer/data_2022_nov.csv
+piscine_pedago_data_science/data_science_0_creation_db/subject/customer/data_2022_oct.csv
+piscine_pedago_data_science/data_science_0_creation_db/subject/customer/data_2023_jan.csv
+piscine_pedago_data_science/data_science_1_data_warehouse/data_2023_feb.csv
