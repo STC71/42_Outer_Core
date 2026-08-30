@@ -39,7 +39,7 @@
 
 <a id="1-objetivo"></a>
 
-En 42 es habitual tener **varios repositorios uno dentro de otro**:
+En **GitHub** es habitual tener **varios repositorios uno dentro de otro** (anidados):
 
 ```text
 42_Outer_Core                          ← 🗂️  portfolio (todo el curso)
@@ -297,7 +297,7 @@ Pregunta clave: *¿Hay un padre Git que me tenga en su `.gitmodules`?*
 
 1. Mira el **padre inmediato**.
 2. Si ese padre es repo **y tiene `origin`** → te registra ahí.
-3. Si el padre es repo **pero no tiene `origin`** (repo local a medias) → **no se queda ahí**. Sube hasta un ancestro con remoto (casi siempre `42_outer_core`) y monta la **cadena completa**.
+3. Si el padre es repo **pero no tiene `origin`** (repo local a medias) → **no se queda ahí**. Sube hasta un ancestro con remoto (en este caso `42_outer_core`) y monta la **cadena completa**.
 
 > ⚠️ `find_ancestor_with_origin` **nunca** elige el propio proyecto actual, aunque ya tenga `origin` en GitHub. Si no, confundiría el cuaderno con el armario.
 
@@ -365,7 +365,8 @@ Tras tu **sí**:
    Update data_science_0_creation_db · 30/08/26 12:51
    ```
    Formato por defecto: `Update <nombre> · DD/MM/AA HH:MM`.  
-   Puedes **aceptarlo** (Enter o `s`), responder `n` y escribir otro, o **escribir directamente** el mensaje personalizado.
+   Puedes **aceptarlo** (Enter o `s`), responder `n` y escribir otro, o **escribir directamente** el mensaje personalizado.  
+   Si personalizas el texto, el script **añade igual** ` · DD/MM/AA HH:MM` al final (p. ej. `feat: tests verdes · 30/08/26 13:50`).
 6. **Push** — Envía la rama a `origin` (crea el seguimiento remoto si hace falta).
 
 ### 5.9 Mapa rápido
@@ -486,6 +487,7 @@ Si ves `160000` y la entrada en `.gitmodules`, está bien.
 | No hace `add` de ignorados | Evita fallos al preparar el índice |
 | Marca de tiempo en commits | Facilita localizar publicaciones (`DD/MM/AA HH:MM`) |
 | Mensaje de commit opcional | Aceptas el por defecto o escribes uno personalizado |
+| Marca de tiempo siempre | También en mensajes personalizados (` · DD/MM/AA HH:MM`) |
 | `gh` en `~/.local/bin` | Sin `sudo` en máquinas del campus |
 | Privado por defecto | Tú eliges si lo haces público |
 | SSH / HTTPS | Intenta respetar el remoto del padre y si tienes clave SSH |
@@ -534,7 +536,8 @@ Ese enlace suele apuntar a un **commit antiguo**. En la rama `main` actual ya no
 
 **¿Qué formato tienen los mensajes de commit?**  
 Por defecto: `Update <nombre_del_repo> · DD/MM/AA HH:MM` (hora local de la máquina).  
-Antes de crear el commit el script te muestra ese mensaje: **Enter** o `s` lo acepta; `n` pide uno nuevo; cualquier otro texto se usa como mensaje.
+Antes de crear el commit el script te muestra ese mensaje: **Enter** o `s` lo acepta; `n` pide uno nuevo; cualquier otro texto se usa como mensaje.  
+En los personalizados también se añade la marca ` · DD/MM/AA HH:MM` al final, para que el historial siga siendo fácil de ordenar en el tiempo.
 
 <div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
@@ -602,7 +605,7 @@ Cada caja de primer nivel en Outer Core es un repo en GitHub; los proyectos dent
 
 Pensado para el flujo del campus (sgoinfre, sin sudo, `gh` local) y para el portfolio [42_Outer_Core](https://github.com/STC71/42_Outer_Core).
 
-> *Automatizar lo repetible para poder centrarse en lo que se aprende.*
+> *Automatizar lo repetible para poder centrarse en lo que se construye.*
 
 ---
 

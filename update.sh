@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Actualizador de repositorios 42 — propuesta revisada
+# Actualizador de repositorios 42 — propuesta revisada el 30/08/2026
 # Publica de dentro hacia fuera una cadena de submódulos Git.
 set -u
 set -o pipefail
@@ -150,7 +150,8 @@ usage() {
     printf '\n'
     printf '%sMensajes de commit:%s\n' "$BOLD" "$RESET"
     printf '  Por defecto: Update <nombre_repo> · DD/MM/AA HH:MM\n'
-    printf '  Antes de cada commit puedes aceptar ese mensaje o escribir uno propio.\n'
+    printf '  Puedes aceptar ese mensaje o escribir uno propio; en mensajes\n'
+    printf '  personalizados también se añade al final · DD/MM/AA HH:MM.\n'
     printf '\n'
     printf '%sRequisitos:%s\n' "$BOLD" "$RESET"
     printf '  git, find; cuenta de GitHub. Si falta gh, puede instalarlo en ~/.local/bin\n'
@@ -183,12 +184,16 @@ confirm() {
 # Muestra el mensaje por defecto; Enter/s lo acepta, n pide otro, cualquier texto lo usa.
 # Los prompts van a stderr: se usa como commit_message=$(prompt_commit_message ...)
 # y si se escribe en stdout el usuario no ve la pregunta (parece un cuelgue).
+# Todo mensaje personalizado recibe al final " · DD/MM/AA HH:MM" para trazabilidad.
 prompt_commit_message() {
     local default_msg=$1
-    local answer
+    local answer stamp
+    stamp=$(date '+%d/%m/%y %H:%M')
 
     printf '\n%s│%s %sMensaje de commit:%s\n' "$BLUE" "$RESET" "$BOLD" "$RESET" >&2
     printf '%s│%s   %s%s%s\n' "$BLUE" "$RESET" "$DIM" "$default_msg" "$RESET" >&2
+    printf '%s│%s   %s(si personalizas, se añadirá · %s)%s\n' \
+        "$BLUE" "$RESET" "$DIM" "$stamp" "$RESET" >&2
     printf '%s%s?%s Usar este mensaje %s[S/n o escribe otro]:%s ' \
         "$YELLOW" "$BOLD" "$RESET" "$DIM" "$RESET" >&2
     IFS= read -r answer || exit 1
@@ -202,11 +207,11 @@ prompt_commit_message() {
             if [[ -z "$answer" ]]; then
                 printf '%s\n' "$default_msg"
             else
-                printf '%s\n' "$answer"
+                printf '%s · %s\n' "$answer" "$stamp"
             fi
             ;;
         *)
-            printf '%s\n' "$answer"
+            printf '%s · %s\n' "$answer" "$stamp"
             ;;
     esac
 }
