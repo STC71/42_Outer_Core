@@ -543,7 +543,7 @@ En los personalizados también se añade la marca ` · DD/MM/AA HH:MM` al final,
 
 ---
 
-## 📁 9. Estructura del portfolio
+## 📁 9. Ejemplo de estructura del portfolio
 
 <a id="9-estructura-del-portfolio"></a>
 
@@ -564,7 +564,7 @@ En los personalizados también se añade la marca ` · DD/MM/AA HH:MM` al final,
 └── web_database/
 ```
 
-Cada caja de primer nivel en Outer Core es un repo en GitHub; los proyectos dentro de una piscine también pueden serlo.
+Cada carpeta de primer nivel en el repo principal es un repo en GitHub; los proyectos dentro de una carpeta también pueden serlo.
 
 ---
 
