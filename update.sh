@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
-
-# Actualizador de repositorios 42 — propuesta revisada el 30/08/2026
+# Actualizador de repositorios 42 — propuesta revisada
 # Publica de dentro hacia fuera una cadena de submódulos Git.
-
 set -u
 set -o pipefail
 
@@ -34,6 +32,7 @@ REPOSITORY_VISIBILITY='private'
 REPOSITORY_VISIBILITY_LABEL='privado'
 CLEANUP_PATHS=()
 LARGE_FILE_LIMIT=$((100 * 1024 * 1024))
+UNTRACK_IGNORED_PENDING=0
 
 cleanup() {
     local path
@@ -484,10 +483,70 @@ handle_large_files() {
             fi
         done
         printf '%s✅ Archivos excluidos mediante %s%s\n' "$GREEN" "$ignore_file" "$RESET"
+        # Para reaplicar git rm --cached tras el reset del staging
+        UNTRACK_IGNORED_PENDING=1
         return 0
     fi
     printf '%s⏹ Publicación cancelada: no se excluyeron los archivos grandes.%s\n' "$RED" "$RESET" >&2
     return 1
+}
+
+# Archivos que siguen en el índice de Git pero ya cubre el .gitignore
+# (p. ej. un PDF versionado antes de añadir *.pdf). Sin esto siguen en GitHub.
+handle_ignored_tracked_files() {
+    local repo=$1
+    local listing relative_file
+    local ignored_tracked=()
+
+    listing=$(mktemp) || return 1
+    git -C "$repo" ls-files -i --exclude-standard -z >"$listing" 2>/dev/null || true
+    while IFS= read -r -d '' relative_file; do
+        [[ -z "$relative_file" ]] && continue
+        ignored_tracked+=("$relative_file")
+    done <"$listing"
+    rm -f "$listing"
+
+    (( ${#ignored_tracked[@]} > 0 )) || return 0
+
+    printf '\n%s⚠ Hay %s archivo(s) aún versionados aunque los cubre el .gitignore:%s\n' \
+        "$YELLOW" "${#ignored_tracked[@]}" "$RESET"
+    for relative_file in "${ignored_tracked[@]}"; do
+        printf '  %s•%s %s\n' "$DIM" "$RESET" "$relative_file"
+    done
+    printf '%s.gitignore no los quita del remoto hasta hacer git rm --cached.%s\n' "$DIM" "$RESET"
+
+    if confirm "Dejar de versionarlos (permanecen en disco) y continuar"; then
+        for relative_file in "${ignored_tracked[@]}"; do
+            git -C "$repo" rm --cached -f -- "$relative_file" >/dev/null 2>&1 \
+                || git -C "$repo" rm --cached -f -- "$relative_file" \
+                || return 1
+        done
+        printf '%s✅ Dejaron de versionarse %s archivo(s); siguen en tu carpeta local.%s\n' \
+            "$GREEN" "${#ignored_tracked[@]}" "$RESET"
+        # Marca global para reaplicar tras el reset del staging
+        UNTRACK_IGNORED_PENDING=1
+        return 0
+    fi
+
+    printf '%sℹ Se mantienen versionados (pueden seguir en GitHub).%s\n' "$DIM" "$RESET"
+    UNTRACK_IGNORED_PENDING=0
+    return 0
+}
+
+# Tras git reset del staging, volver a sacar del índice lo ignorado si el usuario aceptó.
+reapply_untrack_ignored() {
+    local repo=$1
+    local listing relative_file
+
+    (( ${UNTRACK_IGNORED_PENDING:-0} )) || return 0
+
+    listing=$(mktemp) || return 1
+    git -C "$repo" ls-files -i --exclude-standard -z >"$listing" 2>/dev/null || true
+    while IFS= read -r -d '' relative_file; do
+        [[ -z "$relative_file" ]] && continue
+        git -C "$repo" rm --cached -f -- "$relative_file" >/dev/null 2>&1 || true
+    done <"$listing"
+    rm -f "$listing"
 }
 
 ensure_github_cli() {
@@ -579,6 +638,11 @@ stage_repository() {
 
     git -C "$repo" reset -q || return 1
 
+    # Reaplicar git rm --cached de rutas ignoradas tras el reset (si se aceptó antes).
+    if (( is_innermost )); then
+        reapply_untrack_ignored "$repo" || return 1
+    fi
+
     # 1) Añadir lo que existe en disco (find no ve archivos ya borrados).
     listing=$(mktemp) || return 1
     find "$repo" -mindepth 1 -maxdepth 1 -print0 >"$listing"
@@ -588,6 +652,10 @@ stage_repository() {
         abs="$repo/$entry"
 
         if [[ -f "$abs" || -L "$abs" ]]; then
+            # No intentar add de rutas ignoradas (p. ej. en.subject.pdf con *.pdf)
+            if git -C "$repo" check-ignore -q -- "$entry" 2>/dev/null; then
+                continue
+            fi
             git -C "$repo" add -A -- "$entry" || { rm -f "$listing"; return 1; }
             continue
         fi
@@ -1062,6 +1130,8 @@ for repo_index in "${!repos[@]}"; do
     else
         handle_large_files "$repo" \
             || fail "no se pudieron excluir los archivos grandes; publicación cancelada"
+        handle_ignored_tracked_files "$repo" \
+            || fail "no se pudieron gestionar los archivos ignorados aún versionados"
     fi
 
     run_with_progress "Preparando el índice de $repo_name" \
@@ -1071,7 +1141,8 @@ for repo_index in "${!repos[@]}"; do
     if git -C "$repo" diff --cached --quiet; then
         printf '%s│%s %sℹ Sin cambios nuevos; se comprueba el remoto.%s\n' "$BLUE" "$RESET" "$DIM" "$RESET"
     else
-        commit_message="Update $repo_name"
+        # Marca temporal local (DD/MM/AA HH:MM) para localizar publicaciones en el historial
+        commit_message="Update $repo_name · $(date '+%d/%m/%y %H:%M')"
         run_with_progress "Creando el commit de $repo_name" \
             git -C "$repo" commit -m "$commit_message" \
             || fail "no se pudo crear el commit de $repo_name (¿user.name / user.email?)"
