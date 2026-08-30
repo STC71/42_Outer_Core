@@ -334,8 +334,12 @@ Tras tu **sí**:
 2. **Staging selectivo** — No hace un “añadir todo el disco”.  
    - En el hijo: archivos del proyecto; submódulos solo si ya están registrados.  
    - En el padre: la ficha del hijo de la cadena + archivos sueltos de la raíz; **no** mete hermanos ni carpetas ajenas.
-3. **Commit** — Solo si hay cambios (`Update <nombre>`).
-4. **Push** — Envía la rama a `origin` (crea el seguimiento remoto si hace falta).
+3. **Borrados** — Además de lo que existe en disco, el script pregunta a Git qué rutas **ya rastreadas** han desaparecido y las incluye en el commit.  
+   - En el hijo: cualquier archivo versionado que hayas borrado.  
+   - En el padre: borrados en la **raíz** del repo (p. ej. `update_v0.sh`) o bajo el hijo de la cadena.  
+   Así no quedan en GitHub copias viejas que ya eliminaste en local.
+4. **Commit** — Solo si hay cambios (`Update <nombre>`).
+5. **Push** — Envía la rama a `origin` (crea el seguimiento remoto si hace falta).
 
 ### 5.9 Mapa rápido
 
@@ -394,7 +398,14 @@ El script:
 - Carpetas del padre **fuera** de la cadena activa.
 - Historial antiguo (no reescribe commits ni hace rebase automático).
 
-### 6.4 Mensajes que puedes ver
+### 6.4 Borraste archivos en local (p. ej. scripts viejos)
+
+Si eliminas en disco ficheros que **ya estaban versionados** (por ejemplo `update_v0.sh` o `update (1).sh` en la raíz del portfolio) y luego ejecutas el script desde un submódulo de la cadena, el nivel correspondiente **incluye esos borrados** en el commit y el push.
+
+No hace falta un `git rm` manual para ese caso: el staging ya los detecta.  
+*(Los archivos que nunca se llegaron a commitear no están en Git; borrarlos del disco no genera ningún cambio en el remoto.)*
+
+### 6.5 Mensajes que puedes ver
 
 | Mensaje | Qué significa |
 |---------|----------------|
@@ -404,7 +415,7 @@ El script:
 | Sin cambios nuevos… | No había diff; igual se comprueba el remoto |
 | Sigue sin ser un submódulo registrado | Tras intentar crear/registrar, aún falta el padre en `.gitmodules` |
 
-### 6.5 Comprobar que el submódulo quedó bien
+### 6.6 Comprobar que el submódulo quedó bien
 
 Desde el portfolio:
 
@@ -432,11 +443,12 @@ Si ves `160000` y la entrada en `.gitmodules`, está bien.
 | `--dry-run` | Ensayo sin consecuencias |
 | Límite 100 MB | Política de GitHub; mejor avisar antes que fallar a mitad de push |
 | Staging selectivo | El commit del padre no se llena de carpetas ajenas |
+| Borrados versionados | Si quitas un archivo ya rastreado, el commit lo refleja en GitHub |
 | `gh` en `~/.local/bin` | Sin `sudo` en máquinas del campus |
 | Privado por defecto | Tú eliges si lo haces público |
 | SSH / HTTPS | Intenta respetar el remoto del padre y si tienes clave SSH |
 
-El script **no borra tu código**. Los archivos grandes que se ignoran **siguen en tu disco**; solo dejan de versionarse.
+El script **no borra tu código del disco**. Los archivos grandes que se ignoran **siguen en local**; solo dejan de versionarse. Los borrados que *tú* hagas de archivos ya versionados **sí** se propagan al remoto en el siguiente publish.
 
 <div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
@@ -471,6 +483,9 @@ git pull --rebase origin main   # o tu rama
 
 **¿Se suben los CSV enormes del subject?**  
 No, si aceptaste el `.gitignore`. Siguen en local. Para datasets grandes en remoto, valora Git LFS u otro almacenamiento.
+
+**¿Si borro un archivo en local, desaparece también de GitHub?**  
+Sí, si ese archivo **ya estaba versionado** y publicas el nivel del repo donde vivía (directamente o vía la cadena). El script registra el borrado en el commit. Si el archivo nunca se subió, no hay nada que quitar en el remoto.
 
 <div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
@@ -525,7 +540,7 @@ Cada caja de primer nivel en Outer Core es un repo en GitHub; los proyectos dent
 
 ## 👤 Autor
 
-**sternero** — estudiante de 42 Málaga - agosto de 2026 
+**sternero** — estudiante de 42 Málaga  
 
 Pensado para el flujo del campus (sgoinfre, sin sudo, `gh` local) y para el portfolio [42_Outer_Core](https://github.com/STC71/42_Outer_Core).
 
