@@ -16,7 +16,7 @@
 
 ## Descripción
 
-Bienvenido a **42 Outer Core**, una colección curada de proyectos avanzados desarrollados como parte del currículo de 42 School. Este repositorio presenta implementaciones en múltiples dominios:
+Bienvenido a **42 Outer Core**, una colección de proyectos avanzados desarrollados como parte del trabajo en 42 Málaga. Este repositorio presenta implementaciones en múltiples dominios:
 
 - 🤖 **Inteligencia Artificial**: Machine Learning, Deep Learning, Data Science
 - 🐧 **Unix Kernel**: Assembly, sistemas de bajo nivel
