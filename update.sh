@@ -564,7 +564,7 @@ ensure_github_cli() {
 stage_repository() {
     local repo=$1
     local child_path=${2:-}
-    local child_top entry abs listing
+    local child_top entry abs listing deleted del_list
     local is_innermost=0
 
     [[ -z "$child_path" ]] && is_innermost=1
@@ -577,6 +577,7 @@ stage_repository() {
 
     git -C "$repo" reset -q || return 1
 
+    # 1) Añadir lo que existe en disco (find no ve archivos ya borrados).
     listing=$(mktemp) || return 1
     find "$repo" -mindepth 1 -maxdepth 1 -print0 >"$listing"
     while IFS= read -r -d '' entry; do
@@ -606,6 +607,27 @@ stage_repository() {
         fi
     done < "$listing"
     rm -f "$listing"
+
+    # 2) Registrar borrados: archivos/rutas rastreadas que ya no están en disco.
+    #    find no los lista; sin este paso quedan en GitHub (p. ej. update_v0.sh).
+    del_list=$(mktemp) || return 1
+    git -C "$repo" diff --name-only --diff-filter=D -z >"$del_list" 2>/dev/null || true
+    while IFS= read -r -d '' deleted; do
+        [[ -z "$deleted" ]] && continue
+        if (( is_innermost )); then
+            # Proyecto interno: cualquier borrado rastreado cuenta.
+            git -C "$repo" add -u -- "$deleted" || { rm -f "$del_list"; return 1; }
+        else
+            # Padre: solo borrados en la raíz del repo o bajo el hijo de la cadena
+            # (no tocamos hermanos ni otras rutas).
+            if [[ "$deleted" != */* ]]; then
+                git -C "$repo" add -u -- "$deleted" || { rm -f "$del_list"; return 1; }
+            elif [[ -n "$child_top" && ( "$deleted" == "$child_top" || "$deleted" == "$child_top"/* ) ]]; then
+                git -C "$repo" add -u -- "$deleted" || { rm -f "$del_list"; return 1; }
+            fi
+        fi
+    done < "$del_list"
+    rm -f "$del_list"
 }
 
 publish_new_repository() {
