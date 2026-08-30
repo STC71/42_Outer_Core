@@ -12,16 +12,26 @@
 **Publica de forma ordenada una cadena de repositorios Git (submódulos)**  
 *Implementación de sternero · estudiante de 42 Málaga*
 
-[🎯 Objetivo](#1-objetivo) ·
-[🏠 Idea simple](#2-idea-simple) ·
-[🧩 Conceptos](#3-conceptos) ·
-[▶️ Uso](#4-uso) ·
-[⚙️ Cómo funciona](#5-funcionamiento) ·
-[🧭 Casos reales](#6-casos-reales) ·
-[🛡️ Seguridad](#7-seguridad) ·
-[❓ FAQ](#8-faq)
-
 </div>
+
+---
+
+## 📑 Índice
+
+| # | Sección | Contenido |
+|---|---------|-----------|
+| 1 | [🎯 Objetivo](#1-objetivo) | Por qué existe el script |
+| 2 | [🏠 Idea simple](#2-idea-simple) | Cajas rusas y el ascensor |
+| 3 | [🧩 Conceptos](#3-conceptos) | Repo, commit, remoto, submódulo, cadena, `gh` |
+| 4 | [▶️ Uso](#4-uso) | Requisitos, [simulación](#44-simulación-muy-recomendable-la-primera-vez), [publicación](#45-publicación-real) |
+| 5 | [⚙️ Funcionamiento](#5-funcionamiento) | Detección, cadena, [paso a paso por nivel](#58-en-cada-nivel-de-la-lista) |
+| 6 | [🧭 Casos reales](#6-casos-reales) | Tema sin origin, borrados, `.gitignore` vs GitHub |
+| 7 | [🛡️ Seguridad](#7-seguridad) | Confirmaciones, límites, decisiones del script |
+| 8 | [❓ FAQ](#8-faq) | Preguntas frecuentes |
+| 9 | [📁 Estructura del portfolio](#9-estructura-del-portfolio) | Árbol recomendado de carpetas |
+| 10 | [✅ Checklist](#10-checklist-antes-de-publicar) | Antes de publicar |
+| 11 | [🎓 Glosario](#11-glosario) | Términos en corto |
+| 12 | [👤 Autor](#autor) | sternero · 42 Málaga |
 
 ---
 
@@ -29,7 +39,7 @@
 
 <a id="1-objetivo"></a>
 
-En **GitHub** es habitual tener **varios repositorios uno dentro de otro**, como por ejemplo:
+En 42 es habitual tener **varios repositorios uno dentro de otro**:
 
 ```text
 42_Outer_Core                          ← 🗂️  portfolio (todo el curso)
@@ -144,6 +154,8 @@ Varios niveles, cada uno registrado en su padre inmediato:
 
 ### 3.6 Publicar “de dentro hacia fuera”
 
+<a id="36-publicar-de-dentro-hacia-fuera"></a>
+
 Orden obligatorio:
 
 ```text
@@ -168,6 +180,8 @@ Si no está instalada, puede proponer instalarla en `~/.local/bin` **sin sudo**.
 <a id="4-uso"></a>
 
 ### 4.1 Requisitos
+
+<a id="41-requisitos"></a>
 
 | Necesitas | Para qué |
 |-----------|----------|
@@ -197,6 +211,8 @@ chmod +x update.sh
 
 ### 4.4 Simulación (muy recomendable la primera vez)
 
+<a id="44-simulación-muy-recomendable-la-primera-vez"></a>
+
 ```bash
 cd piscine_pedago_data_science/data_science_0_creation_db
 ../../update.sh --dry-run
@@ -205,6 +221,8 @@ cd piscine_pedago_data_science/data_science_0_creation_db
 🧪 **No escribe commits ni hace push.** Solo muestra qué cadena detecta y qué haría.
 
 ### 4.5 Publicación real
+
+<a id="45-publicación-real"></a>
 
 ```bash
 ../../update.sh
@@ -328,6 +346,8 @@ Ejemplo de lo que verás:
 
 ### 5.8 En cada nivel de la lista
 
+<a id="58-en-cada-nivel-de-la-lista"></a>
+
 Tras tu **sí**:
 
 1. **Archivos grandes** (solo en el más interno) — GitHub rechaza archivos **> 100 MB**. Si los hay, los lista y, si aceptas, los mete en `.gitignore` y los saca del índice **sin borrarlos del disco**.
@@ -340,11 +360,12 @@ Tras tu **sí**:
    - En el hijo: cualquier archivo versionado que hayas borrado.  
    - En el padre: borrados en la **raíz** del repo (p. ej. `update_v0.sh`) o bajo el hijo de la cadena.  
    Así no quedan en GitHub copias viejas que ya eliminaste en local.
-5. **Commit** — Solo si hay cambios. Mensaje con marca de tiempo local:
+5. **Commit** — Solo si hay cambios. Propone un mensaje por defecto con marca de tiempo local:
    ```text
    Update data_science_0_creation_db · 30/08/26 12:51
    ```
-   Formato: `Update <nombre> · DD/MM/AA HH:MM`.
+   Formato por defecto: `Update <nombre> · DD/MM/AA HH:MM`.  
+   Puedes **aceptarlo** (Enter o `s`), responder `n` y escribir otro, o **escribir directamente** el mensaje personalizado.
 6. **Push** — Envía la rama a `origin` (crea el seguimiento remoto si hace falta).
 
 ### 5.9 Mapa rápido
@@ -420,7 +441,7 @@ Muy habitual: se subió un PDF (o similar) y **después** se añadió `*.pdf` al
 - Si aceptas, el **nuevo** commit en `main` ya no las incluye.
 - Los commits **antiguos** del historial pueden seguir mostrándolas (es normal: Git no reescribe el pasado). Mira siempre la punta de `main`, no un SHA viejo.
 
-### 6.5 Mensajes que puedes ver
+### 6.6 Mensajes que puedes ver
 
 | Mensaje | Qué significa |
 |---------|----------------|
@@ -464,6 +485,7 @@ Si ves `160000` y la entrada en `.gitmodules`, está bien.
 | Ignorados aún rastreados | Propone sacarlos del índice si el `.gitignore` ya los cubre |
 | No hace `add` de ignorados | Evita fallos al preparar el índice |
 | Marca de tiempo en commits | Facilita localizar publicaciones (`DD/MM/AA HH:MM`) |
+| Mensaje de commit opcional | Aceptas el por defecto o escribes uno personalizado |
 | `gh` en `~/.local/bin` | Sin `sudo` en máquinas del campus |
 | Privado por defecto | Tú eliges si lo haces público |
 | SSH / HTTPS | Intenta respetar el remoto del padre y si tienes clave SSH |
@@ -511,13 +533,16 @@ Sí, si ese archivo **ya estaba versionado** y publicas el nivel del repo donde 
 Ese enlace suele apuntar a un **commit antiguo**. En la rama `main` actual ya no está; en el historial sí puede aparecer. Git no borra el pasado al hacer un commit nuevo.
 
 **¿Qué formato tienen los mensajes de commit?**  
-`Update <nombre_del_repo> · DD/MM/AA HH:MM` (hora local de la máquina donde ejecutas el script).
+Por defecto: `Update <nombre_del_repo> · DD/MM/AA HH:MM` (hora local de la máquina).  
+Antes de crear el commit el script te muestra ese mensaje: **Enter** o `s` lo acepta; `n` pide uno nuevo; cualquier otro texto se usa como mensaje.
 
 <div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
 ---
 
-## 📁 9. Ejemplo de estructura del portfolio
+## 📁 9. Estructura del portfolio
+
+<a id="9-estructura-del-portfolio"></a>
 
 ```text
 42_outer_core/
@@ -536,11 +561,13 @@ Ese enlace suele apuntar a un **commit antiguo**. En la rama `main` actual ya no
 └── web_database/
 ```
 
-Cada caja de primer nivel en Outer Core es un repo en GitHub; los proyectos dentro de una piscine también pueden serlo como puede verse en el ejemplo anterior.
+Cada caja de primer nivel en Outer Core es un repo en GitHub; los proyectos dentro de una piscine también pueden serlo.
 
 ---
 
 ## ✅ 10. Checklist antes de publicar
+
+<a id="10-checklist-antes-de-publicar"></a>
 
 - [ ] Estoy en la carpeta del **proyecto** que quiero publicar (no en un hermano).
 - [ ] Sé qué voy a subir (`git status` tiene sentido).
@@ -553,6 +580,8 @@ Cada caja de primer nivel en Outer Core es un repo en GitHub; los proyectos dent
 ---
 
 ## 🎓 11. Glosario
+
+<a id="11-glosario"></a>
 
 | Término | En corto |
 |---------|----------|
@@ -567,9 +596,11 @@ Cada caja de primer nivel en Outer Core es un repo en GitHub; los proyectos dent
 
 ## 👤 Autor
 
+<a id="autor"></a>
+
 **sternero** — estudiante de 42 Málaga  
 
-Pensado para el flujo del campus (sgoinfre, sin sudo, `gh` local) y para el portfolio [42_Outer_Core](https://github.com/STC71/42_Outer_Core). Pero por supuesto puede usarse libremente.
+Pensado para el flujo del campus (sgoinfre, sin sudo, `gh` local) y para el portfolio [42_Outer_Core](https://github.com/STC71/42_Outer_Core).
 
 > *Automatizar lo repetible para poder centrarse en lo que se aprende.*
 

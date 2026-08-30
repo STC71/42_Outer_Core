@@ -111,14 +111,53 @@ run_with_progress() {
 }
 
 usage() {
-    printf 'Uso: %s [--dry-run]\n' "$(basename "$0")"
+    local me
+    me=$(basename "$0")
+
+    printf '%s%s🚀 %s%s — actualizador de cadenas de submódulos Git\n' "$BOLD" "$CYAN" "$me" "$RESET"
     printf '\n'
-    printf 'Actualiza el repositorio Git del directorio actual y sus repositorios padre.\n'
-    printf 'Ejecuta el script desde el submódulo más interno que quieras publicar.\n'
-    printf 'Si estás en un subdirectorio (por ejemplo libft/src), se usa la raíz de ese repo.\n'
+    printf '%sUso:%s\n' "$BOLD" "$RESET"
+    printf '  %s [opciones]\n' "$me"
     printf '\n'
-    printf '  -n, --dry-run   Muestra la cadena y las acciones sin escribir ni subir nada\n'
-    printf '  -h, --help      Muestra esta ayuda\n'
+    printf '%sDescripción:%s\n' "$BOLD" "$RESET"
+    printf '  Publica de dentro hacia fuera el repo del directorio actual y sus padres\n'
+    printf '  registrados como submódulos (.gitmodules). Puede crear repos en GitHub,\n'
+    printf '  registrar submódulos nuevos y evitar archivos > 100 MiB.\n'
+    printf '\n'
+    printf '%sOpciones:%s\n' "$BOLD" "$RESET"
+    printf '  -n, --dry-run   Simula: muestra la cadena y las acciones sin commit ni push\n'
+    printf '  -h, --help      Muestra esta ayuda y sale\n'
+    printf '\n'
+    printf '%sDónde ejecutarlo:%s\n' "$BOLD" "$RESET"
+    printf '  Desde el proyecto / submódulo más interno que quieras publicar.\n'
+    printf '  Ejemplo:\n'
+    printf '    cd 42_outer_core/piscine_pedago_data_science/data_science_0_creation_db\n'
+    printf '    ../../%s --dry-run\n' "$me"
+    printf '    ../../%s\n' "$me"
+    printf '  Si estás en un subdirectorio (p. ej. src/), se usa la raíz Git de ese repo.\n'
+    printf '\n'
+    printf '%sQué hace (resumen):%s\n' "$BOLD" "$RESET"
+    printf '  1. Detecta si el repo actual es un submódulo registrado\n'
+    printf '  2. Si no, propone crear/registrar la cadena hasta el monorepo con origin\n'
+    printf '  3. Construye la lista de repos (hijo → padres → portfolio)\n'
+    printf '  4. En cada nivel (con confirmación): prepara índice, commit y push\n'
+    printf '\n'
+    printf '%sEn el nivel más interno también:%s\n' "$BOLD" "$RESET"
+    printf '  • Archivos > 100 MiB → propone añadirlos al .gitignore y sacarlos del índice\n'
+    printf '  • Rutas ya en .gitignore pero aún versionadas → propone git rm --cached\n'
+    printf '  • No intenta git add de archivos ignorados\n'
+    printf '  • Registra borrados de archivos versionados que ya no están en disco\n'
+    printf '\n'
+    printf '%sMensajes de commit:%s\n' "$BOLD" "$RESET"
+    printf '  Por defecto: Update <nombre_repo> · DD/MM/AA HH:MM\n'
+    printf '  Antes de cada commit puedes aceptar ese mensaje o escribir uno propio.\n'
+    printf '\n'
+    printf '%sRequisitos:%s\n' "$BOLD" "$RESET"
+    printf '  git, find; cuenta de GitHub. Si falta gh, puede instalarlo en ~/.local/bin\n'
+    printf '  (sin sudo) y pedir autenticación.\n'
+    printf '\n'
+    printf '%sDocumentación:%s  update.md (misma carpeta o raíz del portfolio)\n' "$BOLD" "$RESET"
+    printf '\n'
 }
 
 fail() {
@@ -137,6 +176,37 @@ confirm() {
             ;;
         *)
             return 1
+            ;;
+    esac
+}
+
+# Muestra el mensaje por defecto; Enter/s lo acepta, n pide otro, cualquier texto lo usa.
+# Los prompts van a stderr: se usa como commit_message=$(prompt_commit_message ...)
+# y si se escribe en stdout el usuario no ve la pregunta (parece un cuelgue).
+prompt_commit_message() {
+    local default_msg=$1
+    local answer
+
+    printf '\n%s│%s %sMensaje de commit:%s\n' "$BLUE" "$RESET" "$BOLD" "$RESET" >&2
+    printf '%s│%s   %s%s%s\n' "$BLUE" "$RESET" "$DIM" "$default_msg" "$RESET" >&2
+    printf '%s%s?%s Usar este mensaje %s[S/n o escribe otro]:%s ' \
+        "$YELLOW" "$BOLD" "$RESET" "$DIM" "$RESET" >&2
+    IFS= read -r answer || exit 1
+    case "$answer" in
+        ''|s|S|si|SI|Si|sI|sí|Sí|SÍ|sÍ|y|Y|yes|YES)
+            printf '%s\n' "$default_msg"
+            ;;
+        n|N|no|NO|No)
+            printf '%s%s?%s Nuevo mensaje: ' "$YELLOW" "$BOLD" "$RESET" >&2
+            IFS= read -r answer || exit 1
+            if [[ -z "$answer" ]]; then
+                printf '%s\n' "$default_msg"
+            else
+                printf '%s\n' "$answer"
+            fi
+            ;;
+        *)
+            printf '%s\n' "$answer"
             ;;
     esac
 }
@@ -1141,8 +1211,9 @@ for repo_index in "${!repos[@]}"; do
     if git -C "$repo" diff --cached --quiet; then
         printf '%s│%s %sℹ Sin cambios nuevos; se comprueba el remoto.%s\n' "$BLUE" "$RESET" "$DIM" "$RESET"
     else
-        # Marca temporal local (DD/MM/AA HH:MM) para localizar publicaciones en el historial
-        commit_message="Update $repo_name · $(date '+%d/%m/%y %H:%M')"
+        # Marca temporal local (DD/MM/AA HH:MM); el usuario puede personalizar el mensaje
+        commit_message=$(prompt_commit_message \
+            "Update $repo_name · $(date '+%d/%m/%y %H:%M')")
         run_with_progress "Creando el commit de $repo_name" \
             git -C "$repo" commit -m "$commit_message" \
             || fail "no se pudo crear el commit de $repo_name (¿user.name / user.email?)"
