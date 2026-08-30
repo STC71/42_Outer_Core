@@ -331,15 +331,21 @@ Ejemplo de lo que verás:
 Tras tu **sí**:
 
 1. **Archivos grandes** (solo en el más interno) — GitHub rechaza archivos **> 100 MB**. Si los hay, los lista y, si aceptas, los mete en `.gitignore` y los saca del índice **sin borrarlos del disco**.
-2. **Staging selectivo** — No hace un “añadir todo el disco”.  
+2. **Ignorados aún versionados** (solo en el más interno) — Detecta archivos que **siguen en el índice** pero ya cubre el `.gitignore` (p. ej. un PDF subido antes de añadir `*.pdf`). Te propone dejar de versionarlos con `git rm --cached` (permanecen en disco). Si aceptas, el commit deja de incluirlos en GitHub.
+3. **Staging selectivo** — No hace un “añadir todo el disco”.  
    - En el hijo: archivos del proyecto; submódulos solo si ya están registrados.  
-   - En el padre: la ficha del hijo de la cadena + archivos sueltos de la raíz; **no** mete hermanos ni carpetas ajenas.
-3. **Borrados** — Además de lo que existe en disco, el script pregunta a Git qué rutas **ya rastreadas** han desaparecido y las incluye en el commit.  
+   - En el padre: la ficha del hijo de la cadena + archivos sueltos de la raíz; **no** mete hermanos ni carpetas ajenas.  
+   - **No intenta `git add` de rutas ignoradas** (evita el error *paths are ignored by .gitignore*).
+4. **Borrados** — Además de lo que existe en disco, el script pregunta a Git qué rutas **ya rastreadas** han desaparecido y las incluye en el commit.  
    - En el hijo: cualquier archivo versionado que hayas borrado.  
    - En el padre: borrados en la **raíz** del repo (p. ej. `update_v0.sh`) o bajo el hijo de la cadena.  
    Así no quedan en GitHub copias viejas que ya eliminaste en local.
-4. **Commit** — Solo si hay cambios (`Update <nombre>`).
-5. **Push** — Envía la rama a `origin` (crea el seguimiento remoto si hace falta).
+5. **Commit** — Solo si hay cambios. Mensaje con marca de tiempo local:
+   ```text
+   Update data_science_0_creation_db · 30/08/26 12:51
+   ```
+   Formato: `Update <nombre> · DD/MM/AA HH:MM`.
+6. **Push** — Envía la rama a `origin` (crea el seguimiento remoto si hace falta).
 
 ### 5.9 Mapa rápido
 
@@ -405,6 +411,15 @@ Si eliminas en disco ficheros que **ya estaban versionados** (por ejemplo `updat
 No hace falta un `git rm` manual para ese caso: el staging ya los detecta.  
 *(Los archivos que nunca se llegaron a commitear no están en Git; borrarlos del disco no genera ningún cambio en el remoto.)*
 
+### 6.5 Un archivo está en `.gitignore` pero sigue en GitHub
+
+Muy habitual: se subió un PDF (o similar) y **después** se añadió `*.pdf` al `.gitignore`.
+
+- El `.gitignore` **no saca** del remoto lo que ya estaba versionado.
+- Al publicar el nivel interno, el script **lista** esas rutas y pregunta si dejar de versionarlas (`git rm --cached`).
+- Si aceptas, el **nuevo** commit en `main` ya no las incluye.
+- Los commits **antiguos** del historial pueden seguir mostrándolas (es normal: Git no reescribe el pasado). Mira siempre la punta de `main`, no un SHA viejo.
+
 ### 6.5 Mensajes que puedes ver
 
 | Mensaje | Qué significa |
@@ -414,8 +429,10 @@ No hace falta un `git rm` manual para ese caso: el staging ya los detecta.
 | Archivos > 100 MB | GitHub los rechazaría; se propone ignorarlos |
 | Sin cambios nuevos… | No había diff; igual se comprueba el remoto |
 | Sigue sin ser un submódulo registrado | Tras intentar crear/registrar, aún falta el padre en `.gitmodules` |
+| Aún versionados aunque los cubre el `.gitignore` | Ofrece `git rm --cached` (siguen en disco) |
+| paths are ignored by .gitignore | Ya no debería ocurrir: el staging omite rutas ignoradas |
 
-### 6.6 Comprobar que el submódulo quedó bien
+### 6.7 Comprobar que el submódulo quedó bien
 
 Desde el portfolio:
 
@@ -444,11 +461,14 @@ Si ves `160000` y la entrada en `.gitmodules`, está bien.
 | Límite 100 MB | Política de GitHub; mejor avisar antes que fallar a mitad de push |
 | Staging selectivo | El commit del padre no se llena de carpetas ajenas |
 | Borrados versionados | Si quitas un archivo ya rastreado, el commit lo refleja en GitHub |
+| Ignorados aún rastreados | Propone sacarlos del índice si el `.gitignore` ya los cubre |
+| No hace `add` de ignorados | Evita fallos al preparar el índice |
+| Marca de tiempo en commits | Facilita localizar publicaciones (`DD/MM/AA HH:MM`) |
 | `gh` en `~/.local/bin` | Sin `sudo` en máquinas del campus |
 | Privado por defecto | Tú eliges si lo haces público |
 | SSH / HTTPS | Intenta respetar el remoto del padre y si tienes clave SSH |
 
-El script **no borra tu código del disco**. Los archivos grandes que se ignoran **siguen en local**; solo dejan de versionarse. Los borrados que *tú* hagas de archivos ya versionados **sí** se propagan al remoto en el siguiente publish.
+El script **no borra tu código del disco**. Los archivos grandes o ignorados que se dejan de versionar **siguen en local**; solo salen del índice y del remoto a partir del nuevo commit. Los borrados que *tú* hagas de archivos ya versionados **sí** se propagan al remoto en el siguiente publish.
 
 <div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
@@ -487,11 +507,17 @@ No, si aceptaste el `.gitignore`. Siguen en local. Para datasets grandes en remo
 **¿Si borro un archivo en local, desaparece también de GitHub?**  
 Sí, si ese archivo **ya estaba versionado** y publicas el nivel del repo donde vivía (directamente o vía la cadena). El script registra el borrado en el commit. Si el archivo nunca se subió, no hay nada que quitar en el remoto.
 
+**¿Por qué un PDF sigue viéndose en un enlace de GitHub si ya lo saqué del repo?**  
+Ese enlace suele apuntar a un **commit antiguo**. En la rama `main` actual ya no está; en el historial sí puede aparecer. Git no borra el pasado al hacer un commit nuevo.
+
+**¿Qué formato tienen los mensajes de commit?**  
+`Update <nombre_del_repo> · DD/MM/AA HH:MM` (hora local de la máquina donde ejecutas el script).
+
 <div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
 ---
 
-## 📁 9. Estructura del portfolio
+## 📁 9. Ejemplo de estructura del portfolio
 
 ```text
 42_outer_core/
@@ -510,7 +536,7 @@ Sí, si ese archivo **ya estaba versionado** y publicas el nivel del repo donde 
 └── web_database/
 ```
 
-Cada caja de primer nivel en Outer Core es un repo en GitHub; los proyectos dentro de una piscine también pueden serlo.
+Cada caja de primer nivel en Outer Core es un repo en GitHub; los proyectos dentro de una piscine también pueden serlo como puede verse en el ejemplo anterior.
 
 ---
 
@@ -521,6 +547,7 @@ Cada caja de primer nivel en Outer Core es un repo en GitHub; los proyectos dent
 - [ ] He hecho `../../update.sh --dry-run` y la cadena es la correcta.
 - [ ] Tengo sesión en GitHub (`gh auth status`) o aceptaré el login.
 - [ ] Si hay archivos > 100 MB, sé si los ignoro o los gestiono aparte.
+- [ ] Si el `.gitignore` cubre cosas que aún están en GitHub, aceptaré dejar de versionarlas cuando el script lo proponga.
 - [ ] No tengo un merge/rebase a medias en ningún nivel de la cadena.
 
 ---
@@ -542,7 +569,7 @@ Cada caja de primer nivel en Outer Core es un repo en GitHub; los proyectos dent
 
 **sternero** — estudiante de 42 Málaga  
 
-Pensado para el flujo del campus (sgoinfre, sin sudo, `gh` local) y para el portfolio [42_Outer_Core](https://github.com/STC71/42_Outer_Core).
+Pensado para el flujo del campus (sgoinfre, sin sudo, `gh` local) y para el portfolio [42_Outer_Core](https://github.com/STC71/42_Outer_Core). Pero por supuesto puede usarse libremente.
 
 > *Automatizar lo repetible para poder centrarse en lo que se aprende.*
 
