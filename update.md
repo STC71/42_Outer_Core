@@ -29,7 +29,7 @@
 
 <a id="1-objetivo"></a>
 
-En 42 es habitual tener **varios repositorios uno dentro de otro**:
+En **GitHub** es habitual tener **varios repositorios uno dentro de otro**, como por ejemplo:
 
 ```text
 42_Outer_Core                          ← 🗂️  portfolio (todo el curso)
