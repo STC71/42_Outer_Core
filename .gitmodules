@@ -19,3 +19,6 @@
 [submodule "piscine_pedago_mobile"]
 	path = piscine_pedago_mobile
 	url = https://github.com/STC71/42_piscine_pedago_mobile.git
+[submodule "piscine_pedago_data_science"]
+	path = piscine_pedago_data_science
+	url = git@github.com:STC71/42_piscine_pedago_data_science.git

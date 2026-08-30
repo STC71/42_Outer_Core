@@ -200,27 +200,23 @@ repo_has_origin() {
     git -C "$1" remote get-url origin >/dev/null 2>&1
 }
 
-# Sube desde el PADRE de start hasta encontrar un repo Git con remoto origin.
-# Nunca devuelve start aunque tenga origin (p. ej. el proyecto actual ya
-# publicado en GitHub); buscamos el monorepo contenedor (42_outer_core).
+# Sube directorios hasta encontrar un repo Git con remoto origin.
+# Útil cuando hay repos intermedios locales sin publicar (sin origin).
 find_ancestor_with_origin() {
     local start=$1
-    local candidate root start_norm
+    local candidate origin_url root
 
-    start_norm=$(normalize_path "$start")
-    candidate=$(dirname "$start_norm")
+    candidate=$(normalize_path "$start")
     while [[ "$candidate" != "/" ]]; do
         if is_repository_root "$candidate" && repo_has_origin "$candidate"; then
             printf '%s\n' "$candidate"
             return 0
         fi
+        # También aceptar un worktree cuyo toplevel tenga origin
         root=$(git -C "$candidate" rev-parse --show-toplevel 2>/dev/null || true)
-        if [[ -n "$root" ]]; then
-            root=$(normalize_path "$root")
-            if [[ "$root" != "$start_norm" ]] && repo_has_origin "$root"; then
-                printf '%s\n' "$root"
-                return 0
-            fi
+        if [[ -n "$root" ]] && repo_has_origin "$root"; then
+            printf '%s\n' "$(normalize_path "$root")"
+            return 0
         fi
         candidate=$(dirname "$candidate")
     done
