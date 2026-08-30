@@ -1,137 +1,130 @@
-# 🚀 UPDATE.md — Actualizador de repositorios 42
+<a id="top"></a>
 
 <div align="center">
+
+# 🚀 update.sh — Actualizador automático de repositorios
 
 ![42 School](https://img.shields.io/badge/42-School-000000?style=for-the-badge&logo=42&logoColor=white)
 ![Bash](https://img.shields.io/badge/Bash-Script-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white)
 ![Git](https://img.shields.io/badge/Git-Submodules-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![GitHub CLI](https://img.shields.io/badge/GitHub-CLI-181717?style=for-the-badge&logo=github&logoColor=white)
 
-**Script de publicación coordinada de cadenas de submódulos Git**  
+**Publica de forma ordenada una cadena de repositorios Git (submódulos)**  
 *Implementación de sternero · estudiante de 42 Málaga*
 
-[Objetivo](#-1-objetivo--por-qué-existe-este-script) ·
-[Idea simple](#-2-la-idea-en-lenguaje-cotidiano) ·
-[Conceptos](#-3-conceptos-clave-antes-de-tocar-el-teclado) ·
-[Uso](#-4-cómo-usarlo-paso-a-paso) ·
-[Funcionamiento](#-5-funcionamiento-interno-detallado) ·
-[Comportamiento](#-6-comportamiento-esperable-y-casos-reales) ·
-[Seguridad](#-7-seguridad-y-decisiones-conscientes) ·
-[FAQ](#-8-preguntas-frecuentes)
+[🎯 Objetivo](#1-objetivo) ·
+[🏠 Idea simple](#2-idea-simple) ·
+[🧩 Conceptos](#3-conceptos) ·
+[▶️ Uso](#4-uso) ·
+[⚙️ Cómo funciona](#5-funcionamiento) ·
+[🧭 Casos reales](#6-casos-reales) ·
+[🛡️ Seguridad](#7-seguridad) ·
+[❓ FAQ](#8-faq)
 
 </div>
 
 ---
 
-## 📖 1. Objetivo — ¿Por qué existe este script?
+## 🎯 1. Objetivo
 
-En el campus de **42** es habitual organizar el trabajo en **varios repositorios anidados**:
+<a id="1-objetivo"></a>
+
+En 42 es habitual tener **varios repositorios uno dentro de otro**:
 
 ```text
-42_Outer_Core                          ← portfolio / monorepo principal
- └── piscine_pedago_data_science       ← “carpeta temática” (también un repo)
-      └── data_science_0_creation_db   ← proyecto concreto (también un repo)
+42_Outer_Core                          ← 🗂️  portfolio (todo el curso)
+ └── piscine_pedago_data_science       ← 📁  tema / piscina
+      └── data_science_0_creation_db   ← 📄  proyecto concreto
 ```
 
-Cada nivel puede (y suele) vivir en **GitHub por separado**. Cuando terminas una tarea en el proyecto más interno, no basta con un único `git push`: hay que:
+Cada nivel suele tener **su propio repositorio en GitHub**. Cuando terminas trabajo en el proyecto de dentro, un solo `git push` no basta. Hay que:
 
-1. Guardar y subir los cambios del **proyecto interno**.
-2. Actualizar el **repo del medio** para que “apunte” al commit nuevo del hijo.
-3. Actualizar el **repo principal** para que “apunte” al commit nuevo del medio.
+1. 📤 Subir los cambios del **proyecto**.
+2. 🔗 Actualizar el **tema** para que apunte a esa versión nueva.
+3. 🔗 Actualizar el **portfolio** para que apunte a la versión nueva del tema.
 
-Hacerlo a mano es lento, fácil de olvidar un paso y propenso a errores (archivos enormes, submódulos mal registrados, hermanos que no debían tocarse…).
+A mano es lento y fácil equivocarse (olvidar un nivel, colar carpetas hermanas, intentar subir archivos de 2 GB…).
 
-**`update.sh` automatiza exactamente esa cadena**: publica **de dentro hacia fuera**, pregunta confirmación en cada nivel, crea repos en GitHub si faltan, registra submódulos y evita mezclar carpetas que no pertenecen a la cadena.
+**`update.sh` hace esa cadena por ti:** publica **de dentro hacia fuera**, pide confirmación en cada nivel, crea repos en GitHub si faltan y registra los submódulos bien.
 
-> **En una frase:**  
-> *Desde la carpeta del proyecto en el que estás trabajando, el script sube tus cambios hasta GitHub y actualiza todos los “contenedores” padres de forma ordenada y segura.*
+> 💡 **En una frase:**  
+> Desde la carpeta del proyecto en el que trabajas, el script sube tus cambios a GitHub y actualiza todos los “contenedores” padres, en orden y con confirmación.
 
-<div align="right">
-
-[⬆️ Volver arriba](#-updatemd--actualizador-de-repositorios-42)
-
-</div>
+<div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
 ---
 
-## 🏠 2. La idea en lenguaje cotidiano
+## 🏠 2. Idea simple
 
-Imagina que guardas tus apuntes en **cajas rusas** (una dentro de otra):
+<a id="2-idea-simple"></a>
 
-| Caja | En el mundo real | En tu disco |
-|------|------------------|-------------|
-| Caja pequeña | El cuaderno del ejercicio de hoy | `data_science_0_creation_db` |
-| Caja mediana | La carpeta de la asignatura | `piscine_pedago_data_science` |
-| Caja grande | El armario de todo el curso | `42_outer_core` |
+Piensa en **cajas rusas** (una dentro de otra):
 
-Cada caja tiene su **etiqueta en la nube** (un repositorio en GitHub).
+| 📦 Caja | En la vida real | En tu disco |
+|--------|-----------------|-------------|
+| Pequeña | Cuaderno del ejercicio de hoy | `data_science_0_creation_db` |
+| Mediana | Carpeta de la asignatura | `piscine_pedago_data_science` |
+| Grande | Armario de todo el curso | `42_outer_core` |
 
-Si cambias una página del cuaderno pequeño:
+Cada caja tiene su **copia en la nube** (un repo en GitHub).
 
-1. Hay que **fotografiar** el cuaderno actualizado y colgar la foto en su estantería de la nube.
-2. En la caja mediana hay que **cambiar la nota** que dice “el cuaderno está en la versión X” por “ahora está en la versión Y”.
-3. En el armario grande hay que **actualizar la nota** de la caja mediana.
+Si cambias una página del cuaderno:
 
-Si solo actualizas el cuaderno y te olvidas de las notas de las cajas grandes, quien abra el armario desde Internet seguirá viendo la versión antigua.
+1. 📸 Haces una “foto” del cuaderno y la cuelgas en su estantería de GitHub.
+2. 🏷️ En la caja mediana actualizas la **etiqueta** (“ahora el cuaderno es la versión del 30 de agosto”).
+3. 🏷️ En el armario actualizas la etiqueta de la caja mediana.
 
-**Eso es lo que hace el script:** actualiza el cuaderno y todas las notas de las cajas hacia fuera, en el orden correcto, preguntándote en cada paso: *“¿Publicamos esta caja?”*.
+Si solo actualizas el cuaderno y te olvidas de las etiquetas, quien abra el armario desde Internet **seguirá viendo la versión antigua**.
 
-### Analogía del ascensor
-
-Piensa en un edificio:
+### 🛗 Analogía del ascensor
 
 ```text
-Piso 2  →  proyecto (data_science_0_creation_db)
-Piso 1  →  piscina / tema (piscine_pedago_data_science)
-Planta  →  portfolio (42_outer_core)
+Piso 2   →  proyecto
+Piso 1   →  tema / piscina
+Planta 0 →  portfolio
 ```
 
-El script **entra por el piso en el que estás**, baja el ascensor piso a piso y en cada parada:
+El script **entra por el piso en el que estás** y baja el ascensor:
 
-- Prepara el “paquete” (staging).
-- Lo sella (commit) si hay cambios.
-- Lo envía a la nube (push).
+- En cada parada prepara el paquete, lo sella (commit) si hace falta y lo envía a la nube (push).
+- **No empieza por la planta baja** sin haber cerrado antes los pisos de arriba: dejaría el edificio a medias.
 
-Nunca empieza por la planta baja sin haber cerrado antes los pisos de arriba: eso dejaría el edificio inconsistente.
-
-<div align="right">
-
-[⬆️ Volver arriba](#-updatemd--actualizador-de-repositorios-42)
-
-</div>
+<div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
 ---
 
-## 🧩 3. Conceptos clave (antes de tocar el teclado)
+## 🧩 3. Conceptos
 
-No hace falta ser experto en Git, pero sí entender estas piezas. Cada una lleva un ejemplo cotidiano.
+<a id="3-conceptos"></a>
+
+No hace falta ser experto en Git. Basta entender estas piezas.
 
 ### 3.1 Repositorio Git
 
-Es la **caja con historial**. No solo guarda archivos: guarda *versiones* de esos archivos a lo largo del tiempo (como un historial de cambios de un documento de Google Docs, pero local y profesional).
+La **caja con historial**: no solo guarda archivos, guarda *versiones* a lo largo del tiempo (como el historial de un documento compartido, pero en tu máquina y en la nube).
 
 ### 3.2 Commit
 
-Es una **foto congelada** del estado del proyecto en un momento dado, con un mensaje (“Update data_science_0_creation_db”).  
-Si el repositorio es un diario, el commit es **una entrada del diario**.
+Una **foto congelada** del proyecto en un momento dado, con un mensaje.  
+Si el repo es un diario, el commit es **una entrada**.
 
 ### 3.3 Remoto (`origin`) y GitHub
 
-El remoto es la **copia en la nube**. Casi siempre se llama `origin` y apunta a una URL de GitHub.  
-`git push` = “envía mis fotos nuevas a la nube”.
+La **copia en la nube**. Casi siempre se llama `origin`.  
+`git push` = “envía mis fotos nuevas a GitHub”.
 
 ### 3.4 Submódulo
 
-Un submódulo es **un repositorio completo metido dentro de otro**, pero el padre **no copia todos los archivos del hijo**. Solo guarda:
+Un **repo completo dentro de otro**, pero el padre **no copia todos los archivos del hijo**. Solo guarda:
 
 - la ruta de la carpeta, y  
-- el **identificador exacto del commit** del hijo (como un código de barras de la foto concreta).
+- el **código del commit exacto** del hijo (como un código de barras de “esta edición concreta”).
 
-Eso se ve en el índice de Git con el modo especial **`160000`** (un “gitlink”).
+En Git eso aparece con el modo **`160000`** (gitlink).
 
-**Analogía:** en el inventario del armario no guardas el cuaderno entero; guardas una ficha que dice *“cuaderno de mates, edición del 30 de agosto”*. Si alguien clona el armario, usa esa ficha para **descargar** el cuaderno correcto.
+> 🏷️ **Analogía:** en el inventario del armario no guardas el cuaderno entero; guardas una ficha: *“cuaderno de mates, edición del 30 de agosto”*. Quien clone el armario usa esa ficha para **descargar** el cuaderno correcto.
 
-El archivo **`.gitmodules`** del padre es la lista de fichas:
+El archivo **`.gitmodules`** es la lista de fichas del padre:
 
 ```ini
 [submodule "piscine_pedago_data_science"]
@@ -141,7 +134,7 @@ El archivo **`.gitmodules`** del padre es la lista de fichas:
 
 ### 3.5 Cadena de submódulos
 
-Varios niveles anidados, cada uno registrado en el padre inmediato:
+Varios niveles, cada uno registrado en su padre inmediato:
 
 ```text
 42_Outer_Core
@@ -154,69 +147,62 @@ Varios niveles anidados, cada uno registrado en el padre inmediato:
 Orden obligatorio:
 
 ```text
-1) hijo más interno  →  commit + push
-2) padre             →  actualiza el gitlink del hijo + commit + push
-3) abuelo            →  actualiza el gitlink del padre + commit + push
+1) 📄 hijo     →  commit + push
+2) 📁 padre    →  actualiza la ficha del hijo + commit + push
+3) 🗂️  abuelo  →  actualiza la ficha del padre + commit + push
 ```
 
 Si se hiciera al revés, el padre apuntaría a un commit del hijo que **aún no existe en GitHub**.
 
 ### 3.7 GitHub CLI (`gh`)
 
-Herramienta oficial de GitHub en la terminal. El script la usa para:
-
-- comprobar si ya has iniciado sesión,
-- crear repositorios nuevos,
-- respetar privacidad (privado / público).
-
+Herramienta oficial de GitHub en la terminal. El script la usa para iniciar sesión, crear repos y elegir privacidad.  
 Si no está instalada, puede proponer instalarla en `~/.local/bin` **sin sudo**.
 
-<div align="right">
-
-[⬆️ Volver arriba](#-updatemd--actualizador-de-repositorios-42)
-
-</div>
+<div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
 ---
 
-## ▶️ 4. Cómo usarlo (paso a paso)
+## ▶️ 4. Uso
+
+<a id="4-uso"></a>
 
 ### 4.1 Requisitos
 
-| Requisito | Para qué |
+| Necesitas | Para qué |
 |-----------|----------|
-| `git` | Operaciones de versionado |
-| `find` | Recorrer archivos (archivos grandes, staging) |
-| Cuenta de GitHub | Publicar |
-| `gh` (opcional al inicio) | El script puede instalarlo / autenticarlo |
-| Ejecución **desde un proyecto** que viva bajo el monorepo | Detectar la cadena de padres |
+| `git` | Guardar versiones y subir cambios |
+| `find` | Buscar archivos (p. ej. los demasiado grandes) |
+| Cuenta de GitHub | Publicar en la nube |
+| `gh` (opcional al inicio) | El script puede instalarlo o pedirte login |
+| Ejecutar **desde un proyecto** bajo el portfolio | Detectar la cadena de padres |
 
-### 4.2 Ubicación típica del script
+### 4.2 Dónde suele vivir el script
 
 ```text
 42_outer_core/
- ├── update.sh          ← aquí suele vivir
- ├── UPDATE.md           ← esta guía
+ ├── update.sh              ← el script
+ ├── update.md               ← esta guía
  ├── .gitmodules
  ├── piscine_pedago_data_science/
- │    └── data_science_0_creation_db/   ← trabajas aquí
+ │    └── data_science_0_creation_db/   ← aquí trabajas
  └── …
 ```
 
-### 4.3 Primera vez: permisos
+### 4.3 Primera vez
 
 ```bash
 chmod +x update.sh
 ```
 
-### 4.4 Simulación (recomendado siempre la primera vez en un repo nuevo)
+### 4.4 Simulación (muy recomendable la primera vez)
 
 ```bash
 cd piscine_pedago_data_science/data_science_0_creation_db
 ../../update.sh --dry-run
 ```
 
-**No escribe commits ni hace push.** Solo muestra qué cadena detecta y qué haría.
+🧪 **No escribe commits ni hace push.** Solo muestra qué cadena detecta y qué haría.
 
 ### 4.5 Publicación real
 
@@ -224,16 +210,16 @@ cd piscine_pedago_data_science/data_science_0_creation_db
 ../../update.sh
 ```
 
-Responde a las preguntas:
+Preguntas habituales:
 
-| Pregunta | Significado |
-|----------|-------------|
-| `Crear remoto y publicar este nivel… [s/N]` | Crear el repo en GitHub si aún no existe |
-| `Visibilidad [p]Privado / [u]Público` | Privacidad del repo nuevo (por defecto privado) |
-| `Añadir archivos grandes al .gitignore…` | Evitar el rechazo de GitHub (> 100 MB) |
-| `Publicar 'nombre' en 'main'? [s/N]` | Confirmar commit + push de ese nivel |
+| Te pregunta… | Significa… |
+|--------------|------------|
+| Crear remoto y publicar este nivel `[s/N]` | Crear el repo en GitHub si aún no existe |
+| Visibilidad `[p]` privado / `[u]` público | Privacidad del repo nuevo (por defecto: privado) |
+| Añadir archivos grandes al `.gitignore` | Evitar el rechazo de GitHub (> 100 MB) |
+| Publicar `'nombre'` en `'main'` `[s/N]` | Confirmar commit + push de ese nivel |
 
-Respuestas afirmativas aceptadas: `s`, `si`, `sí`, `y`, `yes` (mayúsculas/minúsculas da igual).
+Respuestas que cuentan como **sí:** `s`, `si`, `sí`, `y`, `yes` (da igual mayúsculas o minúsculas).
 
 ### 4.6 Ayuda
 
@@ -241,114 +227,97 @@ Respuestas afirmativas aceptadas: `s`, `si`, `sí`, `y`, `yes` (mayúsculas/min�
 ./update.sh --help
 ```
 
-<div align="right">
-
-[⬆️ Volver arriba](#-updatemd--actualizador-de-repositorios-42)
-
-</div>
+<div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
 ---
 
-## ⚙️ 5. Funcionamiento interno (detallado)
+## ⚙️ 5. Funcionamiento
 
-Esta sección describe **qué hace el código por dentro**, en el orden real de ejecución.
+<a id="5-funcionamiento"></a>
 
-### 5.1 Arranque y entorno
+Qué hace el código, en orden.
 
-1. **`set -u` y `pipefail`** — Si se usa una variable sin definir o falla un comando en una tubería, el script se detiene en lugar de seguir “a ciegas”.
-2. **Colores** — Solo si la salida es una terminal interactiva (`-t 1`). En logs redirigidos, el texto sale limpio.
-3. **Trap de limpieza** — Al salir, borra ficheros temporales (`mktemp`) registrados en `CLEANUP_PATHS`.
+### 5.1 Arranque
 
-### 5.2 Detección de la posición actual
+1. **Modo estricto** (`set -u`, `pipefail`) — Si algo va mal (variable sin definir, error en una tubería), se detiene en lugar de seguir a ciegas.
+2. **Colores** — Solo en terminal interactiva; en logs el texto sale limpio.
+3. **Limpieza al salir** — Borra ficheros temporales que haya creado.
+
+### 5.2 ¿Dónde estoy?
 
 ```text
-START_DIR     = carpeta desde la que ejecutaste el script (pwd -P)
-current_root  = raíz del repositorio Git que contiene START_DIR
+START_DIR     = carpeta desde la que lanzaste el script
+current_root  = raíz del repositorio Git de esa carpeta
 ```
 
 Ejemplo:
 
 ```text
-Estás en:  .../data_science_0_creation_db/src
-START_DIR: .../data_science_0_creation_db/src
-current_root: .../data_science_0_creation_db   ← raíz del repo
+Estás en:     .../data_science_0_creation_db/src
+START_DIR:    .../data_science_0_creation_db/src
+current_root: .../data_science_0_creation_db     ← raíz del repo
 ```
 
-### 5.3 ¿Ya es un submódulo registrado?
+### 5.3 ¿Ya soy un submódulo registrado?
 
-El script pregunta: *“¿Existe un padre Git que tenga esta carpeta en su `.gitmodules`?”*  
-Función clave: **`find_parent_repo`**.
+Pregunta clave: *¿Hay un padre Git que me tenga en su `.gitmodules`?*
 
-- **Sí** → construye la cadena de publicación y pasa a la fase de commits/pushes.
-- **No** → entra en modo **creación / registro** (casos siguientes).
+| Respuesta | Qué hace el script |
+|-----------|-------------------|
+| ✅ Sí | Construye la cadena y pasa a publicar |
+| ❌ No | Entra en modo **crear / registrar** (siguiente apartado) |
 
-### 5.4 Casos cuando aún no está registrado
+### 5.4 Si aún no estás registrado
 
-#### Caso A — Estás dentro de un worktree, no en la raíz
+**A)** Ejecutaste desde una subcarpeta (`proyecto/src`) y el proyecto aún no es submódulo  
+→ Intenta crear la cadena desde el portfolio hasta esa ruta.
 
-Ejemplo: ejecutaste desde `proyecto/src` y `proyecto` aún no es submódulo.  
-→ Intenta crear la cadena desde el monorepo contenedor hasta esa ruta.
-
-#### Caso B — Repo sin commits (submódulo a medias)
-
-Había un `git init` pero aún no hay historial.  
+**B)** Hay un `git init` pero aún no hay commits  
 → Completa la publicación y el registro en el padre.
 
-#### Caso C — Repo Git local no registrado (el más habitual al montar proyectos nuevos)
+**C)** Es un repo local que aún no figura como submódulo *(lo más habitual al montar algo nuevo)*
 
-Aquí el script es especialmente cuidadoso:
+1. Mira el **padre inmediato**.
+2. Si ese padre es repo **y tiene `origin`** → te registra ahí.
+3. Si el padre es repo **pero no tiene `origin`** (repo local a medias) → **no se queda ahí**. Sube hasta un ancestro con remoto (casi siempre `42_outer_core`) y monta la **cadena completa**.
 
-1. Mira el **padre inmediato** (`dirname` de la raíz actual).
-2. Si ese padre es un repo **y tiene `origin`** → registra el hijo ahí (`create_submodule_from_current_directory`).
-3. Si el padre es un repo **pero no tiene `origin`** (repo local “huérfano”) → **no se queda ahí**.  
-   Sube con **`find_ancestor_with_origin`** hasta encontrar un ancestro con remoto (casi siempre `42_outer_core`) y monta la **cadena completa** (`create_submodule_chain`).
+> ⚠️ `find_ancestor_with_origin` **nunca** elige el propio proyecto actual, aunque ya tenga `origin` en GitHub. Si no, confundiría el cuaderno con el armario.
 
-> **Detalle importante:** `find_ancestor_with_origin` **nunca** devuelve el propio proyecto actual, aunque este ya tenga `origin` en GitHub. Si no, confundiría el “cuaderno” con el “armario”.
+### 5.5 Crear la cadena
 
-### 5.5 Creación de cadena (`create_submodule_chain`)
+Para una ruta como `piscine_pedago_data_science/data_science_0_creation_db`, recorre los niveles **de dentro hacia fuera**:
 
-Dada una ruta relativa al monorepo, por ejemplo:
+| Situación del nivel | Acción |
+|---------------------|--------|
+| Ya es repo con historial | Lo reutiliza; si falta `origin`, lo crea y publica |
+| Aún no es repo | `git init`, primer commit, crea repo en GitHub, push |
+| Tiene un hijo en la cadena | Lo registra en su `.gitmodules` |
 
-```text
-piscine_pedago_data_science/data_science_0_creation_db
-```
-
-Recorre los niveles **de dentro hacia fuera**:
-
-| Nivel | Si ya es repo con commits | Si no existe como repo |
-|-------|---------------------------|-------------------------|
-| Interno | Reutiliza; asegura `origin` si falta | `git init`, commit inicial, crea repo GitHub, push |
-| Intermedio | Igual; registra al hijo en `.gitmodules` | Igual + registra hijo |
-| Al final | Registra el módulo superior en el monorepo | — |
-
-Nombres remotos: se antepone el prefijo **`42_`** al nombre de la carpeta:
+Nombres en GitHub: se antepone **`42_`** al nombre de la carpeta:
 
 ```text
 piscine_pedago_data_science  →  42_piscine_pedago_data_science
 data_science_0_creation_db   →  42_data_science_0_creation_db
 ```
 
-El propietario de GitHub (`STC71`, etc.) se deduce de la URL `origin` del monorepo.
+El usuario de GitHub (`STC71`, etc.) se lee del `origin` del portfolio.
 
-### 5.6 Registro de submódulo (`register_submodule`)
+### 5.6 Registrar un submódulo
 
-1. Escribe/actualiza `.gitmodules` (path + url).
-2. Si la ruta estaba añadida como carpeta normal (no como gitlink), la quita del índice.
-3. Añade el gitlink (`160000`) y el `.gitmodules`.
-4. Intenta `git submodule absorbgitdirs` para dejar la metadata ordenada.
+1. Escribe o actualiza `.gitmodules` (ruta + URL).
+2. Si la carpeta estaba añadida “como carpeta normal”, la corrige.
+3. Deja el gitlink (`160000`) y el `.gitmodules` listos.
+4. Intenta ordenar la metadata interna del submódulo.
 
-### 5.7 Construcción de la lista de publicación
-
-Con el hijo ya registrado, el script hace:
+### 5.7 Lista de publicación
 
 ```text
-repos = [ actual ]
-mientras exista padre registrado:
-    repos += padre
-    actual = padre
+repos = [ proyecto actual ]
+mientras exista un padre registrado:
+    añadir el padre a la lista
 ```
 
-Ejemplo de resultado:
+Ejemplo de lo que verás:
 
 ```text
 📦 Cadena de publicación (de dentro hacia fuera)
@@ -357,130 +326,87 @@ Ejemplo de resultado:
   ▸ 42_outer_core
 ```
 
-### 5.8 Bucle de publicación (por cada repo de la lista)
+### 5.8 En cada nivel de la lista
 
-Para cada nivel, tras confirmar:
+Tras tu **sí**:
 
-#### 1) Archivos grandes (solo en el más interno)
+1. **Archivos grandes** (solo en el más interno) — GitHub rechaza archivos **> 100 MB**. Si los hay, los lista y, si aceptas, los mete en `.gitignore` y los saca del índice **sin borrarlos del disco**.
+2. **Staging selectivo** — No hace un “añadir todo el disco”.  
+   - En el hijo: archivos del proyecto; submódulos solo si ya están registrados.  
+   - En el padre: la ficha del hijo de la cadena + archivos sueltos de la raíz; **no** mete hermanos ni carpetas ajenas.
+3. **Commit** — Solo si hay cambios (`Update <nombre>`).
+4. **Push** — Envía la rama a `origin` (crea el seguimiento remoto si hace falta).
 
-GitHub rechaza blobs **> 100 MB**.  
-`handle_large_files` busca esos archivos, los lista y, si aceptas, los añade al `.gitignore` y los saca del índice (`git rm --cached`) sin borrarlos del disco.
-
-#### 2) Staging inteligente (`stage_repository`)
-
-No hace un `git add -A` ciego sobre todo el árbol. Razones:
-
-| Situación | Qué añade |
-|-----------|-----------|
-| **Repo más interno** | Archivos y carpetas normales del proyecto; submódulos **solo si ya están registrados** |
-| **Repo padre** | El gitlink del **hijo de la cadena** que se está publicando; archivos sueltos en la raíz del padre; **no** mete carpetas hermanas ni repos vecinos no registrados |
-
-**Analogía:** al actualizar la caja mediana, solo cambias la ficha del cuaderno que acabas de publicar; no reordenas el resto de cuadernos de la estantería.
-
-Además:
-
-- Aborta si hay un merge/rebase/cherry-pick a medias.
-- Hace `git reset` del índice para partir de un staging limpio controlado por el script.
-
-#### 3) Commit
-
-Si hay algo en el índice: `commit -m "Update <nombre>"`.  
-Si no hay cambios nuevos: no crea commit vacío; pasa a comprobar el remoto.
-
-#### 4) Push (`push_branch`)
-
-Envía la rama actual a `origin`, creando upstream (`-u`) si hace falta.
-
-### 5.9 Mapa mental de funciones
+### 5.9 Mapa rápido
 
 ```text
 main
- ├─ detección de START_DIR / current_root
- ├─ ¿registrado?
- │   ├─ no → create_submodule_chain / create_submodule_from_current_directory
- │   │        ├─ ensure_github_cli
- │   │        ├─ publish_new_repository / create_github_repo
- │   │        └─ register_submodule
- │   └─ sí  → (sigue)
- ├─ construir lista de padres (find_parent_repo)
- └─ para cada repo de dentro a fuera:
-      ├─ handle_large_files          (solo el más interno)
-      ├─ stage_repository
-      ├─ git commit                  (si hay cambios)
-      └─ push_branch
+ ├─ ¿Dónde estoy?
+ ├─ ¿Registrado como submódulo?
+ │    ├─ No → crear / registrar cadena
+ │    └─ Sí → seguir
+ ├─ Lista de padres (de dentro a fuera)
+ └─ Por cada nivel:
+      preparar → commit (si hay cambios) → push
 ```
 
 ### 5.10 Modo `--dry-run`
 
-Recorre la misma lógica de detección y creación de cadena, pero:
+Misma lógica de detección, pero **sin** crear repos, commits ni pushes. Las líneas van con 🧪 para ver el plan sin riesgos.
 
-- no crea repos en GitHub,
-- no hace commit ni push,
-- imprime líneas con el prefijo `🧪` describiendo lo que *haría*.
-
-Ideal para revisar la cadena antes de tocar nada.
-
-<div align="right">
-
-[⬆️ Volver arriba](#-updatemd--actualizador-de-repositorios-42)
-
-</div>
+<div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
 ---
 
-## 🧭 6. Comportamiento esperable y casos reales
+## 🧭 6. Casos reales
 
-### 6.1 Caso feliz (submódulo ya registrado)
+<a id="6-casos-reales"></a>
+
+### 6.1 Todo ya está registrado
 
 ```bash
 cd .../data_science_0_creation_db
 ../../update.sh
 ```
 
-1. Detecta padres vía `.gitmodules`.
-2. Muestra la cadena.
-3. Pregunta por cada nivel.
-4. Publica 1/N, 2/N, … hasta el monorepo.
+Detecta padres → muestra la cadena → pregunta → publica 1/N, 2/N, …
 
-### 6.2 Proyecto nuevo bajo un tema que aún no está en GitHub
-
-Situación real vivida en 42 Outer Core:
+### 6.2 Proyecto nuevo bajo un tema aún no publicado
 
 ```text
-42_outer_core/                          ← tiene origin
- └── piscine_pedago_data_science/       ← repo local SIN origin
-      └── data_science_0_creation_db/   ← repo CON origin en GitHub
+42_outer_core/                     ← tiene origin en GitHub
+ └── piscine_pedago_data_science/  ← repo local SIN origin
+      └── data_science_0_creation_db/  ← ya tiene origin
 ```
 
-Comportamiento:
+El script:
 
-1. Detecta que el hijo no está registrado.
+1. Ve que el hijo no está registrado.
 2. Ve que el padre intermedio no tiene `origin`.
 3. Sube hasta `42_outer_core`.
-4. Crea/publica `42_piscine_pedago_data_science` si hace falta.
-5. Registra el hijo dentro del tema.
-6. Registra el tema dentro de Outer Core.
-7. Publica la cadena completa.
+4. Crea/publica el remoto del tema si hace falta.
+5. Registra hijo → tema → portfolio.
+6. Publica la cadena.
 
-### 6.3 Qué NO toca el script
+### 6.3 Qué no toca
 
-- Repositorios **hermanos** (otras piscinas, otros proyectos al mismo nivel).
-- Carpetas del padre que **no** están en la cadena activa.
-- El historial antiguo: no hace rebase interactivo ni reescribe commits ajenos.
+- Repos **hermanos** (otras piscinas u otros proyectos al mismo nivel).
+- Carpetas del padre **fuera** de la cadena activa.
+- Historial antiguo (no reescribe commits ni hace rebase automático).
 
-### 6.4 Mensajes frecuentes
+### 6.4 Mensajes que puedes ver
 
-| Mensaje | Significado |
-|---------|-------------|
-| `🆕 Cadena de carpetas/repos sin registrar…` | Hay que montar o registrar la cadena antes de publicar |
-| `🧱 Nivel ya es repo local, pero sin origin` | Existe `.git` local; falta crear el remoto y hacer el primer push |
-| `⚠ archivos que superan el límite de 100 MB` | GitHub los rechazaría; se propone ignorarlos |
-| `ℹ Sin cambios nuevos; se comprueba el remoto` | No había diff; igual se intenta push por si faltaba upstream |
-| `el repositorio actual sigue sin ser un submódulo registrado` | Tras intentar crear/registrar, aún no hay padre en `.gitmodules` |
+| Mensaje | Qué significa |
+|---------|----------------|
+| Cadena sin registrar… | Hay que montar o registrar la cadena antes de publicar |
+| Nivel ya es repo local, pero sin origin | Existe `.git` local; falta el remoto y el primer push |
+| Archivos > 100 MB | GitHub los rechazaría; se propone ignorarlos |
+| Sin cambios nuevos… | No había diff; igual se comprueba el remoto |
+| Sigue sin ser un submódulo registrado | Tras intentar crear/registrar, aún falta el padre en `.gitmodules` |
 
-### 6.5 Cómo verificar que el submódulo quedó bien
+### 6.5 Comprobar que el submódulo quedó bien
 
-Desde el monorepo:
+Desde el portfolio:
 
 ```bash
 cat .gitmodules
@@ -490,142 +416,128 @@ git ls-files -s piscine_pedago_data_science
 git submodule status
 ```
 
-Si ves `160000` y la entrada en `.gitmodules`, el registro es correcto.
+Si ves `160000` y la entrada en `.gitmodules`, está bien.
 
-<div align="right">
-
-[⬆️ Volver arriba](#-updatemd--actualizador-de-repositorios-42)
-
-</div>
+<div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
 ---
 
-## 🛡️ 7. Seguridad y decisiones conscientes
+## 🛡️ 7. Seguridad
 
-| Decisión | Motivo |
-|----------|--------|
-| Confirmación en cada nivel | Evita publicar un piso del edificio sin querer |
-| `--dry-run` | Ensayo general sin consecuencias |
-| Límite 100 MB | Política de GitHub; mejor fallar antes que a mitad de push |
-| Staging selectivo | No contamina el commit del padre con basura de carpetas vecinas |
-| Instalación de `gh` en `~/.local/bin` | No pide `sudo` en máquinas del campus |
-| Visibilidad configurable | Por defecto **privado**; tú eliges público |
-| Detección SSH vs HTTPS | Intenta respetar el protocolo del remoto padre y la presencia de claves |
+<a id="7-seguridad"></a>
 
-**El script no es magia destructiva:** no borra tu código fuente. Los archivos grandes excluidos **siguen en tu disco**; solo dejan de versionarse.
+| Decisión | Por qué |
+|----------|---------|
+| Confirmación en cada nivel | No publicar un piso del edificio sin querer |
+| `--dry-run` | Ensayo sin consecuencias |
+| Límite 100 MB | Política de GitHub; mejor avisar antes que fallar a mitad de push |
+| Staging selectivo | El commit del padre no se llena de carpetas ajenas |
+| `gh` en `~/.local/bin` | Sin `sudo` en máquinas del campus |
+| Privado por defecto | Tú eliges si lo haces público |
+| SSH / HTTPS | Intenta respetar el remoto del padre y si tienes clave SSH |
 
-<div align="right">
+El script **no borra tu código**. Los archivos grandes que se ignoran **siguen en tu disco**; solo dejan de versionarse.
 
-[⬆️ Volver arriba](#-updatemd--actualizador-de-repositorios-42)
-
-</div>
+<div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
 ---
 
-## ❓ 8. Preguntas frecuentes
+## ❓ 8. FAQ
 
-### ¿Puedo ejecutarlo desde la raíz de `42_outer_core`?
+<a id="8-faq"></a>
 
-El diseño está pensado para ejecutarlo **desde un submódulo / proyecto interno**. Desde la raíz del monorepo no hay “padre registrado” hacia arriba en el sentido de la cadena, y el script se detendrá con un mensaje claro.
+**¿Puedo ejecutarlo desde la raíz de `42_outer_core`?**  
+Está pensado para lanzarlo **desde un proyecto / submódulo interno**. Desde la raíz del portfolio no hay “padre hacia arriba” en el sentido de la cadena.
 
-### ¿Qué pasa si cancelo a mitad (`N`)?
+**¿Qué pasa si digo `N` a mitad?**  
+Se detiene en ese nivel. Lo ya publicado en esa ejecución **sigue publicado**. Puedes volver a lanzarlo más tarde.
 
-Se detiene en ese nivel. Los niveles ya publicados en esa ejecución **siguen publicados**. Puedes volver a lanzarlo más tarde; detectará el estado actual.
+**¿Sustituye a `git submodule update`?**  
+No. `update.sh` **publica** (commit / push / registro).  
+`git submodule update --init --recursive` **descarga** al clonar. Son complementarios.
 
-### ¿Sustituye a `git submodule update`?
+**¿Por qué el remoto se llama `42_nombre_carpeta`?**  
+Convención del portfolio: prefijo `42_` para localizar repos y evitar nombres genéricos chocando entre sí.
 
-No. `update.sh` **publica** (commit/push/registro).  
-`git submodule update --init --recursive` **descarga** submódulos al clonar. Son operaciones complementarias.
-
-### ¿Por qué a veces el remoto se llama `42_nombre_carpeta`?
-
-Convención del portfolio STC71 / 42 Outer Core: todos los repos de proyecto en GitHub llevan el prefijo `42_` para localizarlos y evitar colisiones de nombres genéricos.
-
-### ¿Qué hago si el push falla porque el remoto está adelantado?
-
-El script no hace pull/rebase automático (para no resolver conflictos a ciegas). En ese nivel:
+**¿El push falla porque el remoto está adelantado?**  
+El script no hace pull/rebase solo (no quiere resolver conflictos a ciegas):
 
 ```bash
 cd /ruta/del/repo/que/falló
-git pull --rebase origin main   # o la rama que uses
+git pull --rebase origin main   # o tu rama
 # resuelve conflictos si los hay
-../../update.sh                 # o la ruta relativa que corresponda
+../../update.sh
 ```
 
-### ¿Los CSV enormes del subject se suben?
+**¿Se suben los CSV enormes del subject?**  
+No, si aceptaste el `.gitignore`. Siguen en local. Para datasets grandes en remoto, valora Git LFS u otro almacenamiento.
 
-No, si aceptaste añadirlos al `.gitignore`. Siguen en local para practicar; no viajan a GitHub. Para datasets grandes en remoto, valora **Git LFS** u otro almacenamiento.
-
-<div align="right">
-
-[⬆️ Volver arriba](#-updatemd--actualizador-de-repositorios-42)
-
-</div>
+<div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
 ---
 
-## 📁 9. Estructura recomendada del portfolio
+## 📁 9. Estructura del portfolio
 
 ```text
-42_outer_core/                          # monorepo (este repo)
-├── update.sh                           # el script
-├── UPDATE.md                           # esta guía
-├── .gitmodules                         # mapa de submódulos de primer nivel
-├── artificial_intelligence/            # submódulo
-├── cyber_security/                     # submódulo
-├── piscine_pedago_ciber/               # submódulo
-├── piscine_pedago_mobile/              # submódulo
-├── piscine_pedago_data_science/        # submódulo
-│   ├── .gitmodules                     # mapa de proyectos de la piscine
-│   └── data_science_0_creation_db/     # submódulo (proyecto)
+42_outer_core/
+├── update.sh
+├── update.md
+├── .gitmodules
+├── artificial_intelligence/
+├── cyber_security/
+├── piscine_pedago_ciber/
+├── piscine_pedago_mobile/
+├── piscine_pedago_data_science/
+│   ├── .gitmodules
+│   └── data_science_0_creation_db/
 ├── unix_kernel/
 ├── virus/
 └── web_database/
 ```
 
-Cada “caja” de primer nivel en Outer Core es un repositorio independiente en GitHub; los proyectos dentro de una piscine también pueden serlo.
+Cada caja de primer nivel en Outer Core es un repo en GitHub; los proyectos dentro de una piscine también pueden serlo.
 
 ---
 
-## 🧪 10. Checklist rápida antes de publicar
+## ✅ 10. Checklist antes de publicar
 
-- [ ] Estoy dentro de la carpeta del **proyecto** que quiero publicar (no en un hermano).
-- [ ] `git status` en ese proyecto tiene sentido (sé qué voy a subir).
-- [ ] He ejecutado `../../update.sh --dry-run` y la cadena es la esperada.
-- [ ] `gh auth status` muestra sesión activa (o aceptaré el login cuando lo pida).
-- [ ] Si hay archivos > 100 MB, acepto ignorarlos o los gestiono aparte.
+- [ ] Estoy en la carpeta del **proyecto** que quiero publicar (no en un hermano).
+- [ ] Sé qué voy a subir (`git status` tiene sentido).
+- [ ] He hecho `../../update.sh --dry-run` y la cadena es la correcta.
+- [ ] Tengo sesión en GitHub (`gh auth status`) o aceptaré el login.
+- [ ] Si hay archivos > 100 MB, sé si los ignoro o los gestiono aparte.
 - [ ] No tengo un merge/rebase a medias en ningún nivel de la cadena.
 
 ---
 
-## 🎓 11. Glosario express
+## 🎓 11. Glosario
 
-| Término | Definición breve |
-|---------|------------------|
-| **Staging / índice** | “Bandeja de entrada” de lo que entrará en el próximo commit |
-| **gitlink (160000)** | Entrada especial que apunta a un commit de otro repo |
-| **Upstream** | Rama remota asociada a tu rama local (`-u` al hacer push) |
-| **Detached HEAD** | Estás mirando un commit concreto, no una rama; el script pide cambiar a una rama antes de publicar |
-| **Dry-run** | Simulación: enseña el plan sin ejecutarlo |
-| **Monorepo / portfolio** | Repo contenedor (`42_Outer_Core`) que agrupa proyectos vía submódulos |
+| Término | En corto |
+|---------|----------|
+| **Staging / índice** | Bandeja de lo que entrará en el próximo commit |
+| **gitlink (160000)** | Entrada que apunta al commit de otro repo |
+| **Upstream** | Rama remota ligada a la tuya local |
+| **Detached HEAD** | Estás en un commit suelto, no en una rama; el script pide cambiar a una rama |
+| **Dry-run** | Simulación: muestra el plan sin ejecutarlo |
+| **Monorepo / portfolio** | Repo contenedor (`42_Outer_Core`) que agrupa proyectos con submódulos |
 
 ---
 
 ## 👤 Autor
 
-**sternero** — estudiante de 42 Málaga  
+**sternero** — estudiante de 42 Málaga - agosto de 2026 
 
-Script y documentación pensados para el flujo real del campus (sgoinfre, sin sudo, GitHub CLI local) y para el portfolio [42_Outer_Core](https://github.com/STC71/42_Outer_Core).
+Pensado para el flujo del campus (sgoinfre, sin sudo, `gh` local) y para el portfolio [42_Outer_Core](https://github.com/STC71/42_Outer_Core).
 
-> “Automatizar lo repetible para poder centrarse en lo que se aprende.”
+> *Automatizar lo repetible para poder centrarse en lo que se aprende.*
 
 ---
 
 <div align="center">
 
 **¿Duda con una cadena concreta?**  
-Ejecuta primero `--dry-run`, lee la cadena que imprime y, si algo no cuadra, revisa `.gitmodules` de cada nivel antes de publicar de verdad.
+Prueba primero `--dry-run`, mira la cadena que imprime y, si algo no cuadra, revisa el `.gitmodules` de cada nivel antes de publicar de verdad.
 
-[⬆️ Volver arriba](#-updatemd--actualizador-de-repositorios-42)
+<a href="#top">⬆️ Volver arriba</a>
 
 </div>
