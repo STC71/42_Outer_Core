@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Actualizador de repositorios 42 — propuesta revisada
+
+# Actualizador de repositorios 42 — propuesta revisada el 30/08/2026
 # Publica de dentro hacia fuera una cadena de submódulos Git.
+
 set -u
 set -o pipefail
 
