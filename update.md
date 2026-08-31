@@ -25,7 +25,7 @@
 | 2 | [🏠 Idea simple](#2-idea-simple) | Cajas rusas y el ascensor |
 | 3 | [🧩 Conceptos](#3-conceptos) | Repo, commit, remoto, submódulo / gitlink (`160000`), cadena, `gh` |
 | 4 | [▶️ Uso](#4-uso) | Requisitos, [simulación](#44-simulación-muy-recomendable-la-primera-vez), [publicación](#45-publicación-real) |
-| — | [🛠️ Cómo hacerlo manualmente](#como-hacerlo-manualmente) | El ritual a mano y por qué el script ahorra dolores |
+| — | [🛠️ Cómo hacerlo manualmente](#como-hacerlo-manualmente) | El ritual a mano y por qué el script ahorra dolores de cabeza 🤯|
 | 5 | [⚙️ Funcionamiento](#5-funcionamiento) | Detección, cadena, [paso a paso por nivel](#58-en-cada-nivel-de-la-lista) |
 | 6 | [🧭 Casos reales](#6-casos-reales) | Tema sin origin, borrados, `.gitignore` vs GitHub |
 | 7 | [🛡️ Seguridad](#7-seguridad) | Confirmaciones, límites, decisiones del script |
