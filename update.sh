@@ -508,12 +508,29 @@ find_enclosing_repo() {
     return 1
 }
 
+# Quita del índice del padre cualquier entrada que choque con un gitlink:
+# el path como archivo/gitlink/tree y restos bajo path/ (cuando era carpeta normal).
+clear_index_path_for_gitlink() {
+    local parent_root=$1
+    local rel_path=$2
+    local -a nested=()
+
+    git -C "$parent_root" update-index --force-remove -- "$rel_path" 2>/dev/null || true
+    mapfile -d '' nested < <(git -C "$parent_root" ls-files -z -- "$rel_path/" 2>/dev/null || true)
+    if ((${#nested[@]} > 0)); then
+        git -C "$parent_root" update-index --force-remove -- "${nested[@]}" 2>/dev/null || true
+    fi
+}
+
+# Registra un submódulo con gitlink 160000 (sin git add de la carpeta: evita el
+# warning "embedded git repository" y el modo 040000 incorrecto).
 register_submodule() {
     local parent_root=$1
     local rel_path=$2
     local remote_url=$3
-    local mode
+    local child_abs child_sha
 
+    child_abs=$(normalize_path "$parent_root/$rel_path")
     [[ -e "$parent_root/.gitmodules" ]] || touch "$parent_root/.gitmodules"
 
     git -C "$parent_root" config --file "$parent_root/.gitmodules" \
@@ -521,17 +538,33 @@ register_submodule() {
     git -C "$parent_root" config --file "$parent_root/.gitmodules" \
         "submodule.$rel_path.url" "$remote_url"
 
-    if git -C "$parent_root" ls-files --error-unmatch -- "$rel_path" >/dev/null 2>&1; then
-        mode=$(git -C "$parent_root" ls-files -s -- "$rel_path" | awk '{print $1; exit}')
-        if [[ "$mode" != "160000" ]]; then
-            git -C "$parent_root" rm -r --cached -- "$rel_path" >/dev/null || return 1
-        fi
-    fi
+    clear_index_path_for_gitlink "$parent_root" "$rel_path"
 
-    git -C "$parent_root" add --force -- .gitmodules "$rel_path" || return 1
+    child_sha=$(git -C "$child_abs" rev-parse HEAD 2>/dev/null) \
+        || return 1
+
+    git -C "$parent_root" update-index --add --replace --cacheinfo \
+        "160000,$child_sha,$rel_path" || return 1
+    git -C "$parent_root" add --force -- .gitmodules || return 1
+
     git -C "$parent_root" config "submodule.$rel_path.url" "$remote_url"
     git -C "$parent_root" config "submodule.$rel_path.active" true
     git -C "$parent_root" submodule absorbgitdirs -- "$rel_path" >/dev/null 2>&1 || true
+}
+
+# Actualiza en el índice del padre el gitlink (160000) al HEAD actual del hijo.
+stage_submodule_gitlink() {
+    local parent_root=$1
+    local rel_path=$2
+    local child_abs child_sha
+
+    child_abs=$(normalize_path "$parent_root/$rel_path")
+    is_repository_root "$child_abs" || return 1
+    child_sha=$(git -C "$child_abs" rev-parse HEAD 2>/dev/null) || return 1
+
+    clear_index_path_for_gitlink "$parent_root" "$rel_path"
+    git -C "$parent_root" update-index --add --replace --cacheinfo \
+        "160000,$child_sha,$rel_path"
 }
 
 handle_large_files() {
@@ -754,10 +787,13 @@ stage_repository() {
         [[ -d "$abs" ]] || continue
 
         if is_repository_root "$abs"; then
+            # Submódulo: solo el gitlink 160000 (nunca git add de la carpeta)
             if [[ -n "$child_path" && "$entry" == "$child_top" ]]; then
-                git -C "$repo" add -A -- "$child_path" || { rm -f "$listing"; return 1; }
+                stage_submodule_gitlink "$repo" "$entry" \
+                    || { rm -f "$listing"; return 1; }
             elif (( is_innermost )) && is_registered_submodule "$repo" "$(normalize_path "$abs")"; then
-                git -C "$repo" add -A -- "$entry" || { rm -f "$listing"; return 1; }
+                stage_submodule_gitlink "$repo" "$entry" \
+                    || { rm -f "$listing"; return 1; }
             fi
             continue
         fi
