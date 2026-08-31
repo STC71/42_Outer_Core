@@ -125,10 +125,12 @@ usage() {
     printf '  registrar submódulos nuevos y evitar archivos > 100 MiB.\n'
     printf '\n'
     printf '%sOpciones:%s\n' "$BOLD" "$RESET"
-    printf '  -n, --dry-run   Simula: muestra la cadena y las acciones sin commit ni push\n'
-    printf '  -h, --help      Muestra esta ayuda y sale\n'
+    printf '  -n, --dry-run          Simula: muestra acciones sin commit ni push\n'
+    printf '      --split-submodule  Migra la ruta actual a cadena de submódulos\n'
+    printf '                         (de dentro hacia fuera; ver abajo)\n'
+    printf '  -h, --help             Muestra esta ayuda y sale\n'
     printf '\n'
-    printf '%sDónde ejecutarlo:%s\n' "$BOLD" "$RESET"
+    printf '%sDónde ejecutarlo (publicación normal):%s\n' "$BOLD" "$RESET"
     printf '  Desde el proyecto / submódulo más interno que quieras publicar.\n'
     printf '  Ejemplo:\n'
     printf '    cd 42_outer_core/piscine_pedago_data_science/data_science_0_creation_db\n'
@@ -136,7 +138,22 @@ usage() {
     printf '    ../../%s\n' "$me"
     printf '  Si estás en un subdirectorio (p. ej. src/), se usa la raíz Git de ese repo.\n'
     printf '\n'
-    printf '%sQué hace (resumen):%s\n' "$BOLD" "$RESET"
+    printf '%sModo --split-submodule (migración monorepo → cadena de submódulos):%s\n' "$BOLD" "$RESET"
+    printf '  Desde una subcarpeta del monorepo (uno o varios niveles), crea la\n'
+    printf '  cadena de repos igual que el flujo normal: de dentro hacia fuera.\n'
+    printf '  Ejemplo anidado:\n'
+    printf '    cd mi_portfolio/grupo1_/mi_proyecto\n'
+    printf '    ../../%s --split-submodule --dry-run\n' "$me"
+    printf '    ../../%s --split-submodule\n' "$me"
+    printf '  Resultado: mi_proyecto → submódulo de grupo1_;\n'
+    printf '             grupo1_ → submódulo del portfolio.\n'
+    printf '  También vale un solo nivel: cd mi_portfolio/mi_proyecto && ../%s --split-submodule\n' "$me"
+    printf '  Saca del índice del principal lo trackeado, init/publica cada nivel,\n'
+    printf '  registra gitlinks (160000) y propone commit/push del principal.\n'
+    printf '  Requiere origin en el repo principal. No convierte «todas» las carpetas\n'
+    printf '  del monorepo de golpe: una ruta (cadena) por ejecución.\n'
+    printf '\n'
+    printf '%sQué hace (publicación normal):%s\n' "$BOLD" "$RESET"
     printf '  1. Detecta si el repo actual es un submódulo registrado\n'
     printf '  2. Si no, propone crear/registrar la cadena hasta el monorepo con origin\n'
     printf '  3. Construye la lista de repos (hijo → padres → portfolio)\n'
@@ -1040,22 +1057,173 @@ create_submodule_chain() {
 }
 
 # ---------------------------------------------------------------------------
+# --split-submodule: carpeta(s) planas → cadena de submódulos (como update normal)
+# Ejemplo: portfolio/grupo1_/mi_proyecto
+#   → mi_proyecto (repo) submódulo de grupo1_
+#   → grupo1_ (repo) submódulo de portfolio
+# ---------------------------------------------------------------------------
+split_submodule_folder() {
+    local start_dir=$1
+    local outer_root rel_path top_seg
+    local owner outer_origin
+    local commit_message branch
+    local -a path_parts
+    local i part chain_display tracked_top=0
+
+    start_dir=$(normalize_path "$start_dir")
+    outer_root=$(git -C "$start_dir" rev-parse --show-toplevel 2>/dev/null) \
+        || fail "el directorio actual no pertenece a un repositorio Git"
+    outer_root=$(normalize_path "$outer_root")
+
+    if [[ "$start_dir" == "$outer_root" ]]; then
+        fail "modo --split-submodule: ejecuta el script desde una SUBCARPETA del monorepo, no desde la raíz.
+Ejemplo: cd mi_portfolio/grupo1_/mi_proyecto && ../../update.sh --split-submodule"
+    fi
+
+    rel_path=${start_dir#"$outer_root"/}
+    if [[ -z "$rel_path" || "$rel_path" == "$start_dir" ]]; then
+        fail "no se pudo calcular la ruta relativa respecto al repo principal"
+    fi
+
+    IFS='/' read -r -a path_parts <<< "$rel_path"
+    top_seg=${path_parts[0]}
+
+    # Si el primer nivel ya es submódulo registrado del portfolio, el flujo normal basta
+    if is_registered_submodule "$outer_root" "$(normalize_path "$outer_root/$top_seg")"; then
+        fail "el nivel '$top_seg' ya es submódulo del repo principal.
+Usa el flujo normal (sin --split-submodule) desde el proyecto interno."
+    fi
+
+    repo_has_origin "$outer_root" \
+        || fail "el repositorio principal ($outer_root) no tiene remoto origin; configúralo antes"
+
+    if repo_has_in_progress_operation "$outer_root"; then
+        fail "hay un merge/rebase/cherry-pick en curso en el repo principal; termínalo antes"
+    fi
+
+    outer_origin=$(git -C "$outer_root" remote get-url origin)
+    owner=$(github_owner_from_url "$outer_origin")
+    [[ -n "$owner" ]] || fail "no se pudo determinar el propietario de GitHub desde origin"
+    GIT_PROTOCOL=$(detect_git_protocol "$outer_origin")
+
+    if git -C "$outer_root" ls-files --error-unmatch -- "$top_seg" >/dev/null 2>&1 \
+        || git -C "$outer_root" ls-files --error-unmatch -- "$rel_path" >/dev/null 2>&1; then
+        tracked_top=1
+    fi
+
+    chain_display=""
+    for ((i = ${#path_parts[@]} - 1; i >= 0; i--)); do
+        part=${path_parts[i]}
+        if [[ -z "$chain_display" ]]; then
+            chain_display=$part
+        else
+            chain_display="$chain_display → $part"
+        fi
+    done
+    chain_display="$chain_display → $(basename "$outer_root")"
+
+    printf '\n%s%s🔪 Modo --split-submodule%s (cadena, de dentro hacia fuera)\n' \
+        "$BOLD" "$YELLOW" "$RESET"
+    printf '%sRuta desde el principal:%s %s\n' "$DIM" "$RESET" "$rel_path"
+    printf '%sRepo principal:%s %s\n' "$DIM" "$RESET" "$outer_root"
+    printf '%sCadena objetivo:%s %s\n' "$DIM" "$RESET" "$chain_display"
+    printf '%sRemotos (prefijo 42_):%s\n' "$DIM" "$RESET"
+    for part in "${path_parts[@]}"; do
+        printf '  • %s/%s\n' "$owner" "$(module_remote_name "$part")"
+    done
+    printf '%s¿Árbol trackeado en el principal?:%s %s\n' "$DIM" "$RESET" \
+        "$(if (( tracked_top )); then echo sí; else echo no; fi)"
+    printf '\n%sSe hará (mismo espíritu que update.sh normal):%s\n' "$BOLD" "$RESET"
+    printf '  1. Sacar del índice del principal la ruta %s (si aplica)\n' "$top_seg"
+    printf '  2. Crear/publicar cada nivel de dentro hacia fuera\n'
+    printf '  3. Registrar cada hijo como submódulo (gitlink 160000) en su padre\n'
+    printf '  4. Registrar %s como submódulo del principal y commit/push\n' "$top_seg"
+    print_rule
+
+    if (( DRY_RUN )); then
+        # Reutiliza la simulación detallada de creación de cadena
+        create_submodule_chain "$outer_root" "$start_dir" \
+            || fail "falló la simulación de la cadena"
+        printf '%s🧪 Además se registraría %s en el principal y se propondría commit/push.%s\n' \
+            "$YELLOW" "$top_seg" "$RESET"
+        printf '%s🧪 Fin de la simulación --split-submodule.%s\n\n' "$YELLOW" "$RESET"
+        return 0
+    fi
+
+    confirm "Crear la cadena de submódulos para '$rel_path'" \
+        || { printf '%s⏹ Cancelado.%s\n' "$YELLOW" "$RESET"; return 0; }
+
+    # 1) Quitar del índice del monorepo (archivos siguen en disco)
+    if (( tracked_top )); then
+        printf '%s│%s Sacando del índice del principal: %s …\n' "$BLUE" "$RESET" "$top_seg"
+        git -C "$outer_root" rm -r --cached -- "$top_seg" >/dev/null 2>&1 \
+            || git -C "$outer_root" rm -r --cached -- "$rel_path" >/dev/null \
+            || fail "no se pudo hacer git rm --cached en el principal"
+    fi
+
+    # 2–3) Misma lógica que el flujo normal al montar cadena sin registrar
+    create_submodule_chain "$outer_root" "$start_dir" \
+        || fail "no se pudo crear/publicar la cadena de submódulos"
+
+    # 4) Commit (+ push) del principal con el gitlink del primer nivel
+    git -C "$outer_root" add --force -- .gitmodules "$top_seg" 2>/dev/null || true
+    if git -C "$outer_root" diff --cached --quiet; then
+        printf '%sℹ El principal no tiene cambios pendientes tras el registro.%s\n' "$DIM" "$RESET"
+    else
+        commit_message=$(prompt_commit_message \
+            "Split chain $rel_path into submodules · $(date '+%d/%m/%y %H:%M')")
+        git -C "$outer_root" commit -m "$commit_message" \
+            || fail "no se pudo crear el commit en el repo principal"
+        printf '%s✅ Commit creado en el principal (%s)%s\n' \
+            "$GREEN" "$(basename "$outer_root")" "$RESET"
+
+        if confirm "¿Hacer push del principal '$(basename "$outer_root")' a origin?"; then
+            branch=$(current_branch "$outer_root")
+            [[ -n "$branch" ]] || fail "el principal está en detached HEAD"
+            push_branch "$outer_root" "$branch" \
+                || fail "no se pudo hacer push del principal"
+            printf '%s✅ Principal sincronizado con GitHub%s\n' "$GREEN" "$RESET"
+        else
+            printf '%sℹ Commit del principal queda solo en local; haz push cuando quieras.%s\n' \
+                "$DIM" "$RESET"
+        fi
+    fi
+
+    printf '\n%s%s🎉 Cadena de submódulos lista%s\n' "$GREEN" "$BOLD" "$RESET"
+    printf '%s  %s%s\n' "$DIM" "$chain_display" "$RESET"
+    printf '%sComprueba:%s git -C %s ls-files -s %s\n' \
+        "$DIM" "$RESET" "$outer_root" "$top_seg"
+    printf '%s         %s git -C %s/%s ls-files -s  # niveles internos\n\n' \
+        "$DIM" "$RESET" "$outer_root" "$top_seg"
+    return 0
+}
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
 DRY_RUN=0
-case "${1:-}" in
-    '') ;;
-    --dry-run|-n) DRY_RUN=1 ;;
-    --help|-h)
-        usage
-        exit 0
-        ;;
-    *)
-        usage >&2
-        exit 2
-        ;;
-esac
+SPLIT_SUBMODULE=0
+while (( $# > 0 )); do
+    case "$1" in
+        --dry-run|-n)
+            DRY_RUN=1
+            shift
+            ;;
+        --split-submodule)
+            SPLIT_SUBMODULE=1
+            shift
+            ;;
+        --help|-h)
+            usage
+            exit 0
+            ;;
+        *)
+            usage >&2
+            exit 2
+            ;;
+    esac
+done
 
 command -v git >/dev/null 2>&1 || fail "no se encontró git en PATH"
 command -v find >/dev/null 2>&1 || fail "no se encontró find en PATH"
@@ -1074,6 +1242,11 @@ if (( DRY_RUN )); then
     printf '%s%s🧪 Modo simulación%s: no se ejecutarán add, commit ni push.\n' \
         "$YELLOW" "$BOLD" "$RESET"
     print_rule
+fi
+
+if (( SPLIT_SUBMODULE )); then
+    split_submodule_folder "$START_DIR"
+    exit $?
 fi
 
 parent_dir=$(dirname "$current_root")
