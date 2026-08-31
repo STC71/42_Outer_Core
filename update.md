@@ -21,9 +21,11 @@
 | # | Sección | Contenido |
 |---|---------|-----------|
 | 1 | [🎯 Objetivo](#1-objetivo) | Por qué existe el script |
+| — | [⚖️ Ventajas y límites](#ventajas-y-limites) | Por qué anidar repos y cómo el script mitiga los dolores |
 | 2 | [🏠 Idea simple](#2-idea-simple) | Cajas rusas y el ascensor |
-| 3 | [🧩 Conceptos](#3-conceptos) | Repo, commit, remoto, submódulo, cadena, `gh` |
+| 3 | [🧩 Conceptos](#3-conceptos) | Repo, commit, remoto, submódulo / gitlink (`160000`), cadena, `gh` |
 | 4 | [▶️ Uso](#4-uso) | Requisitos, [simulación](#44-simulación-muy-recomendable-la-primera-vez), [publicación](#45-publicación-real) |
+| — | [🛠️ Cómo hacerlo manualmente](#como-hacerlo-manualmente) | El ritual a mano y por qué el script ahorra dolores |
 | 5 | [⚙️ Funcionamiento](#5-funcionamiento) | Detección, cadena, [paso a paso por nivel](#58-en-cada-nivel-de-la-lista) |
 | 6 | [🧭 Casos reales](#6-casos-reales) | Tema sin origin, borrados, `.gitignore` vs GitHub |
 | 7 | [🛡️ Seguridad](#7-seguridad) | Confirmaciones, límites, decisiones del script |
@@ -39,7 +41,7 @@
 
 <a id="1-objetivo"></a>
 
-En **GitHub** es habitual tener **varios repositorios uno dentro de otro** (anidados):
+En 42 es habitual tener **varios repositorios uno dentro de otro**:
 
 ```text
 42_Outer_Core                          ← 🗂️  portfolio (todo el curso)
@@ -59,6 +61,44 @@ A mano es lento y fácil equivocarse (olvidar un nivel, colar carpetas hermanas,
 
 > 💡 **En una frase:**  
 > Desde la carpeta del proyecto en el que trabajas, el script sube tus cambios a GitHub y actualiza todos los “contenedores” padres, en orden y con confirmación.
+
+<div align="right"><a href="#top">⬆️ Volver arriba</a></div>
+
+---
+
+## ⚖️ Ventajas y límites de los repos anidados
+
+<a id="ventajas-y-limites"></a>
+
+Anidar repositorios (submódulos) no es un capricho: encaja muy bien con cómo está organizado el currículo de 42. Tampoco es gratis: añade fricción. Esta sección resume **por qué merece la pena**, **dónde duele** y **cómo `update.sh` responde** en cada caso.
+
+### ✅ Ventajas (y cómo el script las aprovecha)
+
+| Ventaja | Qué ganas | Cómo lo afronta el script |
+|---------|-----------|---------------------------|
+| **Un repo por proyecto** | Historial limpio, issues y README propios, sin mezclar el código de un proyecto con el de un módulo de otro proyecto diferente | Publica cada nivel como repo independiente en GitHub (`42_nombre_carpeta`) y enlaza padres con gitlink (`160000`) |
+| **Portfolio legible** | Quien abra `42_repo_principal` ve la estructura del curso, no un monorepo gigante con miles de archivos sueltos | Actualiza la cadena **de dentro hacia fuera**: proyecto → tema → portfolio, para que las “etiquetas” de los padres apunten a la versión buena |
+| **Versiones independientes** | Puedes avanzar un módulo sin forzar un commit enorme en el repo raíz | Solo toca el repo desde el que ejecutas y **sus padres registrados**; no reescribe el historial de hermanos |
+| **Visibilidad y remoto a medida** | Un proyecto puede ser privado y otro público; SSH o HTTPS según tu entorno | Si falta el remoto, propone crearlo con `gh` (privado por defecto) e intenta respetar el protocolo del padre |
+| **Trabajo local familiar** | En disco sigues teniendo carpetas normales (`cd proyecto && code .`) | Parte del directorio actual (o de la raíz Git si estás en un subdirectorio) y detecta solo la cadena relevante |
+
+### ⚠️ Desventajas (y cómo el script las mitiga)
+
+| Desventaja | Qué puede salir mal a mano | Cómo lo mitiga el script |
+|------------|----------------------------|--------------------------|
+| **Publicar es un ritual de varios pasos** | Olvidas hacer push del hijo, o actualizas el padre sin haber subido el commit nuevo → el remoto queda incoherente | Construye la lista hijo → padres, pide **confirmación en cada nivel** y hace commit + push en orden |
+| **Fácil “ensuciar” el padre** | Un `git add .` en el portfolio mete carpetas hermanas o archivos que no querías | **Staging selectivo**: en padres solo la ficha del hijo de la cadena + archivos de la raíz; no mete hermanos |
+| **Submódulo no registrado** | Tienes un `.git` dentro de una carpeta pero el padre no lo tiene en `.gitmodules` → Git se queja o trata mal la carpeta | Detecta repos sin registrar, puede **crear la cadena** hasta el ancestro con `origin` y registrar el submódulo |
+| **Archivos enormes** | Un CSV de varios GB hace fallar el push a GitHub (límite ~100 MiB) | En el nivel interno lista archivos **> 100 MiB**, propone `.gitignore` + `git rm --cached` (siguen en disco) |
+| **`.gitignore` no borra el pasado** | Añades `*.pdf` pero el PDF ya versionado **sigue en GitHub** | Detecta rutas ignoradas **aún rastreadas** y propone dejar de versionarlas; no intenta `git add` de ignorados |
+| **Borrados locales olvidados** | Borras un fichero en disco local pero el remoto lo conserva | En el staging registra **borrados** de rutas ya rastreadas (en padres, raíz o hijo de la cadena) |
+| **Miedo a “romper algo”** | No sabes qué va a tocar antes de ejecutar | Modo **`--dry-run`**: misma detección, sin commit ni push |
+| **Mensajes de commit genéricos** | Historial poco útil (`Update repo` repetido cien veces) | Propone mensaje con **fecha/hora**; puedes personalizarlo (la marca temporal se mantiene) |
+
+### 🧭 En resumen
+
+Los repos anidados te dan **orden y autonomía por proyecto** a costa de un flujo de publicación más exigente.  
+`update.sh` no elimina esa complejidad de Git — la **automatiza con reglas seguras**: orden correcto, confirmaciones, staging acotado y avisos ante archivos grandes o inconsistencias de `.gitignore`.
 
 <div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
@@ -127,14 +167,38 @@ La **copia en la nube**. Casi siempre se llama `origin`.
 
 Un **repo completo dentro de otro**, pero el padre **no copia todos los archivos del hijo**. Solo guarda:
 
-- la ruta de la carpeta, y  
-- el **código del commit exacto** del hijo (como un código de barras de “esta edición concreta”).
+- la **ruta** de la carpeta, y  
+- el **identificador del commit exacto** del hijo (como un código de barras de “esta edición concreta”).
 
-En Git eso aparece con el modo **`160000`** (gitlink).
+En Git eso se ve como un **gitlink** con modo **`160000`**.
 
 > 🏷️ **Analogía:** en el inventario del armario no guardas el cuaderno entero; guardas una ficha: *“cuaderno de mates, edición del 30 de agosto”*. Quien clone el armario usa esa ficha para **descargar** el cuaderno correcto.
 
-El archivo **`.gitmodules`** es la lista de fichas del padre:
+#### ¿Qué es un gitlink y qué significa `160000`?
+
+Cada entrada del árbol de Git lleva un **modo** (parecido a los permisos de Unix) que indica *qué tipo de cosa* es. El valor **`160000`** es el código interno que Git reserva para un **submódulo**.
+
+| Modo | Qué representa |
+|------|----------------|
+| `100644` | Archivo normal (no ejecutable) |
+| `100755` | Archivo ejecutable |
+| `120000` | Enlace simbólico (symlink) |
+| **`160000`** | **Submódulo (gitlink)** |
+
+Un **gitlink** no guarda el código del otro repo dentro del padre. Solo guarda un **hash SHA-1**: el commit concreto del hijo. Es la forma de decir:
+
+> *«Cuando alguien clone este proyecto con submódulos, ve al otro repositorio y descarga el código **en este commit**».*
+
+Por eso, al publicar, el padre debe actualizarse **después** del hijo: primero existe el commit en GitHub del proyecto, y luego el padre guarda la ficha (`160000` + hash) que apunta a él.
+
+Puedes comprobarlo en el portfolio:
+
+```bash
+git ls-files -s piscine_pedago_data_science
+# Debe empezar por 160000
+```
+
+El archivo **`.gitmodules`** es la lista de fichas del padre (ruta + URL del remoto del hijo):
 
 ```ini
 [submodule "piscine_pedago_data_science"]
@@ -234,7 +298,7 @@ Preguntas habituales:
 |--------------|------------|
 | Crear remoto y publicar este nivel `[s/N]` | Crear el repo en GitHub si aún no existe |
 | Visibilidad `[p]` privado / `[u]` público | Privacidad del repo nuevo (por defecto: privado) |
-| Añadir archivos grandes al `.gitignore` | Evitar el rechazo de GitHub (> 100 MB) |
+| Añadir archivos grandes al `.gitignore` | Evitar el rechazo de GitHub (> 100 MiB) |
 | Publicar `'nombre'` en `'main'` `[s/N]` | Confirmar commit + push de ese nivel |
 
 Respuestas que cuentan como **sí:** `s`, `si`, `sí`, `y`, `yes` (da igual mayúsculas o minúsculas).
@@ -244,6 +308,112 @@ Respuestas que cuentan como **sí:** `s`, `si`, `sí`, `y`, `yes` (da igual may�
 ```bash
 ./update.sh --help
 ```
+
+<div align="right"><a href="#top">⬆️ Volver arriba</a></div>
+
+---
+
+## 🛠️ Cómo hacerlo todo manualmente
+
+<a id="como-hacerlo-manualmente"></a>
+
+Esta sección no sustituye al script: sirve para **entender el ritual** que automatiza. Si algún día no puedes usarlo (o quieres depurar a mano), aquí va el camino completo para una cadena típica:
+
+```text
+proyecto   →  data_science_0_creation_db
+tema       →  piscine_pedago_data_science
+portfolio  →  42_outer_core
+```
+
+Asumimos que los tres niveles **ya existen** como repos Git, están registrados como submódulos y tienen remoto `origin`. Si no, al final hay un apunte sobre el caso “desde cero”.
+
+### Paso 1 — Proyecto (el más interno)
+
+```bash
+cd .../piscine_pedago_data_science/data_science_0_creation_db
+
+# Revisar qué hay
+git status
+
+# Archivos > 100 MiB: no los subas; añádelos al .gitignore y, si ya estaban
+# versionados: git rm --cached ruta/al/archivo
+# Igual con cosas que ya cubre el .gitignore pero siguen en el índice.
+
+git add -A          # o rutas concretas; respeta .gitignore
+git status          # comprueba el índice
+git commit -m "Update data_science_0_creation_db · $(date '+%d/%m/%y %H:%M')"
+git push origin main
+```
+
+Sin este push, el padre **no puede** apuntar a un commit que aún no existe en GitHub.
+
+### Paso 2 — Tema / piscina (padre intermedio)
+
+```bash
+cd .../piscine_pedago_data_science
+
+# Actualizar la ficha del hijo (gitlink 160000 → nuevo commit)
+git add data_science_0_creation_db
+# Si cambió .gitmodules u otros archivos de la raíz del tema:
+git add .gitmodules   # solo si procede
+
+git status            # debe verse el submódulo como commit nuevo, no como miles de archivos
+git commit -m "Update piscine_pedago_data_science · $(date '+%d/%m/%y %H:%M')"
+git push origin main
+```
+
+> ⚠️ Un `git add .` descuidado puede meter **hermanos** o basura. Aquí solo quieres la ficha del hijo (y lo de la raíz del tema que sí toque).
+
+### Paso 3 — Portfolio (raíz)
+
+```bash
+cd .../42_outer_core
+
+git add piscine_pedago_data_science
+git add .gitmodules   # solo si cambió
+
+git status
+git commit -m "Update 42_outer_core · $(date '+%d/%m/%y %H:%M')"
+git push origin main
+```
+
+### Comprobar que quedó bien
+
+```bash
+cd .../42_outer_core
+git ls-files -s piscine_pedago_data_science   # debe empezar por 160000
+cat .gitmodules
+git submodule status
+```
+
+### Si el proyecto o el tema aún no existen en GitHub
+
+A mano el camino se alarga:
+
+1. `git init` (si no hay repo) → primer commit.  
+2. Crear el repo remoto (`gh repo create …` o desde la web).  
+3. `git remote add origin …` y `git push -u origin main`.  
+4. En el padre: escribir `.gitmodules`, `git submodule add` **o** registrar a mano ruta + URL y el gitlink `160000`.  
+5. Commit + push del padre.  
+6. Repetir hacia arriba hasta el portfolio.
+
+Es fácil equivocarse en el orden, en el nombre del remoto (`42_…`) o al registrar el submódulo.
+
+### 💭 Reflexión: ¿para qué el script entonces?
+
+Hacerlo a mano **es viable** y conviene conocerlo: así entiendes por qué el orden importa y qué es un gitlink. Pero en el día a día del campus el coste se acumula:
+
+| A mano | Con `update.sh` |
+|--------|------------------|
+| Tres (o más) `cd` + `add` + `commit` + `push` | Un comando desde el proyecto |
+| Recuerdas tú el orden dentro → fuera | El script construye la cadena y la respeta |
+| Riesgo de `git add .` en el padre | Staging selectivo (hijo de la cadena + raíz) |
+| Archivos enormes / `.gitignore` a ojo | Avisos y propuestas guiadas |
+| Crear repos y registrar submódulos a mano | Lo propone y automatiza con confirmación |
+| Mensajes y fechas como te acuerdes | Mensaje por defecto con marca de tiempo (personalizable) |
+| “¿Habré tocado un hermano?” | No publica repos fuera de la cadena |
+
+En resumen: **el manual te enseña el oficio; el script te ahorra el trabajo repetible** y reduce errores tontos sin esconder lo que Git está haciendo. Si dudas, empieza siempre con `--dry-run`.
 
 <div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
@@ -297,7 +467,7 @@ Pregunta clave: *¿Hay un padre Git que me tenga en su `.gitmodules`?*
 
 1. Mira el **padre inmediato**.
 2. Si ese padre es repo **y tiene `origin`** → te registra ahí.
-3. Si el padre es repo **pero no tiene `origin`** (repo local a medias) → **no se queda ahí**. Sube hasta un ancestro con remoto (en este caso `42_outer_core`) y monta la **cadena completa**.
+3. Si el padre es repo **pero no tiene `origin`** (repo local a medias) → **no se queda ahí**. Sube hasta un ancestro con remoto (casi siempre `42_outer_core`) y monta la **cadena completa**.
 
 > ⚠️ `find_ancestor_with_origin` **nunca** elige el propio proyecto actual, aunque ya tenga `origin` en GitHub. Si no, confundiría el cuaderno con el armario.
 
@@ -350,7 +520,7 @@ Ejemplo de lo que verás:
 
 Tras tu **sí**:
 
-1. **Archivos grandes** (solo en el más interno) — GitHub rechaza archivos **> 100 MB**. Si los hay, los lista y, si aceptas, los mete en `.gitignore` y los saca del índice **sin borrarlos del disco**.
+1. **Archivos grandes** (solo en el más interno) — GitHub rechaza archivos **> 100 MiB**. Si los hay, los lista y, si aceptas, los mete en `.gitignore` y los saca del índice **sin borrarlos del disco**.
 2. **Ignorados aún versionados** (solo en el más interno) — Detecta archivos que **siguen en el índice** pero ya cubre el `.gitignore` (p. ej. un PDF subido antes de añadir `*.pdf`). Te propone dejar de versionarlos con `git rm --cached` (permanecen en disco). Si aceptas, el commit deja de incluirlos en GitHub.
 3. **Staging selectivo** — No hace un “añadir todo el disco”.  
    - En el hijo: archivos del proyecto; submódulos solo si ya están registrados.  
@@ -448,7 +618,7 @@ Muy habitual: se subió un PDF (o similar) y **después** se añadió `*.pdf` al
 |---------|----------------|
 | Cadena sin registrar… | Hay que montar o registrar la cadena antes de publicar |
 | Nivel ya es repo local, pero sin origin | Existe `.git` local; falta el remoto y el primer push |
-| Archivos > 100 MB | GitHub los rechazaría; se propone ignorarlos |
+| Archivos > 100 MiB | GitHub los rechazaría; se propone ignorarlos |
 | Sin cambios nuevos… | No había diff; igual se comprueba el remoto |
 | Sigue sin ser un submódulo registrado | Tras intentar crear/registrar, aún falta el padre en `.gitmodules` |
 | Aún versionados aunque los cubre el `.gitignore` | Ofrece `git rm --cached` (siguen en disco) |
@@ -480,7 +650,7 @@ Si ves `160000` y la entrada en `.gitmodules`, está bien.
 |----------|---------|
 | Confirmación en cada nivel | No publicar un piso del edificio sin querer |
 | `--dry-run` | Ensayo sin consecuencias |
-| Límite 100 MB | Política de GitHub; mejor avisar antes que fallar a mitad de push |
+| Límite 100 MiB | Política de GitHub; mejor avisar antes que fallar a mitad de push |
 | Staging selectivo | El commit del padre no se llena de carpetas ajenas |
 | Borrados versionados | Si quitas un archivo ya rastreado, el commit lo refleja en GitHub |
 | Ignorados aún rastreados | Propone sacarlos del índice si el `.gitignore` ya los cubre |
@@ -543,7 +713,7 @@ En los personalizados también se añade la marca ` · DD/MM/AA HH:MM` al final,
 
 ---
 
-## 📁 9. Ejemplo de estructura del portfolio
+## 📁 9. Estructura del portfolio
 
 <a id="9-estructura-del-portfolio"></a>
 
@@ -564,7 +734,7 @@ En los personalizados también se añade la marca ` · DD/MM/AA HH:MM` al final,
 └── web_database/
 ```
 
-Cada carpeta de primer nivel en el repo principal es un repo en GitHub; los proyectos dentro de una carpeta también pueden serlo.
+Cada caja de primer nivel en Outer Core es un repo en GitHub; los proyectos dentro de una piscine también pueden serlo.
 
 ---
 
@@ -576,7 +746,7 @@ Cada carpeta de primer nivel en el repo principal es un repo en GitHub; los proy
 - [ ] Sé qué voy a subir (`git status` tiene sentido).
 - [ ] He hecho `../../update.sh --dry-run` y la cadena es la correcta.
 - [ ] Tengo sesión en GitHub (`gh auth status`) o aceptaré el login.
-- [ ] Si hay archivos > 100 MB, sé si los ignoro o los gestiono aparte.
+- [ ] Si hay archivos > 100 MiB, sé si los ignoro o los gestiono aparte.
 - [ ] Si el `.gitignore` cubre cosas que aún están en GitHub, aceptaré dejar de versionarlas cuando el script lo proponga.
 - [ ] No tengo un merge/rebase a medias en ningún nivel de la cadena.
 
@@ -589,7 +759,8 @@ Cada carpeta de primer nivel en el repo principal es un repo en GitHub; los proy
 | Término | En corto |
 |---------|----------|
 | **Staging / índice** | Bandeja de lo que entrará en el próximo commit |
-| **gitlink (160000)** | Entrada que apunta al commit de otro repo |
+| **gitlink (`160000`)** | Entrada del padre que apunta al **commit** de otro repo (no copia los archivos) |
+| **Modo de archivo (Git)** | Tipo de objeto: `100644` archivo, `100755` ejecutable, `120000` symlink, `160000` submódulo |
 | **Upstream** | Rama remota ligada a la tuya local |
 | **Detached HEAD** | Estás en un commit suelto, no en una rama; el script pide cambiar a una rama |
 | **Dry-run** | Simulación: muestra el plan sin ejecutarlo |
@@ -605,7 +776,7 @@ Cada carpeta de primer nivel en el repo principal es un repo en GitHub; los proy
 
 Pensado para el flujo del campus (sgoinfre, sin sudo, `gh` local) y para el portfolio [42_Outer_Core](https://github.com/STC71/42_Outer_Core).
 
-> *Automatizar lo repetible para poder centrarse en lo que se construye.*
+> *Automatizar lo repetible para poder centrarse en lo que se aprende.*
 
 ---
 
