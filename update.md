@@ -21,11 +21,11 @@
 | # | Sección | Contenido |
 |---|---------|-----------|
 | 1 | [🎯 Objetivo](#1-objetivo) | Por qué existe el script |
-| 2 | [⚖️ Ventajas y límites](#2-ventajas-y-limites) | Por qué anidar repos y cómo el script mitiga los dolores |
+| 2 | [⚖️ Ventajas y límites](#2-ventajas-y-limites) | Por qué anidar repos y cómo el script mitiga su dificultad |
 | 3 | [🏠 Idea simple](#3-idea-simple) | Cajas rusas y el ascensor |
 | 4 | [🧩 Conceptos](#4-conceptos) | Repo, commit, remoto, submódulo / gitlink (`160000`), cadena, `gh` |
 | 5 | [▶️ Uso](#5-uso) | Requisitos, dry-run, publicación, [`--split-submodule`](#57-modo-split-submodule) |
-| 6 | [🛠️ Cómo hacerlo manualmente](#6-como-hacerlo-manualmente) | El ritual a mano y por qué el script ahorra dolores |
+| 6 | [🛠️ Cómo hacerlo manualmente](#6-como-hacerlo-manualmente) | El ritual a mano y por qué el script ahorra dolores de cabeza 🤯|
 | 7 | [⚙️ Funcionamiento](#7-funcionamiento) | Detección, cadena, paso a paso por nivel |
 | 8 | [🧭 Casos reales](#8-casos-reales) | Tema sin origin, monorepo plano, borrados, `.gitignore` |
 | 9 | [🛡️ Seguridad](#9-seguridad) | Confirmaciones, límites, decisiones del script |
@@ -877,15 +877,17 @@ Cada caja de primer nivel en Outer Core es un repo en GitHub; los proyectos dent
 
 Pensado para el flujo del campus (sgoinfre, sin sudo, `gh` local) y para el portfolio [42_Outer_Core](https://github.com/STC71/42_Outer_Core).
 
-> *Automatizar lo repetible para poder centrarse en lo que se aprende.*
+> *Automatizar lo repetible para poder centrarse en lo que se construye.*
 
 ---
 
 <div align="center">
 
+<br>
 **¿Duda con una cadena concreta?**  
+<br><br>
 Prueba primero `--dry-run`, mira la cadena que imprime y, si algo no cuadra, revisa el `.gitmodules` de cada nivel antes de publicar de verdad.
-
+<br><br>
 <a href="#top">⬆️ Volver arriba</a>
 
 </div>
