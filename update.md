@@ -21,19 +21,19 @@
 | # | Sección | Contenido |
 |---|---------|-----------|
 | 1 | [🎯 Objetivo](#1-objetivo) | Por qué existe el script |
-| — | [⚖️ Ventajas y límites](#ventajas-y-limites) | Por qué anidar repos y cómo el script mitiga los dolores |
-| 2 | [🏠 Idea simple](#2-idea-simple) | Cajas rusas y el ascensor |
-| 3 | [🧩 Conceptos](#3-conceptos) | Repo, commit, remoto, submódulo / gitlink (`160000`), cadena, `gh` |
-| 4 | [▶️ Uso](#4-uso) | Requisitos, [simulación](#44-simulación-muy-recomendable-la-primera-vez), [publicación](#45-publicación-real) |
-| — | [🛠️ Cómo hacerlo manualmente](#como-hacerlo-manualmente) | El ritual a mano y por qué el script ahorra dolores de cabeza 🤯|
-| 5 | [⚙️ Funcionamiento](#5-funcionamiento) | Detección, cadena, [paso a paso por nivel](#58-en-cada-nivel-de-la-lista) |
-| 6 | [🧭 Casos reales](#6-casos-reales) | Tema sin origin, borrados, `.gitignore` vs GitHub |
-| 7 | [🛡️ Seguridad](#7-seguridad) | Confirmaciones, límites, decisiones del script |
-| 8 | [❓ FAQ](#8-faq) | Preguntas frecuentes |
-| 9 | [📁 Estructura del portfolio](#9-estructura-del-portfolio) | Árbol recomendado de carpetas |
-| 10 | [✅ Checklist](#10-checklist-antes-de-publicar) | Antes de publicar |
-| 11 | [🎓 Glosario](#11-glosario) | Términos en corto |
-| 12 | [👤 Autor](#autor) | sternero · 42 Málaga |
+| 2 | [⚖️ Ventajas y límites](#2-ventajas-y-limites) | Por qué anidar repos y cómo el script mitiga los dolores |
+| 3 | [🏠 Idea simple](#3-idea-simple) | Cajas rusas y el ascensor |
+| 4 | [🧩 Conceptos](#4-conceptos) | Repo, commit, remoto, submódulo / gitlink (`160000`), cadena, `gh` |
+| 5 | [▶️ Uso](#5-uso) | Requisitos, dry-run, publicación, [`--split-submodule`](#57-modo-split-submodule) |
+| 6 | [🛠️ Cómo hacerlo manualmente](#6-como-hacerlo-manualmente) | El ritual a mano y por qué el script ahorra dolores |
+| 7 | [⚙️ Funcionamiento](#7-funcionamiento) | Detección, cadena, paso a paso por nivel |
+| 8 | [🧭 Casos reales](#8-casos-reales) | Tema sin origin, monorepo plano, borrados, `.gitignore` |
+| 9 | [🛡️ Seguridad](#9-seguridad) | Confirmaciones, límites, decisiones del script |
+| 10 | [❓ FAQ](#10-faq) | Preguntas frecuentes |
+| 11 | [📁 Estructura del portfolio](#11-estructura-del-portfolio) | Árbol recomendado de carpetas |
+| 12 | [✅ Checklist](#12-checklist-antes-de-publicar) | Antes de publicar |
+| 13 | [🎓 Glosario](#13-glosario) | Términos en corto |
+| 14 | [👤 Autor](#14-autor) | sternero · 42 Málaga |
 
 ---
 
@@ -59,6 +59,8 @@ A mano es lento y fácil equivocarse (olvidar un nivel, colar carpetas hermanas,
 
 **`update.sh` hace esa cadena por ti:** publica **de dentro hacia fuera**, pide confirmación en cada nivel, crea repos en GitHub si faltan y registra los submódulos bien.
 
+También puede **migrar un monorepo de carpetas planas** a esa estructura con `--split-submodule` (de dentro hacia fuera, una ruta por ejecución).
+
 > 💡 **En una frase:**  
 > Desde la carpeta del proyecto en el que trabajas, el script sube tus cambios a GitHub y actualiza todos los “contenedores” padres, en orden y con confirmación.
 
@@ -66,9 +68,9 @@ A mano es lento y fácil equivocarse (olvidar un nivel, colar carpetas hermanas,
 
 ---
 
-## ⚖️ Ventajas y límites de los repos anidados
+## ⚖️ 2. Ventajas y límites de los repos anidados
 
-<a id="ventajas-y-limites"></a>
+<a id="2-ventajas-y-limites"></a>
 
 Anidar repositorios (submódulos) no es un capricho: encaja muy bien con cómo está organizado el currículo de 42. Tampoco es gratis: añade fricción. Esta sección resume **por qué merece la pena**, **dónde duele** y **cómo `update.sh` responde** en cada caso.
 
@@ -89,6 +91,7 @@ Anidar repositorios (submódulos) no es un capricho: encaja muy bien con cómo e
 | **Publicar es un ritual de varios pasos** | Olvidas hacer push del hijo, o actualizas el padre sin haber subido el commit nuevo → el remoto queda incoherente | Construye la lista hijo → padres, pide **confirmación en cada nivel** y hace commit + push en orden |
 | **Fácil “ensuciar” el padre** | Un `git add .` en el portfolio mete carpetas hermanas o archivos que no querías | **Staging selectivo**: en padres solo la ficha del hijo de la cadena + archivos de la raíz; no mete hermanos |
 | **Submódulo no registrado** | Tienes un `.git` dentro de una carpeta pero el padre no lo tiene en `.gitmodules` → Git se queja o trata mal la carpeta | Detecta repos sin registrar, puede **crear la cadena** hasta el ancestro con `origin` y registrar el submódulo |
+| **Monorepo de carpetas planas** | Convertir a mano cada carpeta en repo + submódulo es largo y fácil fallar el orden | Modo **`--split-submodule`**: migra la ruta actual a cadena de submódulos (de dentro hacia fuera) |
 | **Archivos enormes** | Un CSV de varios GB hace fallar el push a GitHub (límite ~100 MiB) | En el nivel interno lista archivos **> 100 MiB**, propone `.gitignore` + `git rm --cached` (siguen en disco) |
 | **`.gitignore` no borra el pasado** | Añades `*.pdf` pero el PDF ya versionado **sigue en GitHub** | Detecta rutas ignoradas **aún rastreadas** y propone dejar de versionarlas; no intenta `git add` de ignorados |
 | **Borrados locales olvidados** | Borras un fichero en disco local pero el remoto lo conserva | En el staging registra **borrados** de rutas ya rastreadas (en padres, raíz o hijo de la cadena) |
@@ -104,9 +107,9 @@ Los repos anidados te dan **orden y autonomía por proyecto** a costa de un fluj
 
 ---
 
-## 🏠 2. Idea simple
+## 🏠 3. Idea simple
 
-<a id="2-idea-simple"></a>
+<a id="3-idea-simple"></a>
 
 Piensa en **cajas rusas** (una dentro de otra):
 
@@ -143,27 +146,27 @@ El script **entra por el piso en el que estás** y baja el ascensor:
 
 ---
 
-## 🧩 3. Conceptos
+## 🧩 4. Conceptos
 
-<a id="3-conceptos"></a>
+<a id="4-conceptos"></a>
 
 No hace falta ser experto en Git. Basta entender estas piezas.
 
-### 3.1 Repositorio Git
+### 4.1 Repositorio Git
 
 La **caja con historial**: no solo guarda archivos, guarda *versiones* a lo largo del tiempo (como el historial de un documento compartido, pero en tu máquina y en la nube).
 
-### 3.2 Commit
+### 4.2 Commit
 
 Una **foto congelada** del proyecto en un momento dado, con un mensaje.  
 Si el repo es un diario, el commit es **una entrada**.
 
-### 3.3 Remoto (`origin`) y GitHub
+### 4.3 Remoto (`origin`) y GitHub
 
 La **copia en la nube**. Casi siempre se llama `origin`.  
 `git push` = “envía mis fotos nuevas a GitHub”.
 
-### 3.4 Submódulo
+### 4.4 Submódulo
 
 Un **repo completo dentro de otro**, pero el padre **no copia todos los archivos del hijo**. Solo guarda:
 
@@ -206,7 +209,7 @@ El archivo **`.gitmodules`** es la lista de fichas del padre (ruta + URL del rem
         url = https://github.com/STC71/42_piscine_pedago_data_science.git
 ```
 
-### 3.5 Cadena de submódulos
+### 4.5 Cadena de submódulos
 
 Varios niveles, cada uno registrado en su padre inmediato:
 
@@ -216,9 +219,9 @@ Varios niveles, cada uno registrado en su padre inmediato:
       └── [submódulo] data_science_0_creation_db
 ```
 
-### 3.6 Publicar “de dentro hacia fuera”
+### 4.6 Publicar “de dentro hacia fuera”
 
-<a id="36-publicar-de-dentro-hacia-fuera"></a>
+<a id="46-publicar-de-dentro-hacia-fuera"></a>
 
 Orden obligatorio:
 
@@ -230,7 +233,7 @@ Orden obligatorio:
 
 Si se hiciera al revés, el padre apuntaría a un commit del hijo que **aún no existe en GitHub**.
 
-### 3.7 GitHub CLI (`gh`)
+### 4.7 GitHub CLI (`gh`)
 
 Herramienta oficial de GitHub en la terminal. El script la usa para iniciar sesión, crear repos y elegir privacidad.  
 Si no está instalada, puede proponer instalarla en `~/.local/bin` **sin sudo**.
@@ -239,13 +242,13 @@ Si no está instalada, puede proponer instalarla en `~/.local/bin` **sin sudo**.
 
 ---
 
-## ▶️ 4. Uso
+## ▶️ 5. Uso
 
-<a id="4-uso"></a>
+<a id="5-uso"></a>
 
-### 4.1 Requisitos
+### 5.1 Requisitos
 
-<a id="41-requisitos"></a>
+<a id="51-requisitos"></a>
 
 | Necesitas | Para qué |
 |-----------|----------|
@@ -255,7 +258,7 @@ Si no está instalada, puede proponer instalarla en `~/.local/bin` **sin sudo**.
 | `gh` (opcional al inicio) | El script puede instalarlo o pedirte login |
 | Ejecutar **desde un proyecto** bajo el portfolio | Detectar la cadena de padres |
 
-### 4.2 Dónde suele vivir el script
+### 5.2 Dónde suele vivir el script
 
 ```text
 42_outer_core/
@@ -267,15 +270,15 @@ Si no está instalada, puede proponer instalarla en `~/.local/bin` **sin sudo**.
  └── …
 ```
 
-### 4.3 Primera vez
+### 5.3 Primera vez
 
 ```bash
 chmod +x update.sh
 ```
 
-### 4.4 Simulación (muy recomendable la primera vez)
+### 5.4 Simulación (muy recomendable la primera vez)
 
-<a id="44-simulación-muy-recomendable-la-primera-vez"></a>
+<a id="54-simulación"></a>
 
 ```bash
 cd piscine_pedago_data_science/data_science_0_creation_db
@@ -284,9 +287,15 @@ cd piscine_pedago_data_science/data_science_0_creation_db
 
 🧪 **No escribe commits ni hace push.** Solo muestra qué cadena detecta y qué haría.
 
-### 4.5 Publicación real
+También puedes combinarlo con la migración:
 
-<a id="45-publicación-real"></a>
+```bash
+../../update.sh --split-submodule --dry-run
+```
+
+### 5.5 Publicación real
+
+<a id="55-publicación-real"></a>
 
 ```bash
 ../../update.sh
@@ -303,19 +312,67 @@ Preguntas habituales:
 
 Respuestas que cuentan como **sí:** `s`, `si`, `sí`, `y`, `yes` (da igual mayúsculas o minúsculas).
 
-### 4.6 Ayuda
+### 5.6 Ayuda
 
 ```bash
 ./update.sh --help
 ```
 
+### 5.7 Modo `--split-submodule`
+
+<a id="57-modo-split-submodule"></a>
+
+Sirve cuando tienes un **monorepo de carpetas planas** (sin `.git` propio en cada proyecto) y quieres convertirlo en **cadena de submódulos**, igual que el flujo normal: **de dentro hacia fuera**.
+
+**Un solo nivel** (carpeta directa bajo el portfolio):
+
+```bash
+cd mi_portfolio/mi_proyecto
+../update.sh --split-submodule --dry-run
+../update.sh --split-submodule
+```
+
+**Varios niveles** (p. ej. grupo + proyecto):
+
+```bash
+cd mi_portfolio/grupo1_/mi_proyecto
+../../update.sh --split-submodule --dry-run
+../../update.sh --split-submodule
+```
+
+**Resultado esperado del ejemplo anidado:**
+
+```text
+mi_proyecto  →  submódulo de grupo1_      (repo 42_mi_proyecto)
+grupo1_      →  submódulo del portfolio   (repo 42_grupo1_)
+```
+
+**Qué hace, en orden:**
+
+1. Calcula la ruta desde el repo principal (el que tiene `origin`).
+2. Muestra la cadena objetivo y los remotos propuestos (`42_…`).
+3. Saca del índice del principal el árbol de esa ruta (si estaba trackeado); los archivos **siguen en disco**.
+4. Crea/publica cada nivel de dentro hacia fuera (mismo motor que al montar una cadena nueva).
+5. Registra los gitlinks (`160000`) hijo → padre → principal.
+6. Propone commit (+ push opcional) del principal.
+
+**Límites importantes:**
+
+| Sí | No |
+|----|----|
+| Una **ruta** (cadena) por ejecución | Convertir “todas” las carpetas del monorepo de un golpe |
+| Principal con `origin` | Ejecutar desde la raíz del portfolio |
+| Combinable con `--dry-run` | Sustituir el flujo diario de publicación (para eso, sin flag) |
+
+Si el primer nivel de la ruta **ya** es submódulo del principal, no uses este modo: lanza el `update.sh` normal desde el proyecto interno.
+
 <div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
 ---
 
-## 🛠️ Cómo hacerlo todo manualmente
+## 🛠️ 6. Cómo hacerlo todo manualmente
 
-<a id="como-hacerlo-manualmente"></a>
+<a id="6-como-hacerlo-manualmente"></a>
 
 Esta sección no sustituye al script: sirve para **entender el ritual** que automatiza. Si algún día no puedes usarlo (o quieres depurar a mano), aquí va el camino completo para una cadena típica:
 
@@ -399,6 +456,8 @@ A mano el camino se alarga:
 
 Es fácil equivocarse en el orden, en el nombre del remoto (`42_…`) o al registrar el submódulo.
 
+Para el caso “solo tengo carpetas planas en un monorepo”, el equivalente automatizado es **`--split-submodule`** (§5.7), no el flujo de publicación diario.
+
 ### 💭 Reflexión: ¿para qué el script entonces?
 
 Hacerlo a mano **es viable** y conviene conocerlo: así entiendes por qué el orden importa y qué es un gitlink. Pero en el día a día del campus el coste se acumula:
@@ -410,6 +469,7 @@ Hacerlo a mano **es viable** y conviene conocerlo: así entiendes por qué el or
 | Riesgo de `git add .` en el padre | Staging selectivo (hijo de la cadena + raíz) |
 | Archivos enormes / `.gitignore` a ojo | Avisos y propuestas guiadas |
 | Crear repos y registrar submódulos a mano | Lo propone y automatiza con confirmación |
+| Migrar monorepo plano nivel a nivel | `--split-submodule` (cadena de la ruta actual) |
 | Mensajes y fechas como te acuerdes | Mensaje por defecto con marca de tiempo (personalizable) |
 | “¿Habré tocado un hermano?” | No publica repos fuera de la cadena |
 
@@ -419,19 +479,19 @@ En resumen: **el manual te enseña el oficio; el script te ahorra el trabajo rep
 
 ---
 
-## ⚙️ 5. Funcionamiento
+## ⚙️ 7. Funcionamiento
 
-<a id="5-funcionamiento"></a>
+<a id="7-funcionamiento"></a>
 
 Qué hace el código, en orden.
 
-### 5.1 Arranque
+### 7.1 Arranque
 
 1. **Modo estricto** (`set -u`, `pipefail`) — Si algo va mal (variable sin definir, error en una tubería), se detiene en lugar de seguir a ciegas.
 2. **Colores** — Solo en terminal interactiva; en logs el texto sale limpio.
 3. **Limpieza al salir** — Borra ficheros temporales que haya creado.
 
-### 5.2 ¿Dónde estoy?
+### 7.2 ¿Dónde estoy?
 
 ```text
 START_DIR     = carpeta desde la que lanzaste el script
@@ -446,7 +506,7 @@ START_DIR:    .../data_science_0_creation_db/src
 current_root: .../data_science_0_creation_db     ← raíz del repo
 ```
 
-### 5.3 ¿Ya soy un submódulo registrado?
+### 7.3 ¿Ya soy un submódulo registrado?
 
 Pregunta clave: *¿Hay un padre Git que me tenga en su `.gitmodules`?*
 
@@ -455,7 +515,7 @@ Pregunta clave: *¿Hay un padre Git que me tenga en su `.gitmodules`?*
 | ✅ Sí | Construye la cadena y pasa a publicar |
 | ❌ No | Entra en modo **crear / registrar** (siguiente apartado) |
 
-### 5.4 Si aún no estás registrado
+### 7.4 Si aún no estás registrado
 
 **A)** Ejecutaste desde una subcarpeta (`proyecto/src`) y el proyecto aún no es submódulo  
 → Intenta crear la cadena desde el portfolio hasta esa ruta.
@@ -471,7 +531,7 @@ Pregunta clave: *¿Hay un padre Git que me tenga en su `.gitmodules`?*
 
 > ⚠️ `find_ancestor_with_origin` **nunca** elige el propio proyecto actual, aunque ya tenga `origin` en GitHub. Si no, confundiría el cuaderno con el armario.
 
-### 5.5 Crear la cadena
+### 7.5 Crear la cadena
 
 Para una ruta como `piscine_pedago_data_science/data_science_0_creation_db`, recorre los niveles **de dentro hacia fuera**:
 
@@ -490,14 +550,16 @@ data_science_0_creation_db   →  42_data_science_0_creation_db
 
 El usuario de GitHub (`STC71`, etc.) se lee del `origin` del portfolio.
 
-### 5.6 Registrar un submódulo
+El modo **`--split-submodule`** reutiliza esta misma lógica tras sacar del índice del principal las carpetas planas de la ruta.
+
+### 7.6 Registrar un submódulo
 
 1. Escribe o actualiza `.gitmodules` (ruta + URL).
 2. Si la carpeta estaba añadida “como carpeta normal”, la corrige.
 3. Deja el gitlink (`160000`) y el `.gitmodules` listos.
 4. Intenta ordenar la metadata interna del submódulo.
 
-### 5.7 Lista de publicación
+### 7.7 Lista de publicación
 
 ```text
 repos = [ proyecto actual ]
@@ -514,9 +576,9 @@ Ejemplo de lo que verás:
   ▸ 42_outer_core
 ```
 
-### 5.8 En cada nivel de la lista
+### 7.8 En cada nivel de la lista
 
-<a id="58-en-cada-nivel-de-la-lista"></a>
+<a id="78-en-cada-nivel-de-la-lista"></a>
 
 Tras tu **sí**:
 
@@ -539,10 +601,12 @@ Tras tu **sí**:
    Si personalizas el texto, el script **añade igual** ` · DD/MM/AA HH:MM` al final (p. ej. `feat: tests verdes · 30/08/26 13:50`).
 6. **Push** — Envía la rama a `origin` (crea el seguimiento remoto si hace falta).
 
-### 5.9 Mapa rápido
+### 7.9 Mapa rápido
 
 ```text
 main
+ ├─ ¿--split-submodule?
+ │    └─ Sí → sacar del índice → crear cadena → commit principal → fin
  ├─ ¿Dónde estoy?
  ├─ ¿Registrado como submódulo?
  │    ├─ No → crear / registrar cadena
@@ -552,19 +616,19 @@ main
       preparar → commit (si hay cambios) → push
 ```
 
-### 5.10 Modo `--dry-run`
+### 7.10 Modo `--dry-run`
 
-Misma lógica de detección, pero **sin** crear repos, commits ni pushes. Las líneas van con 🧪 para ver el plan sin riesgos.
+Misma lógica de detección (y de `--split-submodule` si lo pides), pero **sin** crear repos, commits ni pushes. Las líneas van con 🧪 para ver el plan sin riesgos.
 
 <div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
 ---
 
-## 🧭 6. Casos reales
+## 🧭 8. Casos reales
 
-<a id="6-casos-reales"></a>
+<a id="8-casos-reales"></a>
 
-### 6.1 Todo ya está registrado
+### 8.1 Todo ya está registrado
 
 ```bash
 cd .../data_science_0_creation_db
@@ -573,7 +637,7 @@ cd .../data_science_0_creation_db
 
 Detecta padres → muestra la cadena → pregunta → publica 1/N, 2/N, …
 
-### 6.2 Proyecto nuevo bajo un tema aún no publicado
+### 8.2 Proyecto nuevo bajo un tema aún no publicado
 
 ```text
 42_outer_core/                     ← tiene origin en GitHub
@@ -590,20 +654,46 @@ El script:
 5. Registra hijo → tema → portfolio.
 6. Publica la cadena.
 
-### 6.3 Qué no toca
+### 8.3 Monorepo de carpetas planas → submódulos
+
+```text
+mi_portfolio/          ← un solo repo Git con origin
+ ├── grupo1_/
+ │    └── mi_proyecto/ ← solo carpetas, sin .git propio
+ └── update.sh
+```
+
+```bash
+cd mi_portfolio/grupo1_/mi_proyecto
+../../update.sh --split-submodule --dry-run
+../../update.sh --split-submodule
+```
+
+Resultado:
+
+```text
+mi_portfolio
+ └── [submódulo] grupo1_
+      └── [submódulo] mi_proyecto
+```
+
+Luego, el día a día: desde `mi_proyecto`, `../../update.sh` (sin `--split-submodule`).
+
+### 8.4 Qué no toca
 
 - Repos **hermanos** (otras piscinas u otros proyectos al mismo nivel).
 - Carpetas del padre **fuera** de la cadena activa.
 - Historial antiguo (no reescribe commits ni hace rebase automático).
+- Otras rutas del monorepo distintas de la que migraste con `--split-submodule`.
 
-### 6.4 Borraste archivos en local (p. ej. scripts viejos)
+### 8.5 Borraste archivos en local (p. ej. scripts viejos)
 
-Si eliminas en disco ficheros que **ya estaban versionados** (por ejemplo `update_v0.sh` o `update (1).sh` en la raíz del portfolio) y luego ejecutas el script desde un submódulo de la cadena, el nivel correspondiente **incluye esos borrados** en el commit y el push.
+Si eliminas en disco ficheros que **ya estaban versionados** (por ejemplo `update_v0.sh` en la raíz del portfolio) y luego ejecutas el script desde un submódulo de la cadena, el nivel correspondiente **incluye esos borrados** en el commit y el push.
 
 No hace falta un `git rm` manual para ese caso: el staging ya los detecta.  
 *(Los archivos que nunca se llegaron a commitear no están en Git; borrarlos del disco no genera ningún cambio en el remoto.)*
 
-### 6.5 Un archivo está en `.gitignore` pero sigue en GitHub
+### 8.6 Un archivo está en `.gitignore` pero sigue en GitHub
 
 Muy habitual: se subió un PDF (o similar) y **después** se añadió `*.pdf` al `.gitignore`.
 
@@ -612,19 +702,20 @@ Muy habitual: se subió un PDF (o similar) y **después** se añadió `*.pdf` al
 - Si aceptas, el **nuevo** commit en `main` ya no las incluye.
 - Los commits **antiguos** del historial pueden seguir mostrándolas (es normal: Git no reescribe el pasado). Mira siempre la punta de `main`, no un SHA viejo.
 
-### 6.6 Mensajes que puedes ver
+### 8.7 Mensajes que puedes ver
 
 | Mensaje | Qué significa |
 |---------|----------------|
 | Cadena sin registrar… | Hay que montar o registrar la cadena antes de publicar |
 | Nivel ya es repo local, pero sin origin | Existe `.git` local; falta el remoto y el primer push |
+| Modo --split-submodule | Migración de carpetas planas a cadena de submódulos |
 | Archivos > 100 MiB | GitHub los rechazaría; se propone ignorarlos |
 | Sin cambios nuevos… | No había diff; igual se comprueba el remoto |
 | Sigue sin ser un submódulo registrado | Tras intentar crear/registrar, aún falta el padre en `.gitmodules` |
 | Aún versionados aunque los cubre el `.gitignore` | Ofrece `git rm --cached` (siguen en disco) |
 | paths are ignored by .gitignore | Ya no debería ocurrir: el staging omite rutas ignoradas |
 
-### 6.7 Comprobar que el submódulo quedó bien
+### 8.8 Comprobar que el submódulo quedó bien
 
 Desde el portfolio:
 
@@ -642,14 +733,15 @@ Si ves `160000` y la entrada en `.gitmodules`, está bien.
 
 ---
 
-## 🛡️ 7. Seguridad
+## 🛡️ 9. Seguridad
 
-<a id="7-seguridad"></a>
+<a id="9-seguridad"></a>
 
 | Decisión | Por qué |
 |----------|---------|
 | Confirmación en cada nivel | No publicar un piso del edificio sin querer |
 | `--dry-run` | Ensayo sin consecuencias |
+| `--split-submodule` explícito | La migración de monorepo no se activa por accidente |
 | Límite 100 MiB | Política de GitHub; mejor avisar antes que fallar a mitad de push |
 | Staging selectivo | El commit del padre no se llena de carpetas ajenas |
 | Borrados versionados | Si quitas un archivo ya rastreado, el commit lo refleja en GitHub |
@@ -668,12 +760,13 @@ El script **no borra tu código del disco**. Los archivos grandes o ignorados qu
 
 ---
 
-## ❓ 8. FAQ
+## ❓ 10. FAQ
 
-<a id="8-faq"></a>
+<a id="10-faq"></a>
 
 **¿Puedo ejecutarlo desde la raíz de `42_outer_core`?**  
-Está pensado para lanzarlo **desde un proyecto / submódulo interno**. Desde la raíz del portfolio no hay “padre hacia arriba” en el sentido de la cadena.
+El flujo de **publicación** está pensado para lanzarlo **desde un proyecto / submódulo interno**. Desde la raíz no hay “padre hacia arriba” en el sentido de la cadena.  
+`--split-submodule` tampoco se ejecuta desde la raíz: hay que estar **dentro** de la carpeta (o ruta) a migrar.
 
 **¿Qué pasa si digo `N` a mitad?**  
 Se detiene en ese nivel. Lo ya publicado en esa ejecución **sigue publicado**. Puedes volver a lanzarlo más tarde.
@@ -709,13 +802,19 @@ Por defecto: `Update <nombre_del_repo> · DD/MM/AA HH:MM` (hora local de la máq
 Antes de crear el commit el script te muestra ese mensaje: **Enter** o `s` lo acepta; `n` pide uno nuevo; cualquier otro texto se usa como mensaje.  
 En los personalizados también se añade la marca ` · DD/MM/AA HH:MM` al final, para que el historial siga siendo fácil de ordenar en el tiempo.
 
+**¿Puedo convertir mi monorepo de carpetas en submódulos con el script?**  
+Sí, con **`--split-submodule`**, desde dentro de la ruta a migrar, preferiblemente con `--dry-run` antes. Una ruta (cadena) por ejecución; el principal debe tener `origin`.
+
+**¿`--split-submodule` crea también el nivel intermedio (`grupo1_`)?**  
+Sí. Si la ruta es `grupo1_/mi_proyecto`, publica `mi_proyecto`, luego `grupo1_` como padre con gitlink al hijo, y registra `grupo1_` en el portfolio.
+
 <div align="right"><a href="#top">⬆️ Volver arriba</a></div>
 
 ---
 
-## 📁 9. Estructura del portfolio
+## 📁 11. Estructura del portfolio
 
-<a id="9-estructura-del-portfolio"></a>
+<a id="11-estructura-del-portfolio"></a>
 
 ```text
 42_outer_core/
@@ -738,9 +837,9 @@ Cada caja de primer nivel en Outer Core es un repo en GitHub; los proyectos dent
 
 ---
 
-## ✅ 10. Checklist antes de publicar
+## ✅ 12. Checklist antes de publicar
 
-<a id="10-checklist-antes-de-publicar"></a>
+<a id="12-checklist-antes-de-publicar"></a>
 
 - [ ] Estoy en la carpeta del **proyecto** que quiero publicar (no en un hermano).
 - [ ] Sé qué voy a subir (`git status` tiene sentido).
@@ -749,12 +848,13 @@ Cada caja de primer nivel en Outer Core es un repo en GitHub; los proyectos dent
 - [ ] Si hay archivos > 100 MiB, sé si los ignoro o los gestiono aparte.
 - [ ] Si el `.gitignore` cubre cosas que aún están en GitHub, aceptaré dejar de versionarlas cuando el script lo proponga.
 - [ ] No tengo un merge/rebase a medias en ningún nivel de la cadena.
+- [ ] Si migro carpetas planas: uso `--split-submodule` (con `--dry-run` antes), no el flujo normal por error.
 
 ---
 
-## 🎓 11. Glosario
+## 🎓 13. Glosario
 
-<a id="11-glosario"></a>
+<a id="13-glosario"></a>
 
 | Término | En corto |
 |---------|----------|
@@ -764,13 +864,14 @@ Cada caja de primer nivel en Outer Core es un repo en GitHub; los proyectos dent
 | **Upstream** | Rama remota ligada a la tuya local |
 | **Detached HEAD** | Estás en un commit suelto, no en una rama; el script pide cambiar a una rama |
 | **Dry-run** | Simulación: muestra el plan sin ejecutarlo |
+| **`--split-submodule`** | Migra una ruta de carpetas planas a cadena de submódulos (de dentro hacia fuera) |
 | **Monorepo / portfolio** | Repo contenedor (`42_Outer_Core`) que agrupa proyectos con submódulos |
 
 ---
 
-## 👤 Autor
+## 👤 14. Autor
 
-<a id="autor"></a>
+<a id="14-autor"></a>
 
 **sternero** — estudiante de 42 Málaga  
 
