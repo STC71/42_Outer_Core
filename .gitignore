@@ -65,3 +65,4 @@ bin/
 obj/
 build/
 
+update_backup.sh
