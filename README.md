@@ -3,12 +3,13 @@
 <div align="center">
 
 ![42 School](https://img.shields.io/badge/42-School-000000?style=for-the-badge&logo=42&logoColor=white)
-![Status](https://img.shields.io/badge/Estado-Completado-green?style=for-the-badge)
-![Projects](https://img.shields.io/badge/Proyectos-12-blue?style=for-the-badge)
+![Campus](https://img.shields.io/badge/42-Málaga-00A3E0?style=for-the-badge)
+![Status](https://img.shields.io/badge/Estado-Activo-green?style=for-the-badge)
+![Projects](https://img.shields.io/badge/Proyectos-12+-blue?style=for-the-badge)
 
 **Colección de proyectos avanzados del currículo Outer Core de 42 School**
 
-[Descripción](#descripción) • [Proyectos](#proyectos) • [Tecnologías](#tecnologías) • [Configuración](#configuración) • [Autor](#autor)
+[Descripción](#descripción) · [Resumen](#-resumen-de-proyectos) · [Proyectos](#proyectos) · [Piscine Data Science](#-piscine-pedago-data-science) · [Tecnologías](#tecnologías) · [Configuración](#configuración) · [Autor](#autor)
 
 </div>
 
@@ -16,22 +17,53 @@
 
 ## Descripción
 
-Bienvenido a **42 Outer Core**, una colección de proyectos avanzados desarrollados como parte del trabajo en 42 Málaga. Este repositorio presenta implementaciones en múltiples dominios:
+Bienvenido a **42 Outer Core**, una colección de proyectos avanzados desarrollados como parte del trabajo en **42 Málaga**. Este repositorio presenta implementaciones en múltiples dominios:
 
-- 🤖 **Inteligencia Artificial**: Machine Learning, Deep Learning, Data Science
-- 🐧 **Unix Kernel**: Assembly, sistemas de bajo nivel
-- 🌐 **Web & Database**: Full-stack development, arquitectura web
-- 📱 **Mobile Development**: Cross-platform apps, Flutter, Dart, Firebase
-- 🔐 **Cybersecurity**: Web security, network security, cryptography, anonymity
-- 🦠 **Virus & Security**: Auto-replicación, metaprogramación
+| Dominio | Enfoque |
+|---------|---------|
+| 🤖 **Inteligencia Artificial** | Machine Learning, Deep Learning, Data Science |
+| 📊 **Piscine Pedago Data Science** | SQL → Warehouse → Viz → EDA → Predicción (módulos 0–4) |
+| 🐧 **Unix Kernel** | Assembly, sistemas de bajo nivel |
+| 🌐 **Web & Database** | Full-stack development, arquitectura web |
+| 📱 **Mobile Development** | Cross-platform apps, Flutter, Dart, Firebase |
+| 🔐 **Cybersecurity** | Web security, network security, cryptography, anonymity |
+| 🦠 **Virus & Security** | Auto-replicación, metaprogramación |
 
-Cada proyecto está diseñado para empujar los límites del conocimiento técnico, enfatizando código limpio, pensamiento algorítmico y resolución de problemas del mundo real.
+Cada proyecto está diseñado para empujar los límites del conocimiento técnico, enfatizando **código limpio**, pensamiento algorítmico, documentación didáctica y resolución de problemas del mundo real.
 
 <div align="right">
 
 [⬆️ Volver arriba](#-42-outer-core)
 
 </div>
+
+---
+
+## 📊 Resumen de proyectos
+
+Vista rápida del estado de cada pieza del Outer Core:
+
+| Proyecto | Dominio | Estado |
+|----------|---------|--------|
+| [ft_linear_regression](./artificial_intelligence/ft_linear_regression/) | IA | ✅ Completado |
+| [DSLR](./artificial_intelligence/dslr/) | IA | ✅ Completado |
+| [multilayer-perceptron](./artificial_intelligence/multilayer-perceptron/) | IA | 🚧 En desarrollo |
+| [**Piscine Pedago Data Science**](https://github.com/STC71/42_piscine_pedago_data_science) | Data Science | ✅ M0–M4 completados |
+| [libasm](./unix_kernel/libasm/) | Kernel | ✅ Completado |
+| [Camagru](./web_database/camagru/) | Web | ✅ Completado |
+| [Darkly](./web_database/darkly/) | Web / Sec | 📝 En progreso |
+| [Piscine Pedago Mobile](./piscine_pedago_mobile/) | Mobile | ✅ Completado |
+| [Snow Crash](./cyber_security/snow-crash/) | Ciber | ✅ Completado |
+| [Piscine Pedagógico Ciber](./piscine_pedago_ciber/) | Ciber | ✅ Completado |
+| [Dr. Quine](./virus/dr-quine/) | Virus | ✅ Completado |
+| [Woody Woodpacker](./virus/woody-woodpacker/) | Virus | ✅ Completado |
+
+<div align="right">
+
+[⬆️ Volver arriba](#-42-outer-core)
+
+</div>
+
 
 ## Proyectos
 
@@ -112,6 +144,50 @@ Red neuronal artificial (Multilayer Perceptron) implementada desde cero para cla
 **Estado:** 🚧 En Desarrollo
 
 [📂 Ver Proyecto](./artificial_intelligence/multilayer-perceptron/)
+
+</details>
+
+
+### 📊 Piscine Pedago Data Science
+
+<details open>
+<summary><b>Piscine Pedago Data Science</b> – De la base de datos al modelo predictivo</summary>
+
+Recorrido **completo y documentado** (módulos 0 a 4) orientado a compañeros de 42: SQL y Docker, data warehouse, visualización, exploración estadística y clasificación supervisada.
+
+**Flujo didáctico:**
+
+```text
+M0  Creation of a DB     →  PostgreSQL, Docker, CSV → tablas
+M1  Data Warehouse       →  Limpieza, unificación, deduplicación
+M2  Data visualization   →  Gráficos y lectura de distribuciones
+M3  The present          →  Histogramas, correlación, escalas, split
+M4  The future           →  Métricas, VIF, Tree, KNN, Voting
+```
+
+**Características transversales:**
+- 📚 **README + guías educativas** (`python.md`, `sql.md`, `docker.md`, …) por ejercicio
+- 🎨 Documentación orientada a quien **no** parte de conocimientos previos
+- 🧪 Scripts `start.sh` y automatización donde aporta
+- 🔗 Cada módulo es un **repositorio independiente** (y submódulo del monorepo)
+
+**Módulos y repositorios:**
+
+| Módulo | Tema | Repo |
+|--------|------|------|
+| **0** | Creation of a DB | [42_data_science_0_creation_db](https://github.com/STC71/42_data_science_0_creation_db) |
+| **1** | Data Warehouse | [42_data_science_1_data_warehouse](https://github.com/STC71/42_data_science_1_data_warehouse) |
+| **2** | Data visualization | [42_data_science_2_data_viz](https://github.com/STC71/42_data_science_2_data_viz) |
+| **3** | The present (EDA) | [42_data_science_3_the_present](https://github.com/STC71/42_data_science_3_the_present) |
+| **4** | The future (ML) | [42_data_science_4_the_future](https://github.com/STC71/42_data_science_4_the_future) |
+
+**Stack:** Python, PostgreSQL, Docker, pandas, matplotlib, scikit-learn (según módulo)
+
+**Monorepo:** [42_piscine_pedago_data_science](https://github.com/STC71/42_piscine_pedago_data_science)
+
+**Estado:** ✅ Módulos 0–4 completados
+
+[📂 Ver monorepo](https://github.com/STC71/42_piscine_pedago_data_science)
 
 </details>
 
@@ -501,6 +577,12 @@ cd [categoría]/[nombre_proyecto]
 - [Configuración ft_linear_regression](./artificial_intelligence/ft_linear_regression/README.md)
 - [Configuración DSLR](./artificial_intelligence/dslr/README.md)
 - [Configuración multilayer-perceptron](./artificial_intelligence/multilayer-perceptron/README.md)
+- [**Piscine Pedago Data Science** (monorepo)](https://github.com/STC71/42_piscine_pedago_data_science)
+  - [M0 Creation DB](https://github.com/STC71/42_data_science_0_creation_db)
+  - [M1 Warehouse](https://github.com/STC71/42_data_science_1_data_warehouse)
+  - [M2 Viz](https://github.com/STC71/42_data_science_2_data_viz)
+  - [M3 The present](https://github.com/STC71/42_data_science_3_the_present)
+  - [M4 The future](https://github.com/STC71/42_data_science_4_the_future)
 
 **Unix Kernel:**
 - [Configuración libasm](./unix_kernel/libasm/README.md)
@@ -535,6 +617,7 @@ cd [categoría]/[nombre_proyecto]
 | IA | DSLR | Python | ✅ Completado | 100% |
 | IA | multilayer-perceptron | Python | 🚧 En Desarrollo | 40% |
 | Unix | libasm | Assembly/C | ✅ Completado | 100% |
+| Data Science | Piscine Pedago DS (M0–M4) | Python/SQL/Docker | ✅ Completado | 100% |
 | Web | Camagru | PHP/JS/SQL | ✅ Completado | 100% |
 | Móvil | Piscine Mobile | Flutter/Dart | ✅ Completado | 100% |
 | Virus | Dr. Quine | C/ASM/Python | ✅ Completado | 100% |
@@ -587,6 +670,12 @@ Cada proyecto incluye documentación exhaustiva:
 - ✅ README técnico con explicaciones de Assembly
 - ✅ Documentación de cada función
 - ✅ Tests unitarios y de integración
+
+### Piscine Pedago Data Science (Documentación)
+
+- Monorepo y módulos 0–4 con README, guías (`python.md`, `sql.md`, …) y scripts por ejercicio
+- Enfoque pedagógico para compañeros de 42
+- [Monorepo](https://github.com/STC71/42_piscine_pedago_data_science) · [M4 The future](https://github.com/STC71/42_data_science_4_the_future)
 
 ### Camagru (Documentación Destacada)
 - ✅ **19 README detallados** (uno por carpeta/subcarpeta)
@@ -646,6 +735,6 @@ Este proyecto es parte del currículo de 42 Málaga. Por favor, respeta las pol�
 
 **Hecho con ❤️ en 42 Málaga**
 
-*Última Actualización: Junio 2026*
+*Última Actualización: Octubre 2026*
 
 </div>
