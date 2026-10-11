@@ -88,7 +88,8 @@ Vista rápida del estado de cada pieza del Outer Core:
 ### 🤖 Inteligencia Artificial
 
 <details open>
-<summary><b>ft_linear_regression</b> - Fundamentos de Machine Learning</summary>
+<summary>🧮 <b>ft_linear_regression</b> - Fundamentos de Machine Learning</summary>
+<br>
 
 Una implementación completa de regresión lineal desde cero, demostrando los fundamentos del aprendizaje automático sin depender de librerías de alto nivel.
 
@@ -107,8 +108,11 @@ Una implementación completa de regresión lineal desde cero, demostrando los fu
 
 </details>
 
+---
+
 <details open>
-<summary><b>DSLR</b> - Data Science × Logistic Regression</summary>
+<summary>🏰 <b>DSLR</b> - Data Science × Logistic Regression</summary>
+<br>
 
 Clasificador multiclase de Regresión Logística usando estrategia One-vs-All para clasificar estudiantes de Hogwarts en sus casas. Proyecto completo de Data Science con análisis estadístico, visualización y machine learning.
 
@@ -138,8 +142,11 @@ Clasificador multiclase de Regresión Logística usando estrategia One-vs-All pa
 
 </details>
 
+---
+
 <details open>
-<summary><b>multilayer-perceptron</b> - Deep Learning y Redes Neuronales</summary>
+<summary>🧠 <b>multilayer-perceptron</b> - Deep Learning y Redes Neuronales</summary>
+<br>
 
 Red neuronal artificial (Multilayer Perceptron) implementada desde cero para clasificación binaria. Predice diagnósticos de cáncer de mama (maligno/benigno) usando el dataset de Wisconsin Breast Cancer.
 
@@ -165,6 +172,8 @@ Red neuronal artificial (Multilayer Perceptron) implementada desde cero para cla
 
 </details>
 
+---
+
 
 <a id="piscines-pedagogicas"></a>
 
@@ -173,7 +182,8 @@ Red neuronal artificial (Multilayer Perceptron) implementada desde cero para cla
 ### 📊 Piscine Pedago Data Science
 
 <details open>
-<summary><b>Piscine Pedago Data Science</b> – De la base de datos al modelo predictivo</summary>
+<summary>📊 <b>Piscine Pedago Data Science</b> – De la base de datos al modelo predictivo</summary>
+<br>
 
 Recorrido **completo y documentado** (módulos 0 a 4) orientado a compañeros de 42: SQL y Docker, data warehouse, visualización, exploración estadística y clasificación supervisada.
 
@@ -214,10 +224,13 @@ M4  The future           →  Métricas, VIF, Tree, KNN, Voting
 
 </details>
 
+---
+
 ### 🐧 Kernel Unix
 
 <details open>
-<summary><b>libasm</b> - Implementación de Librería en Assembly</summary>
+<summary>⚙️ <b>libasm</b> - Implementación de Librería en Assembly</summary>
+<br>
 
 Una librería de bajo nivel que implementa funciones estándar de C en Assembly x86-64, proporcionando conocimientos profundos sobre arquitectura de sistemas y optimización.
 
@@ -237,10 +250,13 @@ Una librería de bajo nivel que implementa funciones estándar de C en Assembly 
 
 </details>
 
+---
+
 ### 🌐 Web & Base de Datos
 
 <details open>
-<summary><b>Camagru</b> - Aplicación Web tipo Instagram</summary>
+<summary>📸 <b>Camagru</b> - Aplicación Web tipo Instagram</summary>
+<br>
 
 Una aplicación web full-stack inspirada en Instagram con captura de fotos desde webcam, edición con stickers y funcionalidades sociales.
 
@@ -270,8 +286,11 @@ Una aplicación web full-stack inspirada en Instagram con captura de fotos desde
 
 </details>
 
+---
+
 <details open>
-<summary><b>Darkly</b> - Auditoría de Seguridad Web</summary>
+<summary>🛡️ <b>Darkly</b> - Auditoría de Seguridad Web</summary>
+<br>
 
 Proyecto de introducción a ciberseguridad web y OWASP. Audita un sitio web vulnerable para descubrir 14 vulnerabilidades de seguridad comunes.
 
@@ -300,10 +319,13 @@ Proyecto de introducción a ciberseguridad web y OWASP. Audita un sitio web vuln
 
 </details>
 
+---
+
 ### 📱 Desarrollo Móvil
 
 <details open>
-<summary><b>Piscine Pedago Mobile</b> - Desarrollo Cross-platform con Flutter</summary>
+<summary>📱 <b>Piscine Pedago Mobile</b> - Desarrollo Cross-platform con Flutter</summary>
+<br>
 
 Un viaje intensivo de aprendizaje desde los cimientos de la programación móvil hasta la creación de aplicaciones robustas, conectadas y profesionales utilizando el ecosistema de Flutter y Dart.
 
@@ -324,10 +346,13 @@ Un viaje intensivo de aprendizaje desde los cimientos de la programación móvil
 
 </details>
 
+---
+
 ### 🔐 Ciberseguridad
 
 <details open>
-<summary><b>Snow Crash</b> - Introducción a Ciberseguridad</summary>
+<summary>❄️ <b>Snow Crash</b> - Introducción a Ciberseguridad</summary>
+<br>
 
 Proyecto estilo Capture The Flag (CTF) para descubrir debilidades comunes del sistema desde la base, desarrollando pensamiento lógico para explotar vulnerabilidades sin margen de error.
 
@@ -346,8 +371,11 @@ Proyecto estilo Capture The Flag (CTF) para descubrir debilidades comunes del si
 
 </details>
 
+---
+
 <details open>
-<summary><b>Piscine Pedagógico Ciber</b> - Colección de Proyectos de Ciberseguridad</summary>
+<summary>🔐 <b>Piscine Pedagógico Ciber</b> - Colección de Proyectos de Ciberseguridad</summary>
+<br>
 
 Colección de 4 proyectos de la Piscina de Ciberseguridad de 42 School, cubriendo seguridad web, análisis de red, criptografía y anonimato.
 
@@ -391,10 +419,13 @@ Colección de 4 proyectos de la Piscina de Ciberseguridad de 42 School, cubriend
 
 </details>
 
+---
+
 ### 🦠 Virus & Security
 
 <details open>
-<summary><b>Dr. Quine</b> - Recursión y Auto-replicación</summary>
+<summary>🧬 <b>Dr. Quine</b> - Recursión y Auto-replicación</summary>
+<br>
 
 Proyecto introductorio al teorema de recursión de Kleene mediante la implementación de quines - programas que se auto-replican imprimiendo su propio código fuente.
 
@@ -416,8 +447,11 @@ Proyecto introductorio al teorema de recursión de Kleene mediante la implementa
 
 </details>
 
+---
+
 <details open>
-<summary><b>ft_shield</b> - Troyano educativo y daemon persistente</summary>
+<summary>🛡️ <b>ft_shield</b> - Troyano educativo y daemon persistente</summary>
+<br>
 
 Proyecto de sistemas y seguridad centrado en empaquetado, ejecución como daemon y
 comunicación remota, documentado para trabajar dentro de un entorno controlado.
@@ -430,8 +464,11 @@ comunicación remota, documentado para trabajar dentro de un entorno controlado.
 
 </details>
 
+---
+
 <details open>
-<summary><b>Woody Woodpacker</b> - Inyección de Memoria y Criptografía</summary>
+<summary>📦 <b>Woody Woodpacker</b> - Inyección de Memoria y Criptografía</summary>
+<br>
 
 Desarrollo de un packer/crypter polimórfico que inyecta cargas asíncronas en formato ELF 64-bits utilizando rutinas en lenguaje ensamblador bajo cifrado estático RC4.
 
@@ -466,28 +503,41 @@ Desarrollo de un packer/crypter polimórfico que inyecta cargas asíncronas en f
 <div align="center">
 
 ### Lenguajes
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Assembly](https://img.shields.io/badge/Assembly-654FF0?style=for-the-badge&logo=assemblyscript&logoColor=white)
-![C](https://img.shields.io/badge/C-A8B9CC?style=for-the-badge&logo=c&logoColor=black)
-![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
+[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://docs.python.org/es/3/)
+[![C](https://img.shields.io/badge/C-A8B9CC?style=for-the-badge&logo=c&logoColor=black)](https://en.cppreference.com/w/c)
+[![Assembly](https://img.shields.io/badge/Assembly-654FF0?style=for-the-badge&logo=assemblyscript&logoColor=white)](https://nasm.us/doc/)
+[![Bash](https://img.shields.io/badge/Bash-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white)](https://www.gnu.org/software/bash/manual/)
+[![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/manual/es/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/es/docs/Web/JavaScript)
+[![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev/language)
+[![HTML](https://img.shields.io/badge/HTML-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/es/docs/Web/HTML)
+[![CSS](https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/es/docs/Web/CSS)
 
 ### Herramientas & Frameworks
-![NumPy](https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=numpy&logoColor=white)
-![Matplotlib](https://img.shields.io/badge/Matplotlib-11557c?style=for-the-badge)
-![SQL](https://img.shields.io/badge/SQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
-![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
-![Make](https://img.shields.io/badge/Make-6D00CC?style=for-the-badge)
-![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
-![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
+[![NumPy](https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=numpy&logoColor=white)](https://numpy.org/doc/stable/)
+[![pandas](https://img.shields.io/badge/pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)](https://pandas.pydata.org/docs/)
+[![Matplotlib](https://img.shields.io/badge/Matplotlib-11557c?style=for-the-badge)](https://matplotlib.org/stable/users/index.html)
+[![scikit--learn](https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/stable/user_guide.html)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/docs/current/)
+[![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://dev.mysql.com/doc/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docs.docker.com/get-started/)
+[![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)](https://nginx.org/en/docs/)
+[![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)](https://git-scm.com/book/es/v2)
+[![GNU Make](https://img.shields.io/badge/GNU_Make-6D00CC?style=for-the-badge)](https://www.gnu.org/software/make/manual/)
+[![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://docs.flutter.dev/)
+[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/docs?hl=es)
+[![Android Studio](https://img.shields.io/badge/Android_Studio-3DDC84?style=for-the-badge&logo=android-studio&logoColor=white)](https://developer.android.com/studio?hl=es-419)
+[![Open-Meteo](https://img.shields.io/badge/Open--Meteo-Climate-2E7D32?style=for-the-badge)](https://open-meteo.com/en/docs)
+[![Google Sign-In](https://img.shields.io/badge/Google_Sign--In-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://firebase.google.com/docs/auth/flutter/federated-auth?hl=es)
+[![Vagrant](https://img.shields.io/badge/Vagrant-1868F2?style=for-the-badge&logo=vagrant&logoColor=white)](https://developer.hashicorp.com/vagrant/docs)
 
 ### Security & Network
-![OWASP](https://img.shields.io/badge/OWASP-000000?style=for-the-badge&logo=owasp&logoColor=white)
-![Tor](https://img.shields.io/badge/Tor-7D4698?style=for-the-badge&logo=tor-project&logoColor=white)
-![Wireshark](https://img.shields.io/badge/Wireshark-1679A7?style=for-the-badge&logo=wireshark&logoColor=white)
+[![OWASP](https://img.shields.io/badge/OWASP-000000?style=for-the-badge&logo=owasp&logoColor=white)](https://owasp.org/www-project-top-ten/)
+[![Tor](https://img.shields.io/badge/Tor-7D4698?style=for-the-badge&logo=tor-project&logoColor=white)](https://support.torproject.org/es/)
+[![libpcap](https://img.shields.io/badge/libpcap-1679A7?style=for-the-badge)](https://www.tcpdump.org/)
+[![curl](https://img.shields.io/badge/curl-073551?style=for-the-badge&logo=curl&logoColor=white)](https://curl.se/docs/)
+[![SSH](https://img.shields.io/badge/SSH-222222?style=for-the-badge)](https://www.openssh.com/manual.html)
+[![Wireshark](https://img.shields.io/badge/Wireshark-1679A7?style=for-the-badge&logo=wireshark&logoColor=white)](https://www.wireshark.org/docs/)
 
 </div>
 
