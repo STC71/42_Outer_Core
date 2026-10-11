@@ -9,7 +9,7 @@
 
 **Colección de proyectos avanzados del currículo Outer Core de 42 School**
 
-[Descripción](#descripción) · [Resumen](#-resumen-de-proyectos) · [Proyectos](#proyectos) · [Piscine Data Science](#-piscine-pedago-data-science) · [Tecnologías](#tecnologías) · [Configuración](#configuración) · [Autor](#autor)
+[Descripción](#descripción) · [Resumen](#-resumen-de-proyectos) · [Proyectos](#proyectos) · [Piscines pedagógicas](#-piscines-pedagógicas) · [Tecnologías](#tecnologías) · [Configuración](#configuración) · [Autor](#autor)
 
 </div>
 
@@ -48,7 +48,7 @@ Vista rápida del estado de cada pieza del Outer Core:
 | [ft_linear_regression](./artificial_intelligence/ft_linear_regression/) | IA | ✅ Completado |
 | [DSLR](./artificial_intelligence/dslr/) | IA | ✅ Completado |
 | [multilayer-perceptron](./artificial_intelligence/multilayer-perceptron/) | IA | 🚧 En desarrollo |
-| [**Piscine Pedago Data Science**](https://github.com/STC71/42_piscine_pedago_data_science) | Data Science | ✅ M0–M4 completados |
+| [**Piscine Pedago Data Science**](./piscine_pedago_data_science/) | Data Science | ✅ M0–M4 completados |
 | [libasm](./unix_kernel/libasm/) | Kernel | ✅ Completado |
 | [Camagru](./web_database/camagru/) | Web | ✅ Completado |
 | [Darkly](./web_database/darkly/) | Web / Sec | 📝 En progreso |
@@ -56,6 +56,7 @@ Vista rápida del estado de cada pieza del Outer Core:
 | [Snow Crash](./cyber_security/snow-crash/) | Ciber | ✅ Completado |
 | [Piscine Pedagógico Ciber](./piscine_pedago_ciber/) | Ciber | ✅ Completado |
 | [Dr. Quine](./virus/dr-quine/) | Virus | ✅ Completado |
+| [ft_shield](./virus/ft_shield/) | Virus / Security | 📚 Documentado |
 | [Woody Woodpacker](./virus/woody-woodpacker/) | Virus | ✅ Completado |
 
 <div align="right">
@@ -148,6 +149,8 @@ Red neuronal artificial (Multilayer Perceptron) implementada desde cero para cla
 </details>
 
 
+## 📚 Piscines pedagógicas
+
 ### 📊 Piscine Pedago Data Science
 
 <details open>
@@ -167,6 +170,7 @@ M4  The future           →  Métricas, VIF, Tree, KNN, Voting
 
 **Características transversales:**
 - 📚 **README + guías educativas** (`python.md`, `sql.md`, `docker.md`, …) por ejercicio
+- 📐 **Material matemático** (`mates.md`) para los módulos 2, 3 y 4
 - 🎨 Documentación orientada a quien **no** parte de conocimientos previos
 - 🧪 Scripts `start.sh` y automatización donde aporta
 - 🔗 Cada módulo es un **repositorio independiente** (y submódulo del monorepo)
@@ -187,7 +191,7 @@ M4  The future           →  Métricas, VIF, Tree, KNN, Voting
 
 **Estado:** ✅ Módulos 0–4 completados
 
-[📂 Ver monorepo](https://github.com/STC71/42_piscine_pedago_data_science)
+[📂 Ver monorepo](./piscine_pedago_data_science/) · [🌐 Repositorio](https://github.com/STC71/42_piscine_pedago_data_science)
 
 </details>
 
@@ -390,6 +394,20 @@ Proyecto introductorio al teorema de recursión de Kleene mediante la implementa
 **Estado:** ✅ Completado
 
 [📂 Ver Proyecto](./virus/dr-quine/)
+
+</details>
+
+<details open>
+<summary><b>ft_shield</b> - Troyano educativo y daemon persistente</summary>
+
+Proyecto de sistemas y seguridad centrado en empaquetado, ejecución como daemon y
+comunicación remota, documentado para trabajar dentro de un entorno controlado.
+
+**Stack Tecnológico:** C, System & Kernel, Network Communication, Daemon Process
+
+**Estado:** 📚 Documentado
+
+[📂 Ver Proyecto](./virus/ft_shield/)
 
 </details>
 
@@ -602,6 +620,7 @@ cd [categoría]/[nombre_proyecto]
 
 **Virus & Security:**
 - [Configuración Dr. Quine](./virus/dr-quine/README.md)
+- [Documentación de ft_shield](./virus/ft_shield/README.md)
 
 <div align="right">
 
@@ -621,6 +640,7 @@ cd [categoría]/[nombre_proyecto]
 | Web | Camagru | PHP/JS/SQL | ✅ Completado | 100% |
 | Móvil | Piscine Mobile | Flutter/Dart | ✅ Completado | 100% |
 | Virus | Dr. Quine | C/ASM/Python | ✅ Completado | 100% |
+| Virus | ft_shield | C | 📚 Documentado | — |
 | Virus | Woody Woodpacker | C/Assembly | ✅ Completado | 100% |
 
 <div align="right">
