@@ -1,19 +1,32 @@
-# 🚀 42 Outer Core
+<p align="center">
+  <img src="./banner.jpg" alt="🚀 42 Outer Core – sternero – 42 Málaga" width="100%">
+</p>
 
 <div align="center">
 
-![42 School](https://img.shields.io/badge/42-School-000000?style=for-the-badge&logo=42&logoColor=white)
-![Campus](https://img.shields.io/badge/42-Málaga-00A3E0?style=for-the-badge)
-![Status](https://img.shields.io/badge/Estado-Activo-green?style=for-the-badge)
-![Projects](https://img.shields.io/badge/Proyectos-12+-blue?style=for-the-badge)
+[![42 School](https://img.shields.io/badge/42-School-000000?style=for-the-badge&logo=42&logoColor=white)](https://www.42malaga.com/)
+[![Campus](https://img.shields.io/badge/42-Málaga-00A3E0?style=for-the-badge)](https://www.42malaga.com/)
+[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://docs.python.org/3/)
+[![C](https://img.shields.io/badge/C-00599C?style=for-the-badge&logo=c&logoColor=white)](https://en.cppreference.com/w/c)
+[![Assembly](https://img.shields.io/badge/Assembly-x86--64-525252?style=for-the-badge)](https://nasm.us/doc/)
+[![SQL](https://img.shields.io/badge/SQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/docs/current/tutorial-sql.html)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docs.docker.com/get-started/)
+[![Machine Learning](https://img.shields.io/badge/Machine_Learning-FF6F00?style=for-the-badge)](https://scikit-learn.org/stable/user_guide.html)
+[![Web](https://img.shields.io/badge/Web-HTML%2FCSS%2FJS-1572B6?style=for-the-badge)](https://developer.mozilla.org/es/docs/Web)
+[![Mobile](https://img.shields.io/badge/Mobile-Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://docs.flutter.dev/)
+[![Cybersecurity](https://img.shields.io/badge/Cybersecurity-OWASP-111111?style=for-the-badge)](https://owasp.org/www-project-top-ten/)
+[![Status](https://img.shields.io/badge/Estado-Activo-green?style=for-the-badge)](#progreso)
+[![Projects](https://img.shields.io/badge/Proyectos-12%2B-blue?style=for-the-badge)](#resumen-proyectos)
 
 **Colección de proyectos avanzados del currículo Outer Core de 42 School**
 
-[Descripción](#descripción) · [Resumen](#-resumen-de-proyectos) · [Proyectos](#proyectos) · [Piscines pedagógicas](#-piscines-pedagógicas) · [Tecnologías](#tecnologías) · [Configuración](#configuración) · [Autor](#autor)
+[Descripción](#descripcion) · [Resumen](#resumen-proyectos) · [Proyectos](#proyectos) · [Piscines pedagógicas](#piscines-pedagogicas) · [Tecnologías](#tecnologias) · [Configuración](#configuracion) · [Autor](#autor)
 
 </div>
 
 ---
+
+<a id="descripcion"></a>
 
 ## Descripción
 
@@ -33,11 +46,13 @@ Cada proyecto está diseñado para empujar los límites del conocimiento técnic
 
 <div align="right">
 
-[⬆️ Volver arriba](#-42-outer-core)
+[⬆️ Volver arriba](#top)
 
 </div>
 
 ---
+
+<a id="resumen-proyectos"></a>
 
 ## 📊 Resumen de proyectos
 
@@ -45,26 +60,28 @@ Vista rápida del estado de cada pieza del Outer Core:
 
 | Proyecto | Dominio | Estado |
 |----------|---------|--------|
-| [ft_linear_regression](./artificial_intelligence/ft_linear_regression/) | IA | ✅ Completado |
-| [DSLR](./artificial_intelligence/dslr/) | IA | ✅ Completado |
-| [multilayer-perceptron](./artificial_intelligence/multilayer-perceptron/) | IA | 🚧 En desarrollo |
-| [**Piscine Pedago Data Science**](./piscine_pedago_data_science/) | Data Science | ✅ M0–M4 completados |
-| [libasm](./unix_kernel/libasm/) | Kernel | ✅ Completado |
-| [Camagru](./web_database/camagru/) | Web | ✅ Completado |
-| [Darkly](./web_database/darkly/) | Web / Sec | 📝 En progreso |
+| [Camagru](./web_database/camagru/) | Web | ✅ Completado + bonus |
+| [Darkly](./web_database/darkly/) | Web / Sec | ✅ Completado + bonus |
+| [Dr. Quine](./virus/dr-quine/) | Virus | ✅ Completado + bonus |
+| [DSLR](./artificial_intelligence/dslr/) | IA | ✅ Completado + bonus |
+| [ft_linear_regression](./artificial_intelligence/ft_linear_regression/) | IA | ✅ Completado + bonus |
+| [ft_shield](./virus/ft_shield/) | Virus / Security | ✅ Completado + bonus |
+| [libasm](./unix_kernel/libasm/) | Kernel | ✅ Completado + bonus |
+| [multilayer-perceptron](./artificial_intelligence/multilayer-perceptron/) | IA | ✅ Completado + bonus |
+| [Piscine Pedago Ciber](./piscine_pedago_ciber/) | Ciber | ✅ Completado |
+| [Piscine Pedago Data Science](./piscine_pedago_data_science/) | Data Science | ✅ Completado |
 | [Piscine Pedago Mobile](./piscine_pedago_mobile/) | Mobile | ✅ Completado |
-| [Snow Crash](./cyber_security/snow-crash/) | Ciber | ✅ Completado |
-| [Piscine Pedagógico Ciber](./piscine_pedago_ciber/) | Ciber | ✅ Completado |
-| [Dr. Quine](./virus/dr-quine/) | Virus | ✅ Completado |
-| [ft_shield](./virus/ft_shield/) | Virus / Security | 📚 Documentado |
-| [Woody Woodpacker](./virus/woody-woodpacker/) | Virus | ✅ Completado |
+| [Snow Crash](./cyber_security/snow-crash/) | Ciber | 🚧 En proceso |
+| [Woody Woodpacker](./virus/woody-woodpacker/) | Virus | ✅ Completado + bonus |
 
 <div align="right">
 
-[⬆️ Volver arriba](#-42-outer-core)
+[⬆️ Volver arriba](#top)
 
 </div>
 
+
+<a id="proyectos"></a>
 
 ## Proyectos
 
@@ -142,12 +159,14 @@ Red neuronal artificial (Multilayer Perceptron) implementada desde cero para cla
 
 **Conceptos clave:** Feedforward, Backpropagation, Gradient Descent, Activations, Overfitting
 
-**Estado:** 🚧 En Desarrollo
+**Estado:** ✅ Completado (mandatory + bonus 8/8)
 
 [📂 Ver Proyecto](./artificial_intelligence/multilayer-perceptron/)
 
 </details>
 
+
+<a id="piscines-pedagogicas"></a>
 
 ## 📚 Piscines pedagógicas
 
@@ -275,7 +294,7 @@ Proyecto de introducción a ciberseguridad web y OWASP. Audita un sitio web vuln
 
 **Documentación:** 📚 [README](./web_database/darkly/README.md) + [Implementation Guide](./web_database/darkly/IMPLEMENTATION_GUIDE.md) con guía paso a paso de explotación
 
-**Estado:** 📝 En Progreso
+**Estado:** ✅ Completado + bonus (14/14 obligatorias)
 
 [📂 Ver Proyecto](./web_database/darkly/) | [📖 Guía de Implementación](./web_database/darkly/IMPLEMENTATION_GUIDE.md)
 
@@ -321,7 +340,7 @@ Proyecto estilo Capture The Flag (CTF) para descubrir debilidades comunes del si
 
 **Stack Tecnológico:** Linux, Bash, C, Exploiting (Entorno: Máquina Virtual Linux ISO)
 
-**Estado:** ✅ Completado
+**Estado:** 🚧 En proceso
 
 [📂 Ver Proyecto](./cyber_security/snow-crash/)
 
@@ -405,7 +424,7 @@ comunicación remota, documentado para trabajar dentro de un entorno controlado.
 
 **Stack Tecnológico:** C, System & Kernel, Network Communication, Daemon Process
 
-**Estado:** 📚 Documentado
+**Estado:** ✅ Completado + bonus
 
 [📂 Ver Proyecto](./virus/ft_shield/)
 
@@ -436,9 +455,11 @@ Desarrollo de un packer/crypter polimórfico que inyecta cargas asíncronas en f
 
 <div align="right">
 
-[⬆️ Volver arriba](#-42-outer-core)
+[⬆️ Volver arriba](#top)
 
 </div>
+
+<a id="tecnologias"></a>
 
 ## Tecnologías
 
@@ -472,9 +493,11 @@ Desarrollo de un packer/crypter polimórfico que inyecta cargas asíncronas en f
 
 <div align="right">
 
-[⬆️ Volver arriba](#-42-outer-core)
+[⬆️ Volver arriba](#top)
 
 </div>
+
+<a id="configuracion"></a>
 
 ## Configuración
 
@@ -624,7 +647,7 @@ cd [categoría]/[nombre_proyecto]
 
 <div align="right">
 
-[⬆️ Volver arriba](#-42-outer-core)
+[⬆️ Volver arriba](#top)
 
 </div>
 
@@ -632,20 +655,22 @@ cd [categoría]/[nombre_proyecto]
 
 | Categoría | Proyecto | Lenguaje | Estado | Completado |
 |-----------|----------|----------|--------|------------|
-| IA | ft_linear_regression | Python | ✅ Completado | 100% |
-| IA | DSLR | Python | ✅ Completado | 100% |
-| IA | multilayer-perceptron | Python | 🚧 En Desarrollo | 40% |
-| Unix | libasm | Assembly/C | ✅ Completado | 100% |
+| IA | ft_linear_regression | Python | ✅ Completado + bonus | 100% |
+| IA | DSLR | Python | ✅ Completado + bonus | 100% |
+| IA | multilayer-perceptron | Python | ✅ Completado + bonus (8/8) | 100% |
+| Unix | libasm | Assembly/C | ✅ Completado + bonus | 100% |
 | Data Science | Piscine Pedago DS (M0–M4) | Python/SQL/Docker | ✅ Completado | 100% |
-| Web | Camagru | PHP/JS/SQL | ✅ Completado | 100% |
+| Web | Camagru | PHP/JS/SQL | ✅ Completado + bonus (5) | 125% |
+| Web / Sec | Darkly | Web Security | ✅ Completado + bonus (5) | 125% |
 | Móvil | Piscine Mobile | Flutter/Dart | ✅ Completado | 100% |
-| Virus | Dr. Quine | C/ASM/Python | ✅ Completado | 100% |
-| Virus | ft_shield | C | 📚 Documentado | — |
-| Virus | Woody Woodpacker | C/Assembly | ✅ Completado | 100% |
+| Ciber | Snow Crash | Linux/Bash | 🚧 En proceso | — |
+| Virus | Dr. Quine | C/ASM/Python | ✅ Completado + bonus | 100% |
+| Virus | ft_shield | C | ✅ Completado + bonus (3 y 5) | 125% |
+| Virus | Woody Woodpacker | C/Assembly | ✅ Completado + bonus | 125% |
 
 <div align="right">
 
-[⬆️ Volver arriba](#-42-outer-core)
+[⬆️ Volver arriba](#top)
 
 </div>
 
@@ -662,7 +687,7 @@ Este repositorio demuestra competencia en:
 
 <div align="right">
 
-[⬆️ Volver arriba](#-42-outer-core)
+[⬆️ Volver arriba](#top)
 
 </div>
 
@@ -713,7 +738,7 @@ Cada proyecto incluye documentación exhaustiva:
 
 <div align="right">
 
-[⬆️ Volver arriba](#-42-outer-core)
+[⬆️ Volver arriba](#top)
 
 </div>
 
@@ -723,7 +748,7 @@ Este repositorio es parte de mi viaje personal de aprendizaje en 42 School. Aunq
 
 <div align="right">
 
-[⬆️ Volver arriba](#-42-outer-core)
+[⬆️ Volver arriba](#top)
 
 </div>
 
@@ -733,9 +758,11 @@ Este proyecto es parte del currículo de 42 Málaga. Por favor, respeta las pol�
 
 <div align="right">
 
-[⬆️ Volver arriba](#-42-outer-core)
+[⬆️ Volver arriba](#top)
 
 </div>
+
+<a id="autor"></a>
 
 ## Autor
 
@@ -745,7 +772,7 @@ Este proyecto es parte del currículo de 42 Málaga. Por favor, respeta las pol�
 - GitHub: [@STC71](https://github.com/STC71)
 <div align="right">
 
-[⬆️ Volver arriba](#-42-outer-core)
+[⬆️ Volver arriba](#top)
 
 </div>
 
