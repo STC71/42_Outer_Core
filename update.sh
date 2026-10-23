@@ -799,7 +799,25 @@ stage_repository() {
         fi
 
         if (( is_innermost )); then
-            git -C "$repo" add -A -- "$entry" || { rm -f "$listing"; return 1; }
+            # No intentar add de directorios ignorados ni de árboles cuyo
+            # contenido está completamente cubierto por .gitignore (p. ej.
+            # "vm/" tras excluir solo el .vdi: check-ignore sobre "vm" es
+            # falso, pero git add -- vm falla con "paths are ignored").
+            if git -C "$repo" check-ignore -q -- "$entry" 2>/dev/null; then
+                continue
+            fi
+            add_err=$(mktemp) || { rm -f "$listing"; return 1; }
+            CLEANUP_PATHS+=("$add_err")
+            if ! git -C "$repo" add -A -- "$entry" >"$add_err" 2>&1; then
+                if grep -qiE 'ignored by one of your \.gitignore|use -f if you really want to add' "$add_err"; then
+                    rm -f "$add_err"
+                    continue
+                fi
+                cat "$add_err" >&2
+                rm -f "$add_err" "$listing"
+                return 1
+            fi
+            rm -f "$add_err"
         elif [[ -n "$child_path" && "$entry" == "$child_top" ]]; then
             git -C "$repo" add -A -- "$child_path" || { rm -f "$listing"; return 1; }
         fi
