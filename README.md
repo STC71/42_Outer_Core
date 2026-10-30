@@ -11,11 +11,13 @@
 [![Assembly](https://img.shields.io/badge/Assembly-x86--64-525252?style=for-the-badge)](https://nasm.us/doc/)
 [![SQL](https://img.shields.io/badge/SQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/docs/current/tutorial-sql.html)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docs.docker.com/get-started/)
+[![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://dev.mysql.com/doc/)
 [![Machine Learning](https://img.shields.io/badge/Machine_Learning-FF6F00?style=for-the-badge)](https://scikit-learn.org/stable/user_guide.html)
 [![Web](https://img.shields.io/badge/Web-HTML%2FCSS%2FJS-1572B6?style=for-the-badge)](https://developer.mozilla.org/es/docs/Web)
 [![Mobile](https://img.shields.io/badge/Mobile-Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://docs.flutter.dev/)
 [![Cybersecurity](https://img.shields.io/badge/Cybersecurity-OWASP-111111?style=for-the-badge)](https://owasp.org/www-project-top-ten/)
-[![Status](https://img.shields.io/badge/Estado-Activo-green?style=for-the-badge)](#progreso)
+[![Status](https://img.shields.io/badge/Estado-Activo-green?style=for-the-badge)](#resumen-proyectos)
 [![Projects](https://img.shields.io/badge/Proyectos-12%2B-blue?style=for-the-badge)](#resumen-proyectos)
 
 **Colección de proyectos avanzados del currículo Outer Core de 42 School**
@@ -52,6 +54,21 @@ Cada proyecto está diseñado para empujar los límites del conocimiento técnic
 
 ---
 
+
+<a id="submodulo-web-database"></a>
+
+### Submódulo Web & Database
+
+El directorio `web_database/` es un **git submodule** ([42_web_database](https://github.com/STC71/42_web_database)). Incluye **Camagru** y **Darkly**.
+
+```bash
+git clone --recurse-submodules https://github.com/STC71/42_Outer_Core.git
+# o, si ya clonaste sin submódulos:
+git submodule update --init --recursive
+```
+
+Documentación del dominio: [README Web & Database](https://github.com/STC71/42_web_database/blob/main/README.md).
+
 <a id="resumen-proyectos"></a>
 
 ## 📊 Resumen de proyectos
@@ -60,19 +77,19 @@ Vista rápida del estado de cada pieza del Outer Core:
 
 | Proyecto | Dominio | Estado |
 |----------|---------|--------|
-| [Camagru](./web_database/camagru/) | Web | ✅ Completado + bonus |
-| [Darkly](./web_database/darkly/) | Web / Sec | ✅ Completado + bonus |
-| [Dr. Quine](./virus/dr-quine/) | Virus | ✅ Completado + bonus |
-| [DSLR](./artificial_intelligence/dslr/) | IA | ✅ Completado + bonus |
-| [ft_linear_regression](./artificial_intelligence/ft_linear_regression/) | IA | ✅ Completado + bonus |
-| [ft_shield](./virus/ft_shield/) | Virus / Security | ✅ Completado + bonus |
-| [libasm](./unix_kernel/libasm/) | Kernel | ✅ Completado + bonus |
-| [multilayer-perceptron](./artificial_intelligence/multilayer-perceptron/) | IA | ✅ Completado + bonus |
-| [Piscine Pedago Ciber](./piscine_pedago_ciber/) | Ciber | ✅ Completado |
-| [Piscine Pedago Data Science](./piscine_pedago_data_science/) | Data Science | ✅ Completado |
-| [Piscine Pedago Mobile](./piscine_pedago_mobile/) | Mobile | ✅ Completado |
-| [Snow Crash](./cyber_security/snow-crash/) | Ciber | 🚧 En proceso |
-| [Woody Woodpacker](./virus/woody-woodpacker/) | Virus | ✅ Completado + bonus |
+| [Camagru](./web_database/camagru/) | Web | ✅ 125 % |
+| [Darkly](./web_database/darkly/) | Web / Sec | ✅ 125 % |
+| [Dr. Quine](./virus/dr-quine/) | Virus | ✅ 125 % |
+| [DSLR](./artificial_intelligence/dslr/) | IA | ✅ 125 % |
+| [ft_linear_regression](./artificial_intelligence/ft_linear_regression/) | IA | ✅ 125 % |
+| [ft_shield](./virus/ft_shield/) | Virus / Security | ✅ 125 % |
+| [libasm](./unix_kernel/libasm/) | Kernel | ✅ 125 % |
+| [multilayer-perceptron](./artificial_intelligence/multilayer-perceptron/) | IA | 🚧 En progreso |
+| [Piscine Pedago Ciber](./piscine_pedago_ciber/) | Ciber | ✅ 100 % |
+| [Piscine Pedago Data Science](./piscine_pedago_data_science/) | Data Science | ✅ 100 % |
+| [Piscine Pedago Mobile](./piscine_pedago_mobile/) | Mobile | ✅ 100 % |
+| [Snow Crash](./cyber_security/snow-crash/) | Ciber | ✅ 125 % |
+| [Woody Woodpacker](./virus/woody-woodpacker/) | Virus | ✅ 125 % |
 
 <div align="right">
 
@@ -166,7 +183,7 @@ Red neuronal artificial (Multilayer Perceptron) implementada desde cero para cla
 
 **Conceptos clave:** Feedforward, Backpropagation, Gradient Descent, Activations, Overfitting
 
-**Estado:** ✅ Completado (mandatory + bonus 8/8)
+**Estado:** 🚧 En progreso
 
 [📂 Ver Proyecto](./artificial_intelligence/multilayer-perceptron/)
 
@@ -282,6 +299,26 @@ Una aplicación web full-stack inspirada en Instagram con captura de fotos desde
 
 **Estado:** ✅ Completado (125/100 puntos estimados)
 
+
+**Destacado reciente (Outer Core / defensa 125 %):**
+
+- 🌐 **i18n:** español por defecto + EN / PT / DE / FR (selector por banderas)
+- 🐳 **Docker “works as is”:** PHP 8.2, GD+JPEG, Imagick (GIF), MySQL, phpMyAdmin
+- 🛠️ **Makefile:** `make all`, `make test-full`, `make ext`, `make permissions`
+- 🧪 **Evaluación:** `test_auto.sh` (suite) + `test_eval.sh` (guía interactiva tipo hoja de eval)
+- 📧 **Notificaciones:** email al autor de la foto **solo al comentar** (preferencia desactivable); no se notifica por like
+- 📚 **Documentación por carpetas** + guías `php.md`, `js.md`, `css.md`, `sql.md`, `docker.md` + [app/lang](./web_database/camagru/app/lang/)
+
+**Mapa rápido de documentación:**
+
+| Enlace | Contenido |
+|--------|-----------|
+| [README Camagru](./web_database/camagru/README.md) | Mapa del proyecto |
+| [QUICKSTART](./web_database/camagru/QUICKSTART.md) | Arranque Docker + Mailtrap |
+| [COMPLIANCE](./web_database/camagru/COMPLIANCE.md) | Checklist subject / eval |
+| [Repo dedicado](https://github.com/STC71/42_camagru) | Historial y commits del proyecto |
+| [Web & Database](https://github.com/STC71/42_web_database) | Submódulo dominio web |
+
 [📂 Ver Proyecto](./web_database/camagru/) | [🚀 Guía Rápida](./web_database/camagru/QUICKSTART.md) | [📋 Compliance](./web_database/camagru/COMPLIANCE.md)
 
 </details>
@@ -365,7 +402,7 @@ Proyecto estilo Capture The Flag (CTF) para descubrir debilidades comunes del si
 
 **Stack Tecnológico:** Linux, Bash, C, Exploiting (Entorno: Máquina Virtual Linux ISO)
 
-**Estado:** 🚧 En proceso
+**Estado:** ✅ 125 %
 
 [📂 Ver Proyecto](./cyber_security/snow-crash/)
 
@@ -583,6 +620,32 @@ git submodule update --remote --merge
 git pull --recurse-submodules
 ```
 
+
+### 🚀 Publicar la cadena de repos: `update.sh`
+
+El portfolio anida **repositorios Git** (proyecto → tema/piscine → Outer Core). Un solo `git push` en el nivel interno no actualiza los padres.
+
+En la **raíz de este monorepo** tienes:
+
+| Recurso | Rol |
+|---------|-----|
+| [`update.sh`](./update.sh) | Script bash que publica la cadena **de dentro hacia fuera** (submódulo → padres → repo principal), con confirmaciones y soporte de GitHub CLI (`gh`) |
+| [`update.md`](./update.md) | Guía completa: objetivo, conceptos (gitlink `160000`), uso, dry-run, modo `--split-submodule`, casos reales, FAQ y checklist |
+
+**Uso típico** (desde la carpeta del submódulo o del nivel que quieras publicar; ver detalles en la guía):
+
+```bash
+# Leer antes la documentación
+less update.md   # o abrir update.md en el navegador de GitHub
+
+chmod +x update.sh
+./update.sh --help
+# Recomendado: simular primero
+./update.sh --dry-run
+```
+
+No sustituye el flujo manual de `git submodule update`; lo **ordena y documenta** cuando hay que subir cambios en varios remotos encadenados.
+
 #### 📝 Trabajar en un Submódulo
 
 Si quieres hacer cambios en un proyecto específico:
@@ -701,28 +764,6 @@ cd [categoría]/[nombre_proyecto]
 
 </div>
 
-## Progreso
-
-| Categoría | Proyecto | Lenguaje | Estado | Completado |
-|-----------|----------|----------|--------|------------|
-| IA | ft_linear_regression | Python | ✅ Completado + bonus | 100% |
-| IA | DSLR | Python | ✅ Completado + bonus | 100% |
-| IA | multilayer-perceptron | Python | ✅ Completado + bonus (8/8) | 100% |
-| Unix | libasm | Assembly/C | ✅ Completado + bonus | 100% |
-| Data Science | Piscine Pedago DS (M0–M4) | Python/SQL/Docker | ✅ Completado | 100% |
-| Web | Camagru | PHP/JS/SQL | ✅ Completado + bonus (5) | 125% |
-| Web / Sec | Darkly | Web Security | ✅ Completado + bonus (5) | 125% |
-| Móvil | Piscine Mobile | Flutter/Dart | ✅ Completado | 100% |
-| Ciber | Snow Crash | Linux/Bash | 🚧 En proceso | — |
-| Virus | Dr. Quine | C/ASM/Python | ✅ Completado + bonus | 100% |
-| Virus | ft_shield | C | ✅ Completado + bonus (3 y 5) | 125% |
-| Virus | Woody Woodpacker | C/Assembly | ✅ Completado + bonus | 125% |
-
-<div align="right">
-
-[⬆️ Volver arriba](#top)
-
-</div>
 
 ## Objetivos de Aprendizaje
 
@@ -773,12 +814,15 @@ Cada proyecto incluye documentación exhaustiva:
 - [Monorepo](https://github.com/STC71/42_piscine_pedago_data_science) · [M4 The future](https://github.com/STC71/42_data_science_4_the_future)
 
 ### Camagru (Documentación Destacada)
-- ✅ **19 README detallados** (uno por carpeta/subcarpeta)
-- ✅ Explicación clara del **QUÉ, POR QUÉ y PARA QUÉ** de cada componente
-- ✅ **80+ videos educativos en español** sobre tecnologías del proyecto
-- ✅ Guías de inicio rápido, compliance y resumen técnico
-- ✅ Documentación de arquitectura MVC, seguridad y buenas prácticas
-- ✅ Ejemplos prácticos sin sobrecarga de código
+- ✅ README en raíz del proyecto + **README por subcarpeta** (`app/`, `core/`, `public/`, `config/`, …)
+- ✅ Guías tech con ejemplos del código: `php.md`, `js.md`, `css.md`, `sql.md`, `docker.md`
+- ✅ i18n documentado en `app/lang/README.md`
+- ✅ QUICKSTART, COMPLIANCE, PROJECT_OVERVIEW, SUMMARY, DATABASE_INITIALIZATION
+- ✅ Suite `test_auto.sh` y guía de defensa `test_eval.sh`
+- ✅ Arquitectura MVC, seguridad (hash, PDO, CSRF, XSS) y bonus (AJAX, preview, GIF)
+- ✅ Explicación del **qué / por qué / para qué** de cada capa (documentación didáctica 42)
+- ✅ Recursos educativos en español enlazados desde los README de carpeta (vídeos y referencias)
+
 
 ### Piscine Pedago Mobile
 - ✅ **README general** con el mapa de los 6 módulos
@@ -832,6 +876,6 @@ Este proyecto es parte del currículo de 42 Málaga. Por favor, respeta las pol�
 
 **Hecho con ❤️ en 42 Málaga**
 
-*Última Actualización: Octubre 2026*
+*Última actualización: Octubre 2026 — Proyectos Outer Core al 125 % (piscines 100 %); multilayer-perceptron en progreso; Camagru docs/tests alineados al eval*
 
 </div>
