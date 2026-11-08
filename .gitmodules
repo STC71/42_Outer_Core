@@ -22,3 +22,6 @@
 [submodule "piscine_pedago_data_science"]
 	path = piscine_pedago_data_science
 	url = git@github.com:STC71/42_piscine_pedago_data_science.git
+[submodule "piscine_pedago_deep_learning_beta"]
+	path = piscine_pedago_deep_learning_beta
+	url = git@github.com:STC71/42_piscine_pedago_deep_learning_beta.git
