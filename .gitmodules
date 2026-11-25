@@ -25,3 +25,6 @@
 [submodule "piscine_pedago_deep_learning_beta"]
 	path = piscine_pedago_deep_learning_beta
 	url = git@github.com:STC71/42_piscine_pedago_deep_learning_beta.git
+[submodule "mobile"]
+	path = mobile
+	url = git@github.com:STC71/42_mobile.git
