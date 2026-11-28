@@ -28,3 +28,6 @@
 [submodule "mobile"]
 	path = mobile
 	url = git@github.com:STC71/42_mobile.git
+[submodule "ocaml"]
+	path = ocaml
+	url = git@github.com:STC71/42_ocaml.git
